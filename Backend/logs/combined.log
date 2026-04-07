@@ -1,0 +1,20 @@
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"acquasitions-api","timestamp":"2026-04-07T18:19:34.446Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"-api","timestamp":"2026-04-07T18:19:55.511Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:20:00.716Z"}
+{"level":"info","message":"::1 - - [07/Apr/2026:18:20:08 +0000] \"GET / HTTP/1.1\" 404 36 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-07T18:20:08.425Z"}
+{"level":"info","message":"::1 - - [07/Apr/2026:18:20:08 +0000] \"GET /favicon.ico HTTP/1.1\" 404 47 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-07T18:20:08.844Z"}
+{"level":"info","message":"::1 - - [07/Apr/2026:18:20:15 +0000] \"GET /health HTTP/1.1\" 200 40 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-07T18:20:15.381Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:20:44.248Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:20:49.621Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:20:56.857Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:20:59.101Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:01.949Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:04.329Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:07.193Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:09.564Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:11.362Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:12.842Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:17.189Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:35.266Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:38.300Z"}
+{"level":"info","message":"::1 - - [07/Apr/2026:18:21:43 +0000] \"GET /health HTTP/1.1\" 200 99 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-07T18:21:43.408Z"}
