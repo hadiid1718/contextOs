@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const passwordResetTokenSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       index: true,
     },
@@ -26,6 +26,6 @@ const passwordResetTokenSchema = new mongoose.Schema(
 passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const PasswordResetToken = mongoose.model(
-  "PasswordResetToken",
+  'PasswordResetToken',
   passwordResetTokenSchema
 );

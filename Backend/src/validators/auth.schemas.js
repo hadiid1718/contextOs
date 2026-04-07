@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-const roles = ["owner", "admin", "member", "viewer"];
+const roles = ['owner', 'admin', 'member', 'viewer'];
 
 export const registerSchema = z.object({
   body: z.object({

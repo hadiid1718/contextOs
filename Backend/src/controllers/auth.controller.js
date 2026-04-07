@@ -1,22 +1,22 @@
-import { env } from "../config/env.js";
-import { PasswordResetToken } from "../models/PasswordResetToken.js";
-import { RefreshToken } from "../models/RefreshToken.js";
-import { User } from "../models/User.js";
-import { VerificationToken } from "../models/VerificationToken.js";
-import { AppError } from "../utils/appError.js";
-import { clearAuthCookies, setAuthCookies } from "../utils/cookie.js";
-import { hashToken } from "../utils/hash.js";
-import { sendMail } from "../utils/mailer.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { env } from '../config/env.js';
+import { PasswordResetToken } from '../models/PasswordResetToken.js';
+import { RefreshToken } from '../models/RefreshToken.js';
+import { User } from '../models/User.js';
+import { VerificationToken } from '../models/VerificationToken.js';
+import { AppError } from '../utils/appError.js';
+import { clearAuthCookies, setAuthCookies } from '../utils/cookie.js';
+import { hashToken } from '../utils/hash.js';
+import { sendMail } from '../utils/mailer.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import {
   generateAccessToken,
   generateRandomToken,
   generateRefreshToken,
   generateTokenId,
   verifyRefreshToken,
-} from "../utils/token.js";
+} from '../utils/token.js';
 
-const buildAuthPayload = (user) => ({
+const buildAuthPayload = user => ({
   sub: user.id,
   email: user.email,
   role: user.role,
@@ -30,12 +30,12 @@ const issueAuthTokens = async (user, previousRefreshTokenDoc = null) => {
   const tokenId = generateTokenId();
   const accessToken = generateAccessToken({
     ...buildAuthPayload(user),
-    type: "access",
+    type: 'access',
   });
 
   const refreshToken = generateRefreshToken({
     ...buildAuthPayload(user),
-    type: "refresh",
+    type: 'refresh',
     tid: tokenId,
   });
 
@@ -55,7 +55,7 @@ const issueAuthTokens = async (user, previousRefreshTokenDoc = null) => {
   return { accessToken, refreshToken };
 };
 
-const sendVerificationEmail = async (user) => {
+const sendVerificationEmail = async user => {
   await VerificationToken.deleteMany({ user: user.id });
 
   const rawToken = generateRandomToken();
@@ -68,13 +68,13 @@ const sendVerificationEmail = async (user) => {
   const verificationUrl = `${env.apiBaseUrl}/api/v1/auth/verify-email/${rawToken}`;
   await sendMail({
     to: user.email,
-    subject: "Verify your ContextOS account",
+    subject: 'Verify your ContextOS account',
     text: `Verify your email by visiting: ${verificationUrl}`,
     html: `<p>Verify your email by clicking <a href="${verificationUrl}">this link</a>.</p>`,
   });
 };
 
-const sendPasswordResetEmail = async (user) => {
+const sendPasswordResetEmail = async user => {
   await PasswordResetToken.deleteMany({ user: user.id });
 
   const rawToken = generateRandomToken();
@@ -87,13 +87,13 @@ const sendPasswordResetEmail = async (user) => {
   const resetUrl = `${env.appOrigin}/reset-password?token=${rawToken}`;
   await sendMail({
     to: user.email,
-    subject: "Reset your ContextOS password",
+    subject: 'Reset your ContextOS password',
     text: `Reset your password by visiting: ${resetUrl}`,
     html: `<p>Reset your password by clicking <a href="${resetUrl}">this link</a>.</p>`,
   });
 };
 
-const buildAuthResponse = (user) => ({
+const buildAuthResponse = user => ({
   id: user.id,
   name: user.name,
   email: user.email,
@@ -107,18 +107,18 @@ export const register = asyncHandler(async (req, res) => {
 
   const existingUser = await User.findOne({ email: email.toLowerCase() });
   if (existingUser) {
-    throw new AppError("Email is already in use", 409);
+    throw new AppError('Email is already in use', 409);
   }
 
   const organizations = organizationId
-    ? [{ orgId: organizationId, role: role || "member" }]
+    ? [{ orgId: organizationId, role: role || 'member' }]
     : [];
 
   const user = await User.create({
     name,
     email,
     password,
-    role: role || "member",
+    role: role || 'member',
     organizations,
   });
 
@@ -128,7 +128,7 @@ export const register = asyncHandler(async (req, res) => {
   setAuthCookies(res, accessToken, refreshToken);
 
   res.status(201).json({
-    message: "User registered successfully",
+    message: 'User registered successfully',
     user: buildAuthResponse(user),
   });
 });
@@ -136,13 +136,15 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+  const user = await User.findOne({ email: email.toLowerCase() }).select(
+    '+password'
+  );
   if (!user || !(await user.comparePassword(password))) {
-    throw new AppError("Invalid email or password", 401);
+    throw new AppError('Invalid email or password', 401);
   }
 
   if (!user.emailVerified) {
-    throw new AppError("Email is not verified", 403);
+    throw new AppError('Email is not verified', 403);
   }
 
   user.lastLoginAt = new Date();
@@ -152,7 +154,7 @@ export const login = asyncHandler(async (req, res) => {
   setAuthCookies(res, accessToken, refreshToken);
 
   res.status(200).json({
-    message: "Login successful",
+    message: 'Login successful',
     user: buildAuthResponse(user),
   });
 });
@@ -160,38 +162,45 @@ export const login = asyncHandler(async (req, res) => {
 export const refresh = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies?.[env.refreshCookieName];
   if (!incomingRefreshToken) {
-    throw new AppError("Refresh token is required", 401);
+    throw new AppError('Refresh token is required', 401);
   }
 
   let payload;
   try {
     payload = verifyRefreshToken(incomingRefreshToken);
   } catch {
-    throw new AppError("Invalid or expired refresh token", 401);
+    throw new AppError('Invalid or expired refresh token', 401);
   }
 
-  if (payload.type !== "refresh") {
-    throw new AppError("Invalid refresh token", 401);
+  if (payload.type !== 'refresh') {
+    throw new AppError('Invalid refresh token', 401);
   }
 
   const existingTokenDoc = await RefreshToken.findOne({
     tokenHash: hashToken(incomingRefreshToken),
-  }).populate("user");
+  }).populate('user');
 
-  if (!existingTokenDoc || existingTokenDoc.revokedAt || existingTokenDoc.expiresAt < new Date()) {
-    throw new AppError("Refresh token is no longer valid", 401);
+  if (
+    !existingTokenDoc ||
+    existingTokenDoc.revokedAt ||
+    existingTokenDoc.expiresAt < new Date()
+  ) {
+    throw new AppError('Refresh token is no longer valid', 401);
   }
 
   const user = existingTokenDoc.user;
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError('User not found', 404);
   }
 
-  const { accessToken, refreshToken } = await issueAuthTokens(user, existingTokenDoc);
+  const { accessToken, refreshToken } = await issueAuthTokens(
+    user,
+    existingTokenDoc
+  );
   setAuthCookies(res, accessToken, refreshToken);
 
   res.status(200).json({
-    message: "Token refreshed successfully",
+    message: 'Token refreshed successfully',
     user: buildAuthResponse(user),
   });
 });
@@ -210,13 +219,13 @@ export const logout = asyncHandler(async (req, res) => {
   }
 
   clearAuthCookies(res);
-  res.status(200).json({ message: "Logged out successfully" });
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 export const me = asyncHandler(async (req, res) => {
   const user = await User.findById(req.auth.sub);
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError('User not found', 404);
   }
 
   res.status(200).json({ user: buildAuthResponse(user) });
@@ -230,12 +239,12 @@ export const verifyEmail = asyncHandler(async (req, res) => {
   });
 
   if (!verificationToken) {
-    throw new AppError("Verification token is invalid or expired", 400);
+    throw new AppError('Verification token is invalid or expired', 400);
   }
 
   const user = await User.findById(verificationToken.user);
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError('User not found', 404);
   }
 
   user.emailVerified = true;
@@ -243,7 +252,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 
   await VerificationToken.deleteMany({ user: user.id });
 
-  res.status(200).json({ message: "Email verified successfully" });
+  res.status(200).json({ message: 'Email verified successfully' });
 });
 
 export const resendVerification = asyncHandler(async (req, res) => {
@@ -255,7 +264,8 @@ export const resendVerification = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({
-    message: "If the account exists and is unverified, a verification email has been sent",
+    message:
+      'If the account exists and is unverified, a verification email has been sent',
   });
 });
 
@@ -268,7 +278,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({
-    message: "If the account exists, a password reset email has been sent",
+    message: 'If the account exists, a password reset email has been sent',
   });
 });
 
@@ -282,12 +292,12 @@ export const resetPassword = asyncHandler(async (req, res) => {
   });
 
   if (!resetToken) {
-    throw new AppError("Password reset token is invalid or expired", 400);
+    throw new AppError('Password reset token is invalid or expired', 400);
   }
 
-  const user = await User.findById(resetToken.user).select("+password");
+  const user = await User.findById(resetToken.user).select('+password');
   if (!user) {
-    throw new AppError("User not found", 404);
+    throw new AppError('User not found', 404);
   }
 
   user.password = password;
@@ -295,10 +305,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   await Promise.all([
     PasswordResetToken.deleteMany({ user: user.id }),
-    RefreshToken.updateMany({ user: user.id, revokedAt: null }, { $set: { revokedAt: new Date() } }),
+    RefreshToken.updateMany(
+      { user: user.id, revokedAt: null },
+      { $set: { revokedAt: new Date() } }
+    ),
   ]);
 
   clearAuthCookies(res);
 
-  res.status(200).json({ message: "Password reset successful" });
+  res.status(200).json({ message: 'Password reset successful' });
 });

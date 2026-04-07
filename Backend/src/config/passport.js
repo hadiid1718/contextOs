@@ -1,10 +1,10 @@
-import { Strategy as GitHubStrategy } from "passport-github2";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as GitHubStrategy } from 'passport-github2';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
-import { env } from "./env.js";
-import { User } from "../models/User.js";
+import { env } from './env.js';
+import { User } from '../models/User.js';
 
-const normalizeProfileEmail = (profile) => {
+const normalizeProfileEmail = profile => {
   if (profile?.emails?.length) {
     return profile.emails[0].value.toLowerCase();
   }
@@ -19,10 +19,11 @@ const normalizeProfileEmail = (profile) => {
 const findOrCreateOAuthUser = async ({ provider, providerId, profile }) => {
   const email = normalizeProfileEmail(profile);
   if (!email) {
-    throw new Error("OAuth profile does not include an email");
+    throw new Error('OAuth profile does not include an email');
   }
 
-  const providerKey = provider === "google" ? "authProviders.googleId" : "authProviders.githubId";
+  const providerKey =
+    provider === 'google' ? 'authProviders.googleId' : 'authProviders.githubId';
 
   let user = await User.findOne({ [providerKey]: providerId });
   if (user) {
@@ -33,21 +34,23 @@ const findOrCreateOAuthUser = async ({ provider, providerId, profile }) => {
   if (user) {
     user.authProviders = {
       ...user.authProviders,
-      ...(provider === "google" ? { googleId: providerId } : { githubId: providerId }),
+      ...(provider === 'google'
+        ? { googleId: providerId }
+        : { githubId: providerId }),
     };
     user.emailVerified = true;
     await user.save();
     return user;
   }
 
-  const displayName = profile.displayName || profile.username || "New User";
+  const displayName = profile.displayName || profile.username || 'New User';
   user = await User.create({
     name: displayName,
     email,
-    role: "member",
+    role: 'member',
     emailVerified: true,
     authProviders:
-      provider === "google"
+      provider === 'google'
         ? { googleId: providerId }
         : { githubId: providerId },
   });
@@ -55,7 +58,7 @@ const findOrCreateOAuthUser = async ({ provider, providerId, profile }) => {
   return user;
 };
 
-export const configurePassport = (passport) => {
+export const configurePassport = passport => {
   passport.use(
     new GoogleStrategy(
       {
@@ -66,7 +69,7 @@ export const configurePassport = (passport) => {
       async (_accessToken, _refreshToken, profile, done) => {
         try {
           const user = await findOrCreateOAuthUser({
-            provider: "google",
+            provider: 'google',
             providerId: profile.id,
             profile,
           });
@@ -84,12 +87,12 @@ export const configurePassport = (passport) => {
         clientID: env.githubClientId,
         clientSecret: env.githubClientSecret,
         callbackURL: env.githubCallbackUrl,
-        scope: ["user:email"],
+        scope: ['user:email'],
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
           const user = await findOrCreateOAuthUser({
-            provider: "github",
+            provider: 'github',
             providerId: profile.id,
             profile,
           });

@@ -1,4 +1,4 @@
-export const validate = (schema) => (req, _res, next) => {
+export const validate = schema => (req, _res, next) => {
   const parsed = schema.parse({
     body: req.body,
     query: req.query,

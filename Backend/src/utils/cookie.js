@@ -1,4 +1,4 @@
-import { env } from "../config/env.js";
+import { env } from '../config/env.js';
 
 const accessMaxAgeMs = 15 * 60 * 1000;
 const refreshMaxAgeMs = 7 * 24 * 60 * 60 * 1000;
@@ -8,7 +8,7 @@ const baseCookieOptions = {
   secure: env.cookieSecure,
   sameSite: env.cookieSameSite,
   domain: env.cookieDomain,
-  path: "/",
+  path: '/',
 };
 
 export const setAuthCookies = (res, accessToken, refreshToken) => {
@@ -23,7 +23,7 @@ export const setAuthCookies = (res, accessToken, refreshToken) => {
   });
 };
 
-export const clearAuthCookies = (res) => {
+export const clearAuthCookies = res => {
   res.clearCookie(env.accessCookieName, baseCookieOptions);
   res.clearCookie(env.refreshCookieName, baseCookieOptions);
 };

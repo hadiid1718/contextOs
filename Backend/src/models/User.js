@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt";
-import mongoose from "mongoose";
+import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 
-const roleEnum = ["owner", "admin", "member", "viewer"];
+const roleEnum = ['owner', 'admin', 'member', 'viewer'];
 
 const organizationMembershipSchema = new mongoose.Schema(
   {
@@ -13,7 +13,7 @@ const organizationMembershipSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: roleEnum,
-      default: "member",
+      default: 'member',
     },
   },
   { _id: false }
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: roleEnum,
-      default: "member",
+      default: 'member',
       index: true,
     },
     organizations: {
@@ -74,8 +74,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function preSave(next) {
-  if (!this.isModified("password") || !this.password) {
+userSchema.pre('save', async function preSave(next) {
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 
@@ -83,7 +83,9 @@ userSchema.pre("save", async function preSave(next) {
   return next();
 });
 
-userSchema.methods.comparePassword = function comparePassword(candidatePassword) {
+userSchema.methods.comparePassword = function comparePassword(
+  candidatePassword
+) {
   if (!this.password) {
     return false;
   }
@@ -91,4 +93,4 @@ userSchema.methods.comparePassword = function comparePassword(candidatePassword)
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model('User', userSchema);

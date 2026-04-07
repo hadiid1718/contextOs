@@ -1,17 +1,21 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { AppError } from "../utils/appError.js";
-import { setAuthCookies } from "../utils/cookie.js";
-import { env } from "../config/env.js";
-import { RefreshToken } from "../models/RefreshToken.js";
-import { generateAccessToken, generateRefreshToken, generateTokenId } from "../utils/token.js";
-import { hashToken } from "../utils/hash.js";
+import { asyncHandler } from '../utils/asyncHandler.js';
+import { AppError } from '../utils/appError.js';
+import { setAuthCookies } from '../utils/cookie.js';
+import { env } from '../config/env.js';
+import { RefreshToken } from '../models/RefreshToken.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  generateTokenId,
+} from '../utils/token.js';
+import { hashToken } from '../utils/hash.js';
 
 const refreshExpiryDate = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 export const oauthCallbackSuccess = asyncHandler(async (req, res) => {
   const user = req.user;
   if (!user) {
-    throw new AppError("OAuth authentication failed", 401);
+    throw new AppError('OAuth authentication failed', 401);
   }
 
   const tokenId = generateTokenId();
@@ -20,14 +24,14 @@ export const oauthCallbackSuccess = asyncHandler(async (req, res) => {
     sub: user.id,
     email: user.email,
     role: user.role,
-    type: "access",
+    type: 'access',
   });
 
   const refreshToken = generateRefreshToken({
     sub: user.id,
     email: user.email,
     role: user.role,
-    type: "refresh",
+    type: 'refresh',
     tid: tokenId,
   });
 

@@ -1,4 +1,4 @@
-import { AppError } from "../utils/appError.js";
+import { AppError } from '../utils/appError.js';
 
 const roleWeight = {
   viewer: 1,
@@ -7,17 +7,21 @@ const roleWeight = {
   owner: 4,
 };
 
-export const requireRole = (...allowedRoles) => (req, _res, next) => {
-  const userRole = req.auth?.role;
+export const requireRole =
+  (...allowedRoles) =>
+  (req, _res, next) => {
+    const userRole = req.auth?.role;
 
-  if (!userRole) {
-    return next(new AppError("Authentication required", 401));
-  }
+    if (!userRole) {
+      return next(new AppError('Authentication required', 401));
+    }
 
-  const minAllowedWeight = Math.min(...allowedRoles.map((role) => roleWeight[role]));
-  if (roleWeight[userRole] < minAllowedWeight) {
-    return next(new AppError("Insufficient permissions", 403));
-  }
+    const minAllowedWeight = Math.min(
+      ...allowedRoles.map(role => roleWeight[role])
+    );
+    if (roleWeight[userRole] < minAllowedWeight) {
+      return next(new AppError('Insufficient permissions', 403));
+    }
 
-  return next();
-};
+    return next();
+  };
