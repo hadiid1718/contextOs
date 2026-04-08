@@ -78,13 +78,22 @@ const sendVerificationEmail = async user => {
     expiresAt: verificationExpiryDate(),
   });
 
-  const verificationUrl = `${env.apiBaseUrl}/api/v1/auth/verify-email/${rawToken}`;
-  await sendMail({
-    to: user.email,
-    subject: 'Verify your ContextOS account',
-    text: `Verify your email by visiting: ${verificationUrl}`,
-    html: `<p>Verify your email by clicking <a href="${verificationUrl}">this link</a>.</p>`,
-  });
+  try {
+    const verificationUrl = `${env.apiBaseUrl}/api/v1/auth/verify-email/${rawToken}`;
+    await sendMail({
+      to: user.email,
+      subject: 'Verify your ContextOS account',
+      text: `Verify your email by visiting: ${verificationUrl}`,
+      html: `<p>Verify your email by clicking <a href="${verificationUrl}">this link</a>.</p>`,
+    });
+  } catch (error) {
+    logger.warn(
+      `Verification email failed for ${user.email}: ${error.message}`
+    );
+    // Token is still valid, email can be resent later
+  }
+
+  return rawToken;
 };
 
 const sendPasswordResetEmail = async user => {
@@ -104,6 +113,8 @@ const sendPasswordResetEmail = async user => {
     text: `Reset your password by visiting: ${resetUrl}`,
     html: `<p>Reset your password by clicking <a href="${resetUrl}">this link</a>.</p>`,
   });
+
+  return rawToken;
 };
 
 const buildAuthResponse = user => ({
@@ -135,13 +146,14 @@ export const register = asyncHandler(async (req, res) => {
     organizations,
   });
 
+  let verificationToken = null;
   try {
-    await sendVerificationEmail(user);
+    verificationToken = await sendVerificationEmail(user);
   } catch (error) {
-    // Registration should still succeed even if mail delivery is temporarily down.
-    logger.warn(
-      `Verification email failed for ${user.email}: ${error.message}`
+    logger.error(
+      `Failed to create verification token for ${user.email}: ${error.message}`
     );
+    // User creation continues, verification can be sent later via resend endpoint
   }
 
   const { accessToken, refreshToken } = await issueAuthTokens(user);
@@ -150,6 +162,7 @@ export const register = asyncHandler(async (req, res) => {
   res.status(201).json({
     message: 'User registered successfully',
     user: buildAuthResponse(user),
+    verificationToken,
   });
 });
 
@@ -300,10 +313,11 @@ export const resendVerification = asyncHandler(async (req, res) => {
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
+  let resetToken = null;
   const user = await User.findOne({ email: email.toLowerCase() });
   if (user) {
     try {
-      await sendPasswordResetEmail(user);
+      resetToken = await sendPasswordResetEmail(user);
     } catch (error) {
       logger.warn(
         `Password reset email failed for ${user.email}: ${error.message}`
@@ -313,6 +327,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     message: 'If the account exists, a password reset email has been sent',
+    resetToken,
   });
 });
 

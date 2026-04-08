@@ -5,3 +5,5 @@
 {"level":"error","message":"Error: getaddrinfo ENOTFOUND smtp.example.com\n    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26)","service":"contextos-api","timestamp":"2026-04-08T21:37:55.345Z"}
 {"level":"error","message":"Port 4000 is already in use. Stop the existing process or set a different PORT.","service":"contextos-api","timestamp":"2026-04-08T21:40:43.296Z"}
 {"level":"error","message":"Port 4000 is already in use. Stop the existing process or set a different PORT.","service":"contextos-api","timestamp":"2026-04-08T21:41:53.594Z"}
+{"level":"error","message":"Port 4001 is already in use. Stop the existing process or set a different PORT.","service":"contextos-api","timestamp":"2026-04-08T22:15:16.232Z"}
+{"level":"error","message":"Port 4001 is already in use. Stop the existing process or set a different PORT.","service":"contextos-api","timestamp":"2026-04-08T22:33:41.808Z"}

@@ -62,14 +62,18 @@ export const env = {
   webhookBaseUrl:
     process.env.WEBHOOK_BASE_URL || 'http://localhost:4001/api/v1/webhooks',
   kafkaBrokers: toCsvArray(
-    process.env.KAFKA_BROKERS || process.env.INGESTION_KAFKA_BROKERS || '127.0.0.1:9092'
+    process.env.KAFKA_BROKERS ||
+      process.env.INGESTION_KAFKA_BROKERS ||
+      '127.0.0.1:9092'
   ),
   kafkaClientId:
     process.env.KAFKA_CLIENT_ID ||
     process.env.INGESTION_KAFKA_CLIENT_ID ||
     'contextos-ingestion-service',
   kafkaTopic:
-    process.env.KAFKA_TOPIC || process.env.INGESTION_KAFKA_TOPIC || 'events.ingestion',
+    process.env.KAFKA_TOPIC ||
+    process.env.INGESTION_KAFKA_TOPIC ||
+    'events.ingestion',
   mockKafka: toBoolean(
     process.env.MOCK_KAFKA ?? process.env.INGESTION_MOCK_KAFKA,
     true
@@ -80,11 +84,14 @@ export const env = {
     process.env.INGESTION_ENCRYPTION_KEY ||
     '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
   githubWebhookSecret:
-    process.env.GITHUB_WEBHOOK_SECRET || process.env.INGESTION_GITHUB_WEBHOOK_SECRET,
+    process.env.GITHUB_WEBHOOK_SECRET ||
+    process.env.INGESTION_GITHUB_WEBHOOK_SECRET,
   jiraWebhookSecret:
-    process.env.JIRA_WEBHOOK_SECRET || process.env.INGESTION_JIRA_WEBHOOK_SECRET,
+    process.env.JIRA_WEBHOOK_SECRET ||
+    process.env.INGESTION_JIRA_WEBHOOK_SECRET,
   slackSigningSecret:
-    process.env.SLACK_SIGNING_SECRET || process.env.INGESTION_SLACK_SIGNING_SECRET,
+    process.env.SLACK_SIGNING_SECRET ||
+    process.env.INGESTION_SLACK_SIGNING_SECRET,
   githubWebhookIpAllowlist: toCsvArray(process.env.GITHUB_WEBHOOK_IP_ALLOWLIST),
   jiraWebhookIpAllowlist: toCsvArray(process.env.JIRA_WEBHOOK_IP_ALLOWLIST),
   slackWebhookIpAllowlist: toCsvArray(process.env.SLACK_WEBHOOK_IP_ALLOWLIST),
@@ -97,7 +104,8 @@ export const env = {
   retryMaxDelayMs: toNumber(process.env.RETRY_MAX_DELAY_MS, 10000),
 
   githubApiBaseUrl: process.env.GITHUB_API_BASE_URL || 'https://api.github.com',
-  jiraApiBaseUrl: process.env.JIRA_API_BASE_URL || 'https://your-domain.atlassian.net',
+  jiraApiBaseUrl:
+    process.env.JIRA_API_BASE_URL || 'https://your-domain.atlassian.net',
   slackApiBaseUrl: process.env.SLACK_API_BASE_URL || 'https://slack.com/api',
   confluenceApiBaseUrl:
     process.env.CONFLUENCE_API_BASE_URL ||

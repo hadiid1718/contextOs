@@ -198,4 +198,3 @@ Health response includes `ingestion` runtime status:
 - `schedulerStarted`
 - `startupError`
 - `updatedAt`
-
