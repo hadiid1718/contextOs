@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 
 import { env } from './config/env.js';
+import { getIngestionStatus } from './config/ingestionStatus.js';
 import { configurePassport } from './config/passport.js';
 import {
   errorHandler,
@@ -25,7 +26,15 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, _res, buffer) => {
+      if (req.originalUrl.startsWith('/api/v1/webhooks')) {
+        req.rawBody = buffer.toString('utf8');
+      }
+    },
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
@@ -44,6 +53,7 @@ app.get('/health', (_req, res) => {
     service: 'contextos-api',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    ingestion: getIngestionStatus(),
   });
 });
 

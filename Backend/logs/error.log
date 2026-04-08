@@ -1,0 +1,1 @@
+{"level":"error","message":"Port 4001 is already in use. Stop the existing process or set a different PORT.","service":"contextos-api","timestamp":"2026-04-08T20:43:52.394Z"}
