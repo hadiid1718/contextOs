@@ -1,8 +1,16 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import dotenv from 'dotenv';
 
-dotenv.config();
+const runtimeNodeEnv = process.env.NODE_ENV || 'development';
+const envSpecificPath = path.resolve(process.cwd(), `.env.${runtimeNodeEnv}`);
+const defaultEnvPath = path.resolve(process.cwd(), '.env');
 
-const isProduction = process.env.NODE_ENV === 'production';
+dotenv.config({
+  path: existsSync(envSpecificPath) ? envSpecificPath : defaultEnvPath,
+});
+
+const isProduction = runtimeNodeEnv === 'production';
 
 const assertRequired = key => {
   if (!process.env[key]) {
@@ -15,6 +23,7 @@ if (isProduction) {
     'MONGO_URI',
     'JWT_ACCESS_SECRET',
     'JWT_REFRESH_SECRET',
+    'ORG_INVITATION_SECRET',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
     'GOOGLE_CALLBACK_URL',
@@ -37,6 +46,9 @@ export const env = {
     process.env.JWT_REFRESH_SECRET || 'dev-refresh-secret-change-me',
   jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
   jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+  orgInvitationSecret:
+    process.env.ORG_INVITATION_SECRET || 'dev-org-invitation-secret-change-me',
+  orgInvitationExpiresIn: process.env.ORG_INVITATION_EXPIRES_IN || '48h',
 
   accessCookieName: process.env.ACCESS_COOKIE_NAME || 'accessToken',
   refreshCookieName: process.env.REFRESH_COOKIE_NAME || 'refreshToken',

@@ -7,9 +7,8 @@ const roleWeight = {
   owner: 4,
 };
 
-export const requireRole =
-  (...allowedRoles) =>
-  (req, _res, next) => {
+export const requireRole = (...allowedRoles) => {
+  return (req, _res, next) => {
     const userRole = req.auth?.role;
 
     if (!userRole) {
@@ -25,3 +24,4 @@ export const requireRole =
 
     return next();
   };
+};

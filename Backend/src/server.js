@@ -5,7 +5,15 @@ import logger from './config/loggers.js';
 
 const PORT = env.port;
 
-app.listen(PORT, async () => {
-  logger.info(`server is running on port: http://localhost:${PORT}`);
+const startServer = async () => {
   await connectToDatabase();
+
+  app.listen(PORT, () => {
+    logger.info(`server is running on port: http://localhost:${PORT}`);
+  });
+};
+
+startServer().catch(error => {
+  logger.error(`Startup failed: ${error.message}`);
+  process.exit(1);
 });

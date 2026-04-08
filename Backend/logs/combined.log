@@ -18,3 +18,14 @@
 {"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:35.266Z"}
 {"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-07T18:21:38.300Z"}
 {"level":"info","message":"::1 - - [07/Apr/2026:18:21:43 +0000] \"GET /health HTTP/1.1\" 200 99 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-07T18:21:43.408Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-08T15:53:30.021Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-08T15:56:23.723Z"}
+{"level":"info","message":"::1 - - [08/Apr/2026:15:56:27 +0000] \"GET / HTTP/1.1\" 200 24 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-08T15:56:27.502Z"}
+{"level":"info","message":"::1 - - [08/Apr/2026:15:56:27 +0000] \"GET /favicon.ico HTTP/1.1\" 404 47 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-08T15:56:27.709Z"}
+{"level":"info","message":"::1 - - [08/Apr/2026:15:56:34 +0000] \"GET /health HTTP/1.1\" 200 100 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-08T15:56:34.612Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-01.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-08T16:02:03.257Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-08T16:02:03.263Z"}
+{"level":"info","message":"::1 - - [08/Apr/2026:16:02:11 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-08T16:02:11.687Z"}
+{"level":"info","message":"::1 - - [08/Apr/2026:16:02:14 +0000] \"GET /health HTTP/1.1\" 200 100 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-08T16:02:14.950Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-01.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-08T19:08:06.540Z"}
+{"level":"info","message":"server is running on port: http://localhost:4001","service":"contextos-api","timestamp":"2026-04-08T19:08:06.550Z"}

@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "ContextOS Organisation Service",
+    "description": "Organisation CRUD, membership, and invitation flows for ContextOS.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4001/api/v1"
+    },
+    {
+      "key": "orgId",
+      "value": "replace-with-org-id"
+    },
+    {
+      "key": "memberId",
+      "value": "replace-with-member-user-id"
+    },
+    {
+      "key": "inviteToken",
+      "value": "replace-with-invite-token"
+    }
+  ],
+  "item": [
+    {
+      "name": "List organisations",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/organisations",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations"]
+        }
+      }
+    },
+    {
+      "name": "Create organisation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Acme Team\",\n  \"slug\": \"acme-team\",\n  \"description\": \"Primary organisation for the product team\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organisations",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations"]
+        }
+      }
+    },
+    {
+      "name": "Get organisation",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}"]
+        }
+      }
+    },
+    {
+      "name": "Update organisation",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Acme Engineering\",\n  \"description\": \"Updated description\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete organisation",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}"]
+        }
+      }
+    },
+    {
+      "name": "Activate organisation context",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/context",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}", "context"]
+        }
+      }
+    },
+    {
+      "name": "List members",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/memberships",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}", "memberships"]
+        }
+      }
+    },
+    {
+      "name": "Update member role",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"role\": \"admin\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/memberships/{{memberId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}", "memberships", "{{memberId}}"]
+        }
+      }
+    },
+    {
+      "name": "Invite member",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"member@example.com\",\n  \"role\": \"member\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/invitations",
+          "host": ["{{baseUrl}}"],
+          "path": ["organisations", "{{orgId}}", "invitations"]
+        }
+      }
+    },
+    {
+      "name": "Accept invitation",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/invitations/{{inviteToken}}/accept",
+          "host": ["{{baseUrl}}"],
+          "path": [
+            "organisations",
+            "{{orgId}}",
+            "invitations",
+            "{{inviteToken}}",
+            "accept"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Decline invitation",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "{{baseUrl}}/organisations/{{orgId}}/invitations/{{inviteToken}}/decline",
+          "host": ["{{baseUrl}}"],
+          "path": [
+            "organisations",
+            "{{orgId}}",
+            "invitations",
+            "{{inviteToken}}",
+            "decline"
+          ]
+        }
+      }
+    }
+  ]
+}

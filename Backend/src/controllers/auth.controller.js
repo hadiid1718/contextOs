@@ -16,25 +16,37 @@ import {
   verifyRefreshToken,
 } from '../utils/token.js';
 
-const buildAuthPayload = user => ({
-  sub: user.id,
-  email: user.email,
-  role: user.role,
-});
+const buildAuthPayload = (user, orgId = null) => {
+  const payload = {
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+  };
+
+  if (orgId) {
+    payload.org_id = orgId;
+  }
+
+  return payload;
+};
 
 const refreshExpiryDate = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 const verificationExpiryDate = () => new Date(Date.now() + 24 * 60 * 60 * 1000);
 const passwordResetExpiryDate = () => new Date(Date.now() + 60 * 60 * 1000);
 
-const issueAuthTokens = async (user, previousRefreshTokenDoc = null) => {
+const issueAuthTokens = async (
+  user,
+  previousRefreshTokenDoc = null,
+  orgId = null
+) => {
   const tokenId = generateTokenId();
   const accessToken = generateAccessToken({
-    ...buildAuthPayload(user),
+    ...buildAuthPayload(user, orgId),
     type: 'access',
   });
 
   const refreshToken = generateRefreshToken({
-    ...buildAuthPayload(user),
+    ...buildAuthPayload(user, orgId),
     type: 'refresh',
     tid: tokenId,
   });
@@ -193,9 +205,11 @@ export const refresh = asyncHandler(async (req, res) => {
     throw new AppError('User not found', 404);
   }
 
+  const orgId = payload.org_id || null;
   const { accessToken, refreshToken } = await issueAuthTokens(
     user,
-    existingTokenDoc
+    existingTokenDoc,
+    orgId
   );
   setAuthCookies(res, accessToken, refreshToken);
 
