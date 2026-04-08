@@ -7,6 +7,7 @@ import { AppError } from '../utils/appError.js';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie.js';
 import { hashToken } from '../utils/hash.js';
 import { sendMail } from '../utils/mailer.js';
+import logger from '../config/loggers.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import {
   generateAccessToken,
@@ -134,7 +135,14 @@ export const register = asyncHandler(async (req, res) => {
     organizations,
   });
 
-  await sendVerificationEmail(user);
+  try {
+    await sendVerificationEmail(user);
+  } catch (error) {
+    // Registration should still succeed even if mail delivery is temporarily down.
+    logger.warn(
+      `Verification email failed for ${user.email}: ${error.message}`
+    );
+  }
 
   const { accessToken, refreshToken } = await issueAuthTokens(user);
   setAuthCookies(res, accessToken, refreshToken);
@@ -274,7 +282,13 @@ export const resendVerification = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email: email.toLowerCase() });
   if (user && !user.emailVerified) {
-    await sendVerificationEmail(user);
+    try {
+      await sendVerificationEmail(user);
+    } catch (error) {
+      logger.warn(
+        `Verification resend failed for ${user.email}: ${error.message}`
+      );
+    }
   }
 
   res.status(200).json({
@@ -288,7 +302,13 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email: email.toLowerCase() });
   if (user) {
-    await sendPasswordResetEmail(user);
+    try {
+      await sendPasswordResetEmail(user);
+    } catch (error) {
+      logger.warn(
+        `Password reset email failed for ${user.email}: ${error.message}`
+      );
+    }
   }
 
   res.status(200).json({

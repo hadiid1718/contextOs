@@ -19,4 +19,4 @@ apiRouter.use('/organisations', organisationRouter);
 apiRouter.use('/webhooks', requestContext, webhookRouter);
 apiRouter.use('/credentials', credentialRouter);
 
-export { apiRouter };
+export { apiRouter }; 
