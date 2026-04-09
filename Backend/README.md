@@ -80,6 +80,8 @@ Backend/
         ipAllowlist.js
       validators/
         credential.schemas.js
+      index.js
+      ingestion.smoke.js
     routes/
       auth.routes.js
       index.js
@@ -135,6 +137,7 @@ Webhook trust model (layered):
 
 - Shared-secret signature verification (GitHub/Jira/Slack)
 - Source IP allowlists (CIDR supported)
+- Webhook deliveries must include `X-Org-Id` or `X-ContextOS-Org-Id` so events can be normalised with the correct `org_id`
 
 ## RBAC
 
@@ -152,7 +155,7 @@ Middleware:
 
 ## Run Locally
 
-1. Copy `.env.example` to `.env` and fill all values.
+1. Copy `.env.example` to `.env.development` and fill all values.
 2. Install dependencies:
    - `npm install`
 3. Run service:
@@ -160,16 +163,25 @@ Middleware:
 
 Embedded ingestion env tips:
 
-- Set `INGESTION_ENABLED=true` to keep ingestion routes and scheduler enabled.
-- Set `MOCK_KAFKA=true` for local runs without Kafka.
-- Use `WEBHOOK_BASE_URL` as the public callback base (for example ngrok URL + `/api/v1/webhooks`).
+- `INGESTION_ENABLED` defaults to `true`; set it to `false` to disable both ingestion routes and the polling scheduler.
+- `MOCK_KAFKA` defaults to `true`; set it to `false` only when Kafka is available locally.
+- `WEBHOOK_BASE_URL` should be the public callback base used by GitHub, Jira, and Slack webhook registrations.
+- `APP_ORIGIN` should match your frontend origin for CORS and auth redirect flows.
+- `MAIL_FROM` controls the sender identity used by email verification and password-reset messages.
+
+Shared runtime variables:
+
+- `APP_ORIGIN` (default `http://localhost:3000`)
+- `MAIL_FROM` (default `ContextOS <noreply@contextos.io>`)
+- `WEBHOOK_BASE_URL` (default `http://localhost:4001/api/v1/webhooks`)
+- `INGESTION_ENABLED` (default `true`)
 
 Module 3 environment variables:
 
 - `KAFKA_BROKERS` (comma-separated)
 - `KAFKA_CLIENT_ID`
 - `KAFKA_TOPIC`
-- `MOCK_KAFKA`
+- `MOCK_KAFKA` (default `true`)
 - `ENCRYPTION_KEY` (64-char hex key for AES-256-GCM)
 - `GITHUB_WEBHOOK_SECRET`
 - `JIRA_WEBHOOK_SECRET`
@@ -177,15 +189,15 @@ Module 3 environment variables:
 - `GITHUB_WEBHOOK_IP_ALLOWLIST` (comma-separated CIDR/IP)
 - `JIRA_WEBHOOK_IP_ALLOWLIST` (comma-separated CIDR/IP)
 - `SLACK_WEBHOOK_IP_ALLOWLIST` (comma-separated CIDR/IP)
-- `POLL_CRON` (default every 15 minutes)
-- `POLL_LOOKBACK_MINUTES`
-- `RETRY_MAX_RETRIES`
-- `RETRY_BASE_DELAY_MS`
-- `RETRY_MAX_DELAY_MS`
-- `GITHUB_API_BASE_URL`
-- `JIRA_API_BASE_URL`
-- `SLACK_API_BASE_URL`
-- `CONFLUENCE_API_BASE_URL`
+- `POLL_CRON` (default `*/15 * * * *`)
+- `POLL_LOOKBACK_MINUTES` (default `15`)
+- `RETRY_MAX_RETRIES` (default `4`)
+- `RETRY_BASE_DELAY_MS` (default `250`)
+- `RETRY_MAX_DELAY_MS` (default `10000`)
+- `GITHUB_API_BASE_URL` (default `https://api.github.com`)
+- `JIRA_API_BASE_URL` (default `https://your-domain.atlassian.net`)
+- `SLACK_API_BASE_URL` (default `https://slack.com/api`)
+- `CONFLUENCE_API_BASE_URL` (default `https://your-domain.atlassian.net/wiki/rest/api`)
 
 Health check:
 

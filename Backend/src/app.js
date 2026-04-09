@@ -7,6 +7,7 @@ import passport from 'passport';
 
 import { env } from './config/env.js';
 import { configurePassport } from './config/passport.js';
+import { getIngestionStatus } from './config/ingestionStatus.js';
 import {
   errorHandler,
   notFoundHandler,
@@ -52,6 +53,7 @@ app.get('/health', (_req, res) => {
     service: 'contextos-api',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    ingestion: getIngestionStatus(),
   });
 });
 

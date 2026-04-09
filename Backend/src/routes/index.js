@@ -1,6 +1,8 @@
 import { Router } from 'express';
 
 import { authRouter } from './auth.routes.js';
+import { credentialRouter } from '../ingestion/routes/credential.routes.js';
+import { webhookRouter } from '../ingestion/routes/webhook.routes.js';
 import {
   organisationRouter,
   publicOrganisationRouter,
@@ -13,5 +15,7 @@ apiRouter.use('/auth', authRouter);
 apiRouter.use('/auth/oauth', oauthRouter);
 apiRouter.use('/organisations', publicOrganisationRouter);
 apiRouter.use('/organisations', organisationRouter);
+apiRouter.use('/credentials', credentialRouter);
+apiRouter.use('/webhooks', webhookRouter);
 
 export { apiRouter };

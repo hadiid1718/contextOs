@@ -150,3 +150,8 @@
 {"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-02.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-08T22:33:41.793Z"}
 {"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-08T22:40:17.772Z"}
 {"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-02.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-08T22:40:22.155Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-02.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-09T07:47:27.396Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-09T07:47:27.416Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:07:47:31 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:31.782Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:07:47:32 +0000] \"GET /favicon.ico HTTP/1.1\" 404 47 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:32.274Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:07:47:36 +0000] \"GET /health HTTP/1.1\" 200 234 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:36.962Z"}

@@ -1,7 +1,7 @@
 {
   "name": "contextos-auth-service",
   "version": "1.0.0",
-  "description": "Authentication and User Management microservice for ContextOS",
+  "description": "Authentication, Organisation, and Ingestion microservice for ContextOS",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
@@ -30,7 +30,7 @@
     "mongoose": "^8.5.4",
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.14",
+    "nodemailer": "^8.0.5",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
