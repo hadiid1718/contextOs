@@ -50,4 +50,3 @@ export const stopPollingScheduler = () => {
   scheduledJob = null;
   running = false;
 };
-

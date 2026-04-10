@@ -6,6 +6,7 @@ import { Membership } from '../models/Membership.js';
 import { Organisation } from '../models/Organisation.js';
 import { RefreshToken } from '../models/RefreshToken.js';
 import { User } from '../models/User.js';
+import { emitNotificationSafely } from '../notifications/services/notificationPublisher.service.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { AppError } from '../utils/appError.js';
 import { setAuthCookies } from '../utils/cookie.js';
@@ -437,8 +438,25 @@ export const updateMemberRole = asyncHandler(async (req, res) => {
     );
   }
 
+  const previousRole = targetMembership.role;
   targetMembership.role = req.body.role;
   await targetMembership.save();
+
+  void emitNotificationSafely({
+    user_id: targetMembership.user.toString(),
+    org_id: organisation.org_id,
+    type: 'MEMBER_ROLE_CHANGED',
+    message: `Your role in ${organisation.name} changed from ${previousRole} to ${req.body.role}.`,
+  });
+
+  if (req.auth.sub !== targetMembership.user.toString()) {
+    void emitNotificationSafely({
+      user_id: req.auth.sub,
+      org_id: organisation.org_id,
+      type: 'MEMBER_ROLE_UPDATED',
+      message: `You changed ${targetMembership.email}'s role from ${previousRole} to ${req.body.role} in ${organisation.name}.`,
+    });
+  }
 
   res.status(200).json({
     message: 'Member role updated successfully',
@@ -519,6 +537,25 @@ const handleInvitationAction = async (req, res, action) => {
     invitation.respondedAt = new Date();
     invitation.acceptedBy = user.id;
     await invitation.save();
+
+    void emitNotificationSafely({
+      user_id: user.id.toString(),
+      org_id: organisation.org_id,
+      type: 'INVITATION_ACCEPTED',
+      message: `You joined ${organisation.name} as ${invitation.role}.`,
+    });
+
+    if (
+      invitation.invitedBy?.toString() &&
+      invitation.invitedBy.toString() !== user.id.toString()
+    ) {
+      void emitNotificationSafely({
+        user_id: invitation.invitedBy.toString(),
+        org_id: organisation.org_id,
+        type: 'INVITATION_ACCEPTED',
+        message: `${user.email} accepted the invitation to join ${organisation.name} as ${invitation.role}.`,
+      });
+    }
 
     const { accessToken, refreshToken } = await issueOrganisationTokens(
       user,

@@ -1,5 +1,4 @@
 import { asyncHandler } from '../../utils/asyncHandler.js';
-import { AppError } from '../../utils/appError.js';
 import {
   normalizeGitHubWebhookEvent,
   normalizeJiraWebhookEvent,
@@ -24,7 +23,8 @@ const handleIgnoredWebhook = (res, provider, eventType) =>
   });
 
 export const githubWebhook = asyncHandler(async (req, res) => {
-  const eventType = req.ingestionWebhook?.eventType || req.headers['x-github-event'];
+  const eventType =
+    req.ingestionWebhook?.eventType || req.headers['x-github-event'];
 
   if (!supportedGithubEvents.has(eventType)) {
     return handleIgnoredWebhook(res, 'github', eventType);
@@ -73,7 +73,9 @@ export const slackWebhook = asyncHandler(async (req, res) => {
   const eventType =
     req.ingestionWebhook?.eventType || req.body?.event?.type || req.body?.type;
   const resolvedSlackEventType =
-    eventType === 'event_callback' ? req.body?.event?.type || eventType : eventType;
+    eventType === 'event_callback'
+      ? req.body?.event?.type || eventType
+      : eventType;
 
   if (!supportedSlackEvents.has(resolvedSlackEventType)) {
     return handleIgnoredWebhook(res, 'slack', resolvedSlackEventType);
@@ -96,4 +98,3 @@ export const slackWebhook = asyncHandler(async (req, res) => {
     event: normalizedEvent,
   });
 });
-

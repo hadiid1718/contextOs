@@ -96,4 +96,3 @@ export const IntegrationCredential = mongoose.model(
   'IntegrationCredential',
   integrationCredentialSchema
 );
-

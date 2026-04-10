@@ -22,4 +22,3 @@ export const incrementGraphProcessedEvents = () => {
 };
 
 export const getGraphStatus = () => ({ ...graphStatus });
-

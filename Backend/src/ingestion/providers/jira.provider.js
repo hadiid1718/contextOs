@@ -8,7 +8,11 @@ const buildJqlSince = since => {
   return `updated >= "${formatted}" ORDER BY updated ASC`;
 };
 
-export const pollJiraCredential = async ({ credential, decryptedCredentials, since }) => {
+export const pollJiraCredential = async ({
+  credential,
+  decryptedCredentials,
+  since,
+}) => {
   const token =
     decryptedCredentials?.accessToken ||
     decryptedCredentials?.apiToken ||
@@ -31,7 +35,11 @@ export const pollJiraCredential = async ({ credential, decryptedCredentials, sin
         fields: 'summary,status,assignee,reporter,project,updated,created',
       },
     },
-    { maxRetries: env.retryMaxRetries, baseDelayMs: env.retryBaseDelayMs, maxDelayMs: env.retryMaxDelayMs }
+    {
+      maxRetries: env.retryMaxRetries,
+      baseDelayMs: env.retryBaseDelayMs,
+      maxDelayMs: env.retryMaxDelayMs,
+    }
   );
 
   const issues = Array.isArray(data?.issues) ? data.issues : [];
@@ -67,4 +75,3 @@ export const pollJiraCredential = async ({ credential, decryptedCredentials, sin
     });
   });
 };
-

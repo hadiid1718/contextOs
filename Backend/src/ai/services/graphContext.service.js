@@ -22,15 +22,19 @@ const toGraphSummary = chain => ({
   })),
 });
 
-export const fetchGraphContextForChunks = async ({ orgId, chunks, maxNodes = 3, maxHops = 2 }) => {
+export const fetchGraphContextForChunks = async ({
+  orgId,
+  chunks,
+  maxNodes = 3,
+  maxHops = 2,
+}) => {
   if (!env.aiGraphContextEnabled) {
     return [];
   }
 
-  const nodeIds = [...new Set(chunks.map(chunk => chunk.node_id).filter(Boolean))].slice(
-    0,
-    maxNodes
-  );
+  const nodeIds = [
+    ...new Set(chunks.map(chunk => chunk.node_id).filter(Boolean)),
+  ].slice(0, maxNodes);
 
   if (nodeIds.length === 0) {
     return [];
@@ -62,4 +66,3 @@ export const fetchGraphContextForChunks = async ({ orgId, chunks, maxNodes = 3, 
 
   return context;
 };
-

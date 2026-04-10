@@ -1,7 +1,10 @@
 import logger from '../../config/loggers.js';
 import { IntegrationCredential } from '../models/IntegrationCredential.js';
 import { ingestNormalizedEvents } from './eventIngestion.service.js';
-import { markCredentialSync, decryptStoredCredential } from './integrationCredential.service.js';
+import {
+  markCredentialSync,
+  decryptStoredCredential,
+} from './integrationCredential.service.js';
 import { pollConfluenceCredential } from '../providers/confluence.provider.js';
 import { pollGithubCredential } from '../providers/github.provider.js';
 import { pollJiraCredential } from '../providers/jira.provider.js';
@@ -18,7 +21,9 @@ const buildLookbackDate = lookbackMinutes =>
   new Date(Date.now() - lookbackMinutes * 60 * 1000);
 
 export const runPollingCycle = async ({ lookbackMinutes = 15 } = {}) => {
-  const credentials = await IntegrationCredential.find({ status: 'active' }).sort({ updatedAt: -1 });
+  const credentials = await IntegrationCredential.find({
+    status: 'active',
+  }).sort({ updatedAt: -1 });
   const cycleStartedAt = new Date();
   const results = [];
 
@@ -75,4 +80,3 @@ export const runPollingCycle = async ({ lookbackMinutes = 15 } = {}) => {
 
   return results;
 };
-

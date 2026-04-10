@@ -9,11 +9,17 @@ import { buildRagPrompt } from '../prompts/queryPrompt.builder.js';
 import { searchChunksByVector } from '../repositories/vectorSearch.repository.js';
 import { fetchGraphContextForChunks } from './graphContext.service.js';
 
-const normalizeQuestion = question => String(question || '').trim().toLowerCase().replace(/\s+/g, ' ');
+const normalizeQuestion = question =>
+  String(question || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
 
 export const buildQueryCacheKey = ({ orgId, question }) => {
   const hash = createHash('sha256')
-    .update(`${orgId}:${normalizeQuestion(question)}:${env.aiEmbeddingModel}:${env.aiCompletionModel}`)
+    .update(
+      `${orgId}:${normalizeQuestion(question)}:${env.aiEmbeddingModel}:${env.aiCompletionModel}`
+    )
     .digest('hex');
 
   return `rag:query:${hash}`;
@@ -157,4 +163,3 @@ export const streamRagAnswer = async ({ orgId, question, onToken }) => {
     });
   }
 };
-

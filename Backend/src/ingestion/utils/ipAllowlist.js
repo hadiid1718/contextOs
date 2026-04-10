@@ -38,7 +38,10 @@ const expandIpv6 = ip => {
 };
 
 const ipv6ToBigInt = ip =>
-  expandIpv6(ip).reduce((acc, segment) => (acc << 16n) + BigInt(`0x${segment}`), 0n);
+  expandIpv6(ip).reduce(
+    (acc, segment) => (acc << 16n) + BigInt(`0x${segment}`),
+    0n
+  );
 
 const getIpVersion = ip => net.isIP(normalizeIp(ip) || '') || 0;
 
@@ -49,7 +52,10 @@ const parseCidr = cidr => {
 
   if (version === 4) {
     const resolvedPrefix = Number.isFinite(prefix) ? prefix : 32;
-    const mask = resolvedPrefix === 0 ? 0n : ((1n << 32n) - 1n) << (32n - BigInt(resolvedPrefix));
+    const mask =
+      resolvedPrefix === 0
+        ? 0n
+        : ((1n << 32n) - 1n) << (32n - BigInt(resolvedPrefix));
     const base = ipv4ToInt(ip) & mask;
     return { version, base, mask, prefix: resolvedPrefix };
   }
@@ -122,4 +128,3 @@ export const isIpAllowed = (ip, allowlist = []) => {
 
   return false;
 };
-

@@ -10,6 +10,8 @@ export default [
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
+        fetch: 'readonly',
+        AbortSignal: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
         URL: 'readonly',

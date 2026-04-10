@@ -17,4 +17,3 @@ export const getOpenAIClient = () => {
   openAIClient = new OpenAI({ apiKey: env.openAiApiKey });
   return openAIClient;
 };
-

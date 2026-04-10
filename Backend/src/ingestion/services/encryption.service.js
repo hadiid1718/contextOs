@@ -65,4 +65,3 @@ export const cloneEncryptedPayload = record => ({
   authTag: record.authTag,
   ciphertext: record.ciphertext,
 });
-

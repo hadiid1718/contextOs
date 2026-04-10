@@ -5,7 +5,8 @@ const toIsoTimestamp = value => {
 
   if (typeof value === 'number' || /^\d+(\.\d+)?$/.test(String(value))) {
     const numericValue = Number(value);
-    const milliseconds = numericValue < 1e12 ? numericValue * 1000 : numericValue;
+    const milliseconds =
+      numericValue < 1e12 ? numericValue * 1000 : numericValue;
     const numericDate = new Date(milliseconds);
 
     if (!Number.isNaN(numericDate.getTime())) {
@@ -43,35 +44,37 @@ const buildMetadata = (payload = {}, event = {}) => ({
 });
 
 export const normalizeGitHubWebhookEvent = ({ orgId, req, payload }) => {
-  const eventType = req.headers['x-github-event'] || payload.action || 'unknown';
+  const eventType =
+    req.headers['x-github-event'] || payload.action || 'unknown';
   const content = {
     action: payload.action || null,
-    repository: payload.repository?.full_name || payload.repository?.name || null,
+    repository:
+      payload.repository?.full_name || payload.repository?.name || null,
     ref: payload.ref || null,
     commits: Array.isArray(payload.commits)
       ? payload.commits.map(commit => ({
-        id: commit.id,
-        message: commit.message,
-        author: commit.author,
-        url: commit.url,
-      }))
+          id: commit.id,
+          message: commit.message,
+          author: commit.author,
+          url: commit.url,
+        }))
       : [],
     pull_request: payload.pull_request
       ? {
-        number: payload.pull_request.number,
-        state: payload.pull_request.state,
-        title: payload.pull_request.title,
-        merged: payload.pull_request.merged,
-        url: payload.pull_request.html_url || payload.pull_request.url,
-      }
+          number: payload.pull_request.number,
+          state: payload.pull_request.state,
+          title: payload.pull_request.title,
+          merged: payload.pull_request.merged,
+          url: payload.pull_request.html_url || payload.pull_request.url,
+        }
       : null,
     issue: payload.issue
       ? {
-        number: payload.issue.number,
-        state: payload.issue.state,
-        title: payload.issue.title,
-        url: payload.issue.html_url || payload.issue.url,
-      }
+          number: payload.issue.number,
+          state: payload.issue.state,
+          title: payload.issue.title,
+          url: payload.issue.html_url || payload.issue.url,
+        }
       : null,
   };
 
@@ -88,12 +91,15 @@ export const normalizeGitHubWebhookEvent = ({ orgId, req, payload }) => {
       },
       payload.repository
         ? {
-          repository_id: payload.repository.id || null,
-          repository_full_name: payload.repository.full_name || null,
-        }
+            repository_id: payload.repository.id || null,
+            repository_full_name: payload.repository.full_name || null,
+          }
         : {}
     ),
-    timestamp: payload.repository?.updated_at || payload.head_commit?.timestamp || new Date(),
+    timestamp:
+      payload.repository?.updated_at ||
+      payload.head_commit?.timestamp ||
+      new Date(),
   });
 };
 
@@ -121,10 +127,10 @@ export const normalizeJiraWebhookEvent = ({ orgId, req, payload }) => {
       },
       project: issue.fields?.project
         ? {
-          id: issue.fields.project.id || null,
-          key: issue.fields.project.key || null,
-          name: issue.fields.project.name || null,
-        }
+            id: issue.fields.project.id || null,
+            key: issue.fields.project.key || null,
+            name: issue.fields.project.name || null,
+          }
         : null,
       changelog: payload.changelog || null,
     },
@@ -136,7 +142,8 @@ export const normalizeJiraWebhookEvent = ({ orgId, req, payload }) => {
       },
       payload.properties || {}
     ),
-    timestamp: payload.timestamp || payload.issue?.fields?.updated || new Date(),
+    timestamp:
+      payload.timestamp || payload.issue?.fields?.updated || new Date(),
   });
 };
 
@@ -167,7 +174,10 @@ export const normalizeSlackWebhookEvent = ({ orgId, req, payload }) => {
       }
     ),
     timestamp:
-      payload.event?.event_ts || payload.event?.ts || payload.event_time || new Date(),
+      payload.event?.event_ts ||
+      payload.event?.ts ||
+      payload.event_time ||
+      new Date(),
   });
 };
 
@@ -180,4 +190,3 @@ export const normalizeConfluenceActivity = ({ orgId, item, metadata = {} }) =>
     metadata,
     timestamp: item.when || item.lastModified || new Date(),
   });
-

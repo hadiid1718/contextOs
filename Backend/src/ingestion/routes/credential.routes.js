@@ -22,9 +22,20 @@ credentialRouter.use(requireAuth);
 credentialRouter.use(requireOrganisationMembership('admin'));
 
 credentialRouter.get('/', listCredentials);
-credentialRouter.get('/:provider', validate(credentialProviderParamSchema), getCredentialByProvider);
-credentialRouter.put('/:provider', validate(upsertCredentialSchema), upsertCredential);
-credentialRouter.delete('/:provider', validate(credentialProviderParamSchema), removeCredential);
+credentialRouter.get(
+  '/:provider',
+  validate(credentialProviderParamSchema),
+  getCredentialByProvider
+);
+credentialRouter.put(
+  '/:provider',
+  validate(upsertCredentialSchema),
+  upsertCredential
+);
+credentialRouter.delete(
+  '/:provider',
+  validate(credentialProviderParamSchema),
+  removeCredential
+);
 
 export { credentialRouter };
-

@@ -4,8 +4,14 @@ import {
   getIngestionStatus,
   setIngestionStatus,
 } from '../config/ingestionStatus.js';
-import { connectKafkaProducer, disconnectKafkaProducer } from './config/kafka.js';
-import { startPollingScheduler, stopPollingScheduler } from './jobs/pollScheduler.js';
+import {
+  connectKafkaProducer,
+  disconnectKafkaProducer,
+} from './config/kafka.js';
+import {
+  startPollingScheduler,
+  stopPollingScheduler,
+} from './jobs/pollScheduler.js';
 
 let initialized = false;
 
@@ -56,4 +62,3 @@ export const shutdownIngestionModule = async () => {
   initialized = false;
   setIngestionStatus({ schedulerStarted: false, kafkaConnected: false });
 };
-

@@ -29,4 +29,3 @@ export const resolveIngestionOrgContext = (req, _res, next) => {
   req.org_id = String(orgId);
   return next();
 };
-

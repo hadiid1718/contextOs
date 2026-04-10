@@ -3,7 +3,12 @@ import { createHash } from 'node:crypto';
 import { GraphEdge } from '../models/GraphEdge.js';
 import { GraphNode } from '../models/GraphNode.js';
 
-const relationshipTypes = new Set(['caused', 'referenced', 'resolved', 'decided']);
+const relationshipTypes = new Set([
+  'caused',
+  'referenced',
+  'resolved',
+  'decided',
+]);
 
 const scoreOrDefault = (value, fallback = 0.6) => {
   const numeric = Number(value);
@@ -35,7 +40,9 @@ const collectTicketKeys = input => {
 
 const isDecisionEvent = event => {
   const eventType = String(event.event_type || '').toLowerCase();
-  const contentText = String(event.content?.text || event.content?.summary || '').toLowerCase();
+  const contentText = String(
+    event.content?.text || event.content?.summary || ''
+  ).toLowerCase();
 
   return (
     eventType.includes('decision') ||
@@ -44,7 +51,15 @@ const isDecisionEvent = event => {
   );
 };
 
-const createNode = ({ orgId, nodeType, source, externalRef, content, metadata, createdAt }) => ({
+const createNode = ({
+  orgId,
+  nodeType,
+  source,
+  externalRef,
+  content,
+  metadata,
+  createdAt,
+}) => ({
   _id: buildStableId({ orgId, nodeType, source, externalRef }),
   org_id: orgId,
   node_type: nodeType,
@@ -64,7 +79,9 @@ const extractNodesFromEvent = event => {
   }
 
   if (source === 'github') {
-    const commits = Array.isArray(event.content?.commits) ? event.content.commits : [];
+    const commits = Array.isArray(event.content?.commits)
+      ? event.content.commits
+      : [];
     for (const commit of commits) {
       if (!commit?.id) {
         continue;
@@ -88,7 +105,10 @@ const extractNodesFromEvent = event => {
     }
 
     if (event.content?.pull_request?.number) {
-      const repository = event.content?.repository || event.metadata?.repository_full_name || 'repo';
+      const repository =
+        event.content?.repository ||
+        event.metadata?.repository_full_name ||
+        'repo';
       const prRef = `${repository}#${event.content.pull_request.number}`;
 
       nodes.push(
@@ -108,7 +128,10 @@ const extractNodesFromEvent = event => {
     }
 
     if (event.content?.issue?.number) {
-      const repository = event.content?.repository || event.metadata?.repository_full_name || 'repo';
+      const repository =
+        event.content?.repository ||
+        event.metadata?.repository_full_name ||
+        'repo';
       const issueRef = `${repository}#${event.content.issue.number}`;
 
       nodes.push(
@@ -149,8 +172,13 @@ const extractNodesFromEvent = event => {
   }
 
   if (source === 'slack') {
-    const channel = event.content?.channel || event.metadata?.channel || 'unknown-channel';
-    const ts = event.content?.ts || event.content?.thread_ts || event.timestamp || Date.now();
+    const channel =
+      event.content?.channel || event.metadata?.channel || 'unknown-channel';
+    const ts =
+      event.content?.ts ||
+      event.content?.thread_ts ||
+      event.timestamp ||
+      Date.now();
     nodes.push(
       createNode({
         orgId,
@@ -168,7 +196,11 @@ const extractNodesFromEvent = event => {
   }
 
   if (source === 'confluence') {
-    const pageId = event.content?.id || event.content?.contentId || event.metadata?.id || event.timestamp;
+    const pageId =
+      event.content?.id ||
+      event.content?.contentId ||
+      event.metadata?.id ||
+      event.timestamp;
     nodes.push(
       createNode({
         orgId,
@@ -279,7 +311,8 @@ const buildDerivedEdges = ({ event, nodes }) => {
 
     for (const key of keys) {
       const existingTicket = tickets.find(ticket => {
-        const ticketKey = ticket.content?.key || ticket.content?.id || ticket.content?.number;
+        const ticketKey =
+          ticket.content?.key || ticket.content?.id || ticket.content?.number;
         return String(ticketKey || '').toUpperCase() === key;
       });
 
@@ -310,7 +343,9 @@ const buildDerivedEdges = ({ event, nodes }) => {
     }
   }
 
-  const isResolvedEvent = String(event.event_type || '').toLowerCase().includes('merged');
+  const isResolvedEvent = String(event.event_type || '')
+    .toLowerCase()
+    .includes('merged');
   if (isResolvedEvent) {
     for (const pr of prs) {
       for (const ticket of tickets) {
@@ -325,7 +360,9 @@ const buildDerivedEdges = ({ event, nodes }) => {
   }
 
   if (decisions.length > 0) {
-    const nonDecisionNodes = nodes.filter(node => node.node_type !== 'decision');
+    const nonDecisionNodes = nodes.filter(
+      node => node.node_type !== 'decision'
+    );
     for (const decision of decisions) {
       for (const originNode of nonDecisionNodes) {
         edges.push({
@@ -410,17 +447,21 @@ export const processGraphEvent = async event => {
   }
 
   const derivedEdges = buildDerivedEdges({ event, nodes });
-  const uniqueNodes = [...new Map(nodes.map(node => [node._id, node])).values()];
+  const uniqueNodes = [
+    ...new Map(nodes.map(node => [node._id, node])).values(),
+  ];
 
   for (const node of uniqueNodes) {
     await upsertNode(node);
   }
 
   const metadataEdges = buildMetadataEdges(event);
-  const allEdges = uniqueEdges([...metadataEdges, ...derivedEdges]).map(edge => ({
-    ...edge,
-    org_id: event.org_id,
-  }));
+  const allEdges = uniqueEdges([...metadataEdges, ...derivedEdges]).map(
+    edge => ({
+      ...edge,
+      org_id: event.org_id,
+    })
+  );
 
   for (const edge of allEdges) {
     await upsertEdge(edge);
@@ -431,5 +472,3 @@ export const processGraphEvent = async event => {
     upsertedEdges: allEdges.length,
   };
 };
-
-

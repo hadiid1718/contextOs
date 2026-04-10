@@ -26,4 +26,3 @@ export const getGraphDecisionsSchema = z.object({
   }),
   params: z.object({}).optional().default({}),
 });
-

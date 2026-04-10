@@ -90,7 +90,10 @@ export const getIntegrationCredential = async (orgId, provider) => {
 export const deleteIntegrationCredential = async (orgId, provider) =>
   IntegrationCredential.findOneAndDelete({ org_id: orgId, provider });
 
-export const markCredentialSync = async (credentialId, { lastSyncedAt, error }) => {
+export const markCredentialSync = async (
+  credentialId,
+  { lastSyncedAt, error }
+) => {
   const update = {
     lastPolledAt: new Date(),
     updatedAt: new Date(),
@@ -104,9 +107,12 @@ export const markCredentialSync = async (credentialId, { lastSyncedAt, error }) 
     update.lastError = String(error?.message || error);
   }
 
-  return IntegrationCredential.findByIdAndUpdate(credentialId, { $set: update }, { new: true });
+  return IntegrationCredential.findByIdAndUpdate(
+    credentialId,
+    { $set: update },
+    { new: true }
+  );
 };
 
 export const decryptStoredCredential = credential =>
   decryptJsonPayload(cloneEncryptedPayload(credential.encryptedPayload));
-

@@ -20,7 +20,10 @@ graphRouter.get(
   validate(getGraphCausalChainSchema),
   getGraphCausalChain
 );
-graphRouter.get('/decisions', validate(getGraphDecisionsSchema), getGraphDecisions);
+graphRouter.get(
+  '/decisions',
+  validate(getGraphDecisionsSchema),
+  getGraphDecisions
+);
 
 export { graphRouter };
-

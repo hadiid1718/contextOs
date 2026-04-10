@@ -58,15 +58,61 @@ if (isProduction) {
     'GITHUB_CALLBACK_URL',
     'GRAPH_CONSUMER_GROUP_ID',
     'OPENAI_API_KEY',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
+    'STRIPE_PRO_PRICE_ID',
   ].forEach(assertRequired);
 }
 
 export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 4001),
+  gatewayPort: Number(process.env.GATEWAY_PORT || 4000),
   mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/contextos-auth',
   appOrigin: process.env.APP_ORIGIN || 'http://localhost:3000',
+  gatewayCorsOrigin:
+    process.env.GATEWAY_CORS_ORIGIN ||
+    process.env.APP_ORIGIN ||
+    'http://localhost:3000',
   apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:4001',
+  gatewayRateLimitPerMinute: toNumber(
+    process.env.GATEWAY_RATE_LIMIT_PER_MINUTE,
+    1000
+  ),
+  gatewayRateLimitWindowMs: toNumber(
+    process.env.GATEWAY_RATE_LIMIT_WINDOW_MS,
+    60000
+  ),
+  gatewayRateLimitPrefix:
+    process.env.GATEWAY_RATE_LIMIT_PREFIX || 'gateway:rate',
+  gatewayUpstreamTimeoutMs: toNumber(
+    process.env.GATEWAY_UPSTREAM_TIMEOUT_MS,
+    2000
+  ),
+  authServiceUrl:
+    process.env.AUTH_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
+  ingestionServiceUrl:
+    process.env.INGESTION_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
+  graphServiceUrl:
+    process.env.GRAPH_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
+  queryServiceUrl:
+    process.env.QUERY_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
+  notificationServiceUrl:
+    process.env.NOTIFICATION_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
+  billingServiceUrl:
+    process.env.BILLING_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
   ingestionEnabled: process.env.INGESTION_ENABLED !== 'false',
   webhookBaseUrl:
     process.env.WEBHOOK_BASE_URL || 'http://localhost:4001/api/v1/webhooks',
@@ -105,6 +151,9 @@ export const env = {
     process.env.GRAPH_MOCK_KAFKA ?? process.env.MOCK_KAFKA,
     true
   ),
+  notificationsEnabled: toBoolean(process.env.NOTIFICATIONS_ENABLED, true),
+  notificationKafkaTopic:
+    process.env.NOTIFICATION_KAFKA_TOPIC || 'events.notifications',
 
   ingestionEncryptionKey:
     process.env.ENCRYPTION_KEY ||
@@ -180,13 +229,27 @@ export const env = {
     process.env.OAUTH_FAILURE_REDIRECT || 'http://localhost:3000/auth/failure',
 
   aiQueryEnabled: toBoolean(process.env.AI_QUERY_ENABLED, true),
+  billingEnabled: toBoolean(process.env.BILLING_ENABLED, true),
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  stripeProPriceId: process.env.STRIPE_PRO_PRICE_ID || '',
+  stripeCustomerPortalReturnUrl:
+    process.env.STRIPE_CUSTOMER_PORTAL_RETURN_URL ||
+    'http://localhost:3000/settings/billing',
+  proPriceUsd: toNumber(process.env.PRO_PRICE_USD, 49),
+  freeMaxUsers: toNumber(process.env.FREE_MAX_USERS, 5),
+  freeAiQueryLimit: toNumber(process.env.FREE_AI_QUERY_LIMIT, 100),
+  proAiQueryLimit: toNumber(process.env.PRO_AI_QUERY_LIMIT, 5000),
+  enterpriseAiQueryLimit: toNumber(process.env.ENTERPRISE_AI_QUERY_LIMIT, 0),
+  enterpriseMaxUsers: toNumber(process.env.ENTERPRISE_MAX_USERS, 0),
   openAiApiKey: process.env.OPENAI_API_KEY,
   aiEmbeddingModel: process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small',
   aiCompletionModel: process.env.AI_COMPLETION_MODEL || 'gpt-4o',
   aiTopK: toNumber(process.env.AI_TOP_K, 10),
   aiVectorCandidates: toNumber(process.env.AI_VECTOR_CANDIDATES, 150),
   aiChunkCollection: process.env.AI_CHUNK_COLLECTION || 'rag_chunks',
-  aiVectorIndexName: process.env.AI_VECTOR_INDEX_NAME || 'rag_chunks_vector_idx',
+  aiVectorIndexName:
+    process.env.AI_VECTOR_INDEX_NAME || 'rag_chunks_vector_idx',
   aiVectorEmbeddingPath: process.env.AI_VECTOR_EMBEDDING_PATH || 'embedding',
   aiGraphContextEnabled: toBoolean(process.env.AI_GRAPH_CONTEXT_ENABLED, true),
   aiGraphContextNodes: toNumber(process.env.AI_GRAPH_CONTEXT_NODES, 3),
@@ -194,7 +257,10 @@ export const env = {
   aiGraphServiceBaseUrl:
     process.env.GRAPH_SERVICE_BASE_URL ||
     `${process.env.API_BASE_URL || 'http://localhost:4001'}/api/v1/graph`,
-  aiGraphServiceTimeoutMs: toNumber(process.env.AI_GRAPH_SERVICE_TIMEOUT_MS, 5000),
+  aiGraphServiceTimeoutMs: toNumber(
+    process.env.AI_GRAPH_SERVICE_TIMEOUT_MS,
+    5000
+  ),
   aiRedisEnabled: toBoolean(process.env.AI_REDIS_ENABLED, true),
   redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
   aiCacheTtlSeconds: toNumber(process.env.AI_CACHE_TTL_SECONDS, 600),

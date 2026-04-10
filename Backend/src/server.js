@@ -6,11 +6,11 @@ import {
   initializeKnowledgeGraphModule,
   shutdownKnowledgeGraphModule,
 } from './graph/index.js';
-import { initializeIngestionModule, shutdownIngestionModule } from './ingestion/index.js';
 import {
-  initializeAIQueryModule,
-  shutdownAIQueryModule,
-} from './ai/index.js';
+  initializeIngestionModule,
+  shutdownIngestionModule,
+} from './ingestion/index.js';
+import { initializeAIQueryModule, shutdownAIQueryModule } from './ai/index.js';
 
 const PORT = env.port;
 let httpServer = null;
@@ -56,4 +56,3 @@ void startServer();
 
 process.on('SIGINT', () => void gracefulShutdown('SIGINT'));
 process.on('SIGTERM', () => void gracefulShutdown('SIGTERM'));
-

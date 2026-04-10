@@ -44,6 +44,8 @@ const prompt = buildRagPrompt({
 });
 
 console.log('Validated payload:', parsed.body);
-console.log('Prompt preview:', prompt.userPrompt.split('\n').slice(0, 8).join('\n'));
+console.log(
+  'Prompt preview:',
+  prompt.userPrompt.split('\n').slice(0, 8).join('\n')
+);
 console.log('Citation count:', prompt.citations.length);
-

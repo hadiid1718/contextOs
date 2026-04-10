@@ -47,4 +47,3 @@ const ragChunkSchema = new mongoose.Schema(
 ragChunkSchema.index({ org_id: 1, node_id: 1, created_at: -1 });
 
 export const RagChunk = mongoose.model('RagChunk', ragChunkSchema);
-

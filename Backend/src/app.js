@@ -9,6 +9,7 @@ import { env } from './config/env.js';
 import { getGraphStatus } from './config/graphStatus.js';
 import { configurePassport } from './config/passport.js';
 import { getIngestionStatus } from './config/ingestionStatus.js';
+import { getBillingStatus, stripeWebhookRouter } from './billing/index.js';
 import { getAIQueryStatus } from './ai/index.js';
 import {
   errorHandler,
@@ -28,10 +29,14 @@ app.use(
     credentials: true,
   })
 );
+app.use('/webhooks', stripeWebhookRouter);
 app.use(
   express.json({
     verify: (req, _res, buffer) => {
-      if (req.originalUrl.startsWith('/api/v1/webhooks')) {
+      if (
+        req.originalUrl.startsWith('/api/v1/webhooks') ||
+        req.originalUrl.startsWith('/webhooks/stripe')
+      ) {
         req.rawBody = buffer.toString('utf8');
       }
     },
@@ -58,6 +63,7 @@ app.get('/health', (_req, res) => {
     ingestion: getIngestionStatus(),
     graph: getGraphStatus(),
     ai: getAIQueryStatus(),
+    billing: getBillingStatus(),
   });
 });
 

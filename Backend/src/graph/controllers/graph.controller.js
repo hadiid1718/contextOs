@@ -34,4 +34,3 @@ export const getGraphDecisions = asyncHandler(async (req, res) => {
     data: decisions,
   });
 });
-

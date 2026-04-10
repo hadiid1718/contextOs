@@ -1,6 +1,7 @@
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const defaultJitter = baseDelayMs => Math.floor(baseDelayMs * (0.5 + Math.random()));
+const defaultJitter = baseDelayMs =>
+  Math.floor(baseDelayMs * (0.5 + Math.random()));
 
 export const withRetry = async (
   operation,
@@ -39,4 +40,3 @@ export const withRetry = async (
 
   throw lastError;
 };
-

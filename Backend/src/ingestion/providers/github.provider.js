@@ -3,7 +3,10 @@ import { normalizeEvent } from '../normalizers/eventNormalizer.js';
 import { requestJson, buildBearerHeaders } from './providerHttpClient.js';
 
 const toRepositoryList = metadata => {
-  if (Array.isArray(metadata?.repositories) && metadata.repositories.length > 0) {
+  if (
+    Array.isArray(metadata?.repositories) &&
+    metadata.repositories.length > 0
+  ) {
     return metadata.repositories;
   }
 
@@ -49,13 +52,17 @@ const normalizeGithubApiEvent = ({ orgId, credential, repo, event }) => {
   });
 };
 
-export const pollGithubCredential = async ({ credential, decryptedCredentials }) => {
+export const pollGithubCredential = async ({
+  credential,
+  decryptedCredentials,
+}) => {
   const repositories = toRepositoryList(credential.metadata);
   if (repositories.length === 0) {
     return [];
   }
 
-  const token = decryptedCredentials?.accessToken || decryptedCredentials?.token;
+  const token =
+    decryptedCredentials?.accessToken || decryptedCredentials?.token;
   if (!token) {
     return [];
   }
@@ -72,7 +79,11 @@ export const pollGithubCredential = async ({ credential, decryptedCredentials })
           'X-GitHub-Api-Version': '2022-11-28',
         },
       },
-      { maxRetries: env.retryMaxRetries, baseDelayMs: env.retryBaseDelayMs, maxDelayMs: env.retryMaxDelayMs }
+      {
+        maxRetries: env.retryMaxRetries,
+        baseDelayMs: env.retryBaseDelayMs,
+        maxDelayMs: env.retryMaxDelayMs,
+      }
     );
 
     for (const event of Array.isArray(events) ? events : []) {
@@ -91,4 +102,3 @@ export const pollGithubCredential = async ({ credential, decryptedCredentials })
 
   return results;
 };
-

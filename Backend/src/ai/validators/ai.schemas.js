@@ -8,4 +8,3 @@ export const streamRagQuerySchema = z.object({
   query: z.object({}).optional().default({}),
   params: z.object({}).optional().default({}),
 });
-

@@ -18,4 +18,3 @@ This module consumes `events.ingestion` Kafka events and materializes a decision
 1. Ensure MongoDB is available at `MONGO_URI`.
 2. Start backend: `npm run dev`.
 3. Optionally run smoke script: `npm run graph:smoke`.
-

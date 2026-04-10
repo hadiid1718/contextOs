@@ -1,5 +1,7 @@
 const clipText = (value, maxLength = 900) => {
-  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  const text = String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
   if (!text) {
     return '(empty chunk)';
   }
@@ -12,7 +14,8 @@ export const toCitations = chunks =>
     id: `C${index + 1}`,
     source: chunk.source || 'unknown',
     node_id: chunk.node_id || null,
-    score: typeof chunk.score === 'number' ? Number(chunk.score.toFixed(4)) : null,
+    score:
+      typeof chunk.score === 'number' ? Number(chunk.score.toFixed(4)) : null,
     snippet: clipText(chunk.chunk_text, 260),
   }));
 
@@ -21,7 +24,9 @@ export const buildRagPrompt = ({ question, chunks, graphContext }) => {
 
   const chunkSection = citations
     .map(citation => {
-      const matchedChunk = chunks.find(chunk => chunk.node_id === citation.node_id);
+      const matchedChunk = chunks.find(
+        chunk => chunk.node_id === citation.node_id
+      );
       return [
         `[${citation.id}]`,
         `source=${citation.source}`,
@@ -34,11 +39,11 @@ export const buildRagPrompt = ({ question, chunks, graphContext }) => {
 
   const graphSection = graphContext.length
     ? graphContext
-      .map(
-        (context, index) =>
-          `[G${index + 1}] root=${context.root_id || 'n/a'} type=${context.root_type || 'n/a'} nodes=${context.node_count} edges=${context.edge_count}`
-      )
-      .join('\n')
+        .map(
+          (context, index) =>
+            `[G${index + 1}] root=${context.root_id || 'n/a'} type=${context.root_type || 'n/a'} nodes=${context.node_count} edges=${context.edge_count}`
+        )
+        .join('\n')
     : 'No causal graph context available.';
 
   const systemPrompt = [
@@ -70,4 +75,3 @@ export const buildRagPrompt = ({ question, chunks, graphContext }) => {
     citations,
   };
 };
-

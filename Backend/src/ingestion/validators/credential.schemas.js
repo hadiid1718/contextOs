@@ -29,4 +29,3 @@ export const upsertCredentialSchema = z.object({
     provider: z.enum(providers),
   }),
 });
-

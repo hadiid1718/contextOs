@@ -46,4 +46,3 @@ graphEdgeSchema.index(
 );
 
 export const GraphEdge = mongoose.model('GraphEdge', graphEdgeSchema);
-

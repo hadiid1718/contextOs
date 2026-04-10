@@ -47,4 +47,3 @@ const graphNodeSchema = new mongoose.Schema(
 graphNodeSchema.index({ org_id: 1, node_type: 1 });
 
 export const GraphNode = mongoose.model('GraphNode', graphNodeSchema);
-

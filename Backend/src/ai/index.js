@@ -13,4 +13,3 @@ export const shutdownAIQueryModule = async () => {
 };
 
 export const getAIQueryStatus = () => getRedisCacheStatus();
-

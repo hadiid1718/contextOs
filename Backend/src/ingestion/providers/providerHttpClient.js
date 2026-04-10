@@ -61,4 +61,3 @@ export const isProviderConfigured = provider => {
 
   return false;
 };
-

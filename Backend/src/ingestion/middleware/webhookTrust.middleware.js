@@ -5,7 +5,9 @@ import { AppError } from '../../utils/appError.js';
 import { isIpAllowed } from '../utils/ipAllowlist.js';
 
 const getClientIp = req =>
-  req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket?.remoteAddress;
+  req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+  req.ip ||
+  req.socket?.remoteAddress;
 
 const rawBodyToString = req =>
   typeof req.rawBody === 'string'
@@ -132,7 +134,8 @@ export const requireWebhookTrust = provider => (req, _res, next) => {
   }
 
   if (provider === 'github') {
-    const signature = req.headers['x-hub-signature-256'] || req.headers['x-hub-signature'];
+    const signature =
+      req.headers['x-hub-signature-256'] || req.headers['x-hub-signature'];
     if (!verifyHmacSignature({ secret, rawBody, expected: signature })) {
       return next(new AppError('Invalid GitHub webhook signature', 401));
     }
@@ -140,7 +143,8 @@ export const requireWebhookTrust = provider => (req, _res, next) => {
 
   if (provider === 'jira') {
     const signature =
-      req.headers['x-atlassian-webhook-signature'] || req.headers['x-hub-signature'];
+      req.headers['x-atlassian-webhook-signature'] ||
+      req.headers['x-hub-signature'];
     if (!verifyHmacSignature({ secret, rawBody, expected: signature })) {
       return next(new AppError('Invalid Jira webhook signature', 401));
     }
@@ -169,4 +173,3 @@ export const requireWebhookTrust = provider => (req, _res, next) => {
 
   return next();
 };
-

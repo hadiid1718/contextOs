@@ -90,4 +90,3 @@ export const ensureKafkaHealthy = async () => {
 };
 
 export const isKafkaConnected = () => kafkaConnected || env.mockKafka;
-

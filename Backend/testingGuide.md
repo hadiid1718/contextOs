@@ -351,3 +351,52 @@ Expected: trusted requests are accepted and normalized events are processed.
 - Endpoints that require a token in the URL need the raw token, not JWT cookies.
 - If you get `400 Invalid JSON payload`, check that your body is valid JSON or that you are using HTTPie fields correctly.
 - OAuth and webhooks depend on external configuration and may not be fully testable in a local environment without provider setup.
+
+## 9. Billing Endpoints
+
+### 9.1 Create a Pro checkout session
+
+```bash
+http --session=auth POST $BASE_URL/api/v1/billing/checkout/pro \
+  org_id="org_001" \
+  org_name="Acme Team" \
+  user_email=$EMAIL \
+  seats:=1
+```
+
+Expected: `201 Created` with a Stripe Checkout session URL.
+
+### 9.2 Open the Stripe customer portal
+
+```bash
+http --session=auth POST $BASE_URL/api/v1/billing/portal \
+  org_id="org_001"
+```
+
+Expected: `200 OK` with a Stripe Portal URL if the organisation has a Stripe customer attached.
+
+### 9.3 Inspect usage summary
+
+```bash
+http --session=auth GET $BASE_URL/api/v1/billing/usage/org_001
+```
+
+### 9.4 Trigger the usage meter route
+
+```bash
+http --session=auth POST $BASE_URL/api/v1/billing/usage/ai-query \
+  org_id="org_001" \
+  units:=1
+```
+
+### 9.5 Stripe webhook testing
+
+Use the Stripe CLI or a signed fixture so the `stripe-signature` header is valid.
+
+```bash
+http POST $BASE_URL/webhooks/stripe \
+  stripe-signature:<valid-signature> \
+  < checkout-session-completed.json
+```
+
+Expected: `200 OK` and the corresponding subscription record is updated.

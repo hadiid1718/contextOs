@@ -1,4 +1,7 @@
-import { decryptJsonPayload, encryptJsonPayload } from './services/encryption.service.js';
+import {
+  decryptJsonPayload,
+  encryptJsonPayload,
+} from './services/encryption.service.js';
 import {
   normalizeEvent,
   normalizeGitHubWebhookEvent,
@@ -56,4 +59,3 @@ const output = {
 };
 
 console.log(JSON.stringify(output, null, 2));
-

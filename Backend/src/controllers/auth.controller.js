@@ -3,6 +3,7 @@ import { PasswordResetToken } from '../models/PasswordResetToken.js';
 import { RefreshToken } from '../models/RefreshToken.js';
 import { User } from '../models/User.js';
 import { VerificationToken } from '../models/VerificationToken.js';
+import { emitNotificationSafely } from '../notifications/services/notificationPublisher.service.js';
 import { AppError } from '../utils/appError.js';
 import { clearAuthCookies, setAuthCookies } from '../utils/cookie.js';
 import { hashToken } from '../utils/hash.js';
@@ -173,10 +174,27 @@ export const login = asyncHandler(async (req, res) => {
     '+password'
   );
   if (!user || !(await user.comparePassword(password))) {
+    if (user) {
+      void emitNotificationSafely({
+        user_id: user.id,
+        org_id: req.auth?.org_id || 'global',
+        type: 'AUTH_LOGIN_FAILED',
+        message: 'A failed login attempt was detected for your account.',
+      });
+    }
+
     throw new AppError('Invalid email or password', 401);
   }
 
   if (!user.emailVerified) {
+    void emitNotificationSafely({
+      user_id: user.id,
+      org_id: req.auth?.org_id || 'global',
+      type: 'AUTH_UNVERIFIED_LOGIN_BLOCKED',
+      message:
+        'A login attempt was blocked because your email is not verified.',
+    });
+
     throw new AppError('Email is not verified', 403);
   }
 
@@ -359,6 +377,14 @@ export const resetPassword = asyncHandler(async (req, res) => {
       { $set: { revokedAt: new Date() } }
     ),
   ]);
+
+  void emitNotificationSafely({
+    user_id: user.id,
+    org_id: 'global',
+    type: 'AUTH_PASSWORD_RESET',
+    message:
+      'Your password was reset successfully and active sessions were revoked.',
+  });
 
   clearAuthCookies(res);
 

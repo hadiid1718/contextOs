@@ -14,8 +14,13 @@ const toSpaceList = metadata => {
   return [];
 };
 
-export const pollConfluenceCredential = async ({ credential, decryptedCredentials, since }) => {
-  const token = decryptedCredentials?.accessToken || decryptedCredentials?.token;
+export const pollConfluenceCredential = async ({
+  credential,
+  decryptedCredentials,
+  since,
+}) => {
+  const token =
+    decryptedCredentials?.accessToken || decryptedCredentials?.token;
   if (!token) {
     return [];
   }
@@ -40,7 +45,11 @@ export const pollConfluenceCredential = async ({ credential, decryptedCredential
           expand: 'version,space',
         },
       },
-      { maxRetries: env.retryMaxRetries, baseDelayMs: env.retryBaseDelayMs, maxDelayMs: env.retryMaxDelayMs }
+      {
+        maxRetries: env.retryMaxRetries,
+        baseDelayMs: env.retryBaseDelayMs,
+        maxDelayMs: env.retryMaxDelayMs,
+      }
     );
 
     const pages = Array.isArray(data?.results) ? data.results : [];
@@ -62,4 +71,3 @@ export const pollConfluenceCredential = async ({ credential, decryptedCredential
 
   return results;
 };
-

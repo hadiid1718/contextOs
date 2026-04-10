@@ -16,7 +16,10 @@ export const listCredentials = asyncHandler(async (req, res) => {
 });
 
 export const getCredentialByProvider = asyncHandler(async (req, res) => {
-  const credential = await getIntegrationCredential(req.orgId, req.params.provider);
+  const credential = await getIntegrationCredential(
+    req.orgId,
+    req.params.provider
+  );
 
   if (!credential) {
     throw new AppError('Integration credential not found', 404);
@@ -48,7 +51,10 @@ export const upsertCredential = asyncHandler(async (req, res) => {
 });
 
 export const removeCredential = asyncHandler(async (req, res) => {
-  const credential = await deleteIntegrationCredential(req.orgId, req.params.provider);
+  const credential = await deleteIntegrationCredential(
+    req.orgId,
+    req.params.provider
+  );
 
   if (!credential) {
     throw new AppError('Integration credential not found', 404);
@@ -58,4 +64,3 @@ export const removeCredential = asyncHandler(async (req, res) => {
     message: 'Integration credential deleted successfully',
   });
 });
-

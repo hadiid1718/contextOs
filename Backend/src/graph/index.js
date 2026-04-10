@@ -2,7 +2,10 @@ import { env } from '../config/env.js';
 import { setGraphStatus, getGraphStatus } from '../config/graphStatus.js';
 import logger from '../config/loggers.js';
 import { createGraphIndexes } from '../config/graphMigrations.js';
-import { startGraphConsumer, stopGraphConsumer } from './config/kafkaConsumer.js';
+import {
+  startGraphConsumer,
+  stopGraphConsumer,
+} from './config/kafkaConsumer.js';
 
 let initialized = false;
 
@@ -51,4 +54,3 @@ export const shutdownKnowledgeGraphModule = async () => {
   initialized = false;
   setGraphStatus({ kafkaConnected: false, consumerRunning: false });
 };
-

@@ -44,7 +44,10 @@ export const startGraphConsumer = async () => {
 
   if (!connected) {
     await kafkaConsumer.connect();
-    await kafkaConsumer.subscribe({ topic: env.graphKafkaTopic, fromBeginning: false });
+    await kafkaConsumer.subscribe({
+      topic: env.graphKafkaTopic,
+      fromBeginning: false,
+    });
 
     await kafkaConsumer.run({
       eachMessage: async ({ message }) => {
@@ -69,7 +72,11 @@ export const startGraphConsumer = async () => {
     });
 
     connected = true;
-    setGraphStatus({ kafkaConnected: true, consumerRunning: true, startupError: null });
+    setGraphStatus({
+      kafkaConnected: true,
+      consumerRunning: true,
+      startupError: null,
+    });
   }
 
   return { mock: false };
@@ -83,4 +90,3 @@ export const stopGraphConsumer = async () => {
   connected = false;
   setGraphStatus({ kafkaConnected: false, consumerRunning: false });
 };
-

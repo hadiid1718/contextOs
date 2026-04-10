@@ -14,8 +14,13 @@ const toChannelList = metadata => {
   return [];
 };
 
-export const pollSlackCredential = async ({ credential, decryptedCredentials, since }) => {
-  const token = decryptedCredentials?.accessToken || decryptedCredentials?.token;
+export const pollSlackCredential = async ({
+  credential,
+  decryptedCredentials,
+  since,
+}) => {
+  const token =
+    decryptedCredentials?.accessToken || decryptedCredentials?.token;
   if (!token) {
     return [];
   }
@@ -41,7 +46,11 @@ export const pollSlackCredential = async ({ credential, decryptedCredentials, si
           limit: 100,
         },
       },
-      { maxRetries: env.retryMaxRetries, baseDelayMs: env.retryBaseDelayMs, maxDelayMs: env.retryMaxDelayMs }
+      {
+        maxRetries: env.retryMaxRetries,
+        baseDelayMs: env.retryBaseDelayMs,
+        maxDelayMs: env.retryMaxDelayMs,
+      }
     );
 
     const messages = Array.isArray(data?.messages) ? data.messages : [];
@@ -77,4 +86,3 @@ export const pollSlackCredential = async ({ credential, decryptedCredentials, si
 
   return results;
 };
-

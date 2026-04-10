@@ -105,6 +105,30 @@ Backend/
       validators/
         ai.schemas.js
       index.js
+    billing/
+      README.md
+      billing.smoke.js
+      controllers/
+        billing.controller.js
+      index.js
+      middleware/
+        stripeWebhook.middleware.js
+        usageMetering.middleware.js
+      models/
+        Subscription.js
+        UsageRecord.js
+      routes/
+        billing.routes.js
+        stripeWebhook.routes.js
+      services/
+        stripe.service.js
+        subscription.service.js
+        usage.service.js
+      validators/
+        billing.schemas.js
+    tests/
+      billing.schemas.test.js
+      usage.service.test.js
     routes/
       auth.routes.js
       index.js
@@ -162,6 +186,28 @@ Module 5 AI query route:
 
 - `POST /api/v1/ai/query/stream` (SSE stream: `token`, `meta`, `done`, `error` events)
 
+Notification integration route:
+
+- `POST /api/v1/notifications/publish` (authenticated; publishes to Kafka topic `events.notifications`)
+
+Billing routes:
+
+- `POST /api/v1/billing/checkout/pro`
+- `POST /api/v1/billing/portal`
+- `GET /api/v1/billing/subscriptions/:org_id`
+- `GET /api/v1/billing/usage/:org_id`
+- `POST /api/v1/billing/usage/ai-query`
+
+Stripe webhook route:
+
+- `POST /webhooks/stripe`
+
+Automatic notification events are also emitted on selected flows:
+
+- invitation accepted (`INVITATION_ACCEPTED`)
+- member role changed (`MEMBER_ROLE_CHANGED`, `MEMBER_ROLE_UPDATED`)
+- auth security alerts (`AUTH_LOGIN_FAILED`, `AUTH_UNVERIFIED_LOGIN_BLOCKED`, `AUTH_PASSWORD_RESET`)
+
 Ingestion event schema published to Kafka topic `events.ingestion`:
 
 - `{ org_id, source, event_type, content, metadata, timestamp }`
@@ -215,6 +261,19 @@ Module 3 environment variables:
 - `KAFKA_CLIENT_ID`
 - `KAFKA_TOPIC`
 - `MOCK_KAFKA` (default `true`)
+- `NOTIFICATIONS_ENABLED` (default `true`)
+- `NOTIFICATION_KAFKA_TOPIC` (default `events.notifications`)
+- `BILLING_ENABLED` (default `true`)
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_PRO_PRICE_ID`
+- `STRIPE_CUSTOMER_PORTAL_RETURN_URL` (default `http://localhost:3000/settings/billing`)
+- `PRO_PRICE_USD` (default `49`)
+- `FREE_MAX_USERS` (default `5`)
+- `FREE_AI_QUERY_LIMIT` (default `100`)
+- `PRO_AI_QUERY_LIMIT` (default `5000`)
+- `ENTERPRISE_AI_QUERY_LIMIT` (default `0`)
+- `ENTERPRISE_MAX_USERS` (default `0`)
 - `GRAPH_ENABLED` (default `true`)
 - `GRAPH_KAFKA_TOPIC` (default `events.ingestion`)
 - `GRAPH_KAFKA_CLIENT_ID` (default `contextos-knowledge-graph-service`)
@@ -257,6 +316,40 @@ Module 5 environment variables:
 - `REDIS_URL` (default `redis://127.0.0.1:6379`)
 - `AI_CACHE_TTL_SECONDS` (default `600`)
 
+Module 8 API Gateway:
+
+- `npm run gateway:dev` starts the API Gateway service
+- `npm run gateway:start` starts API Gateway with file watch
+- `npm run gateway:smoke` prints configured proxy/readiness targets
+- `GET /health?probe=liveness` returns liveness only
+- `GET /health` (or `?probe=readiness`) runs upstream readiness checks
+
+Gateway upstream proxy routes:
+
+- `/api/v1/auth` -> auth service (public)
+- `/api/v1/webhooks` -> ingestion service webhooks (public)
+- `/api/v1/credentials` -> ingestion service (JWT + per-org rate limit)
+- `/api/v1/graph` -> graph service (JWT + per-org rate limit)
+- `/api/v1/query` -> query service (rewritten to `/api/v1/ai`)
+- `/api/v1/ai` -> query service alias
+- `/api/v1/notifications` -> notification service
+- `/api/v1/billing` -> billing service
+
+Gateway environment variables:
+
+- `GATEWAY_PORT` (default `4000`)
+- `GATEWAY_CORS_ORIGIN` (default `APP_ORIGIN`)
+- `GATEWAY_RATE_LIMIT_PER_MINUTE` (default `1000`)
+- `GATEWAY_RATE_LIMIT_WINDOW_MS` (default `60000`)
+- `GATEWAY_RATE_LIMIT_PREFIX` (default `gateway:rate`)
+- `GATEWAY_UPSTREAM_TIMEOUT_MS` (default `2000`)
+- `AUTH_SERVICE_URL`
+- `INGESTION_SERVICE_URL`
+- `GRAPH_SERVICE_URL`
+- `QUERY_SERVICE_URL`
+- `NOTIFICATION_SERVICE_URL`
+- `BILLING_SERVICE_URL`
+
 Health check:
 
 - `GET /health`
@@ -286,3 +379,20 @@ Run AI query module smoke test:
 
 - `npm run ai:smoke`
 
+Run notification publisher smoke test:
+
+- `npm run notifications:smoke`
+
+Run billing smoke test:
+
+- `npm run billing:smoke`
+
+Stripe configuration guide:
+
+1. Create a Stripe Product for the Pro plan.
+2. Create a recurring monthly Price set to `$49` per user.
+3. Copy the Price ID into `STRIPE_PRO_PRICE_ID`.
+4. Enable Customer Portal in Stripe and set the return URL.
+5. Add a webhook endpoint pointing to `POST /webhooks/stripe`.
+6. Subscribe the webhook to `checkout.session.completed`, `customer.subscription.deleted`, and `invoice.payment_failed`.
+7. Store the webhook signing secret in `STRIPE_WEBHOOK_SECRET`.

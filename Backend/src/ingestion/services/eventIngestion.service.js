@@ -13,23 +13,20 @@ const retryConfig = {
 export const ingestNormalizedEvent = async event => {
   const normalizedEvent = normalizeEvent(event);
 
-  await withRetry(
-    () => publishNormalizedEvent(normalizedEvent),
-    {
-      ...retryConfig,
-      onRetry: ({ attempt, waitTime, error }) => {
-        logger.warn(
-          JSON.stringify({
-            service: 'ingestion',
-            message: 'Retrying ingestion publication',
-            attempt,
-            waitTime,
-            error: error?.message || String(error),
-          })
-        );
-      },
-    }
-  );
+  await withRetry(() => publishNormalizedEvent(normalizedEvent), {
+    ...retryConfig,
+    onRetry: ({ attempt, waitTime, error }) => {
+      logger.warn(
+        JSON.stringify({
+          service: 'ingestion',
+          message: 'Retrying ingestion publication',
+          attempt,
+          waitTime,
+          error: error?.message || String(error),
+        })
+      );
+    },
+  });
 
   return normalizedEvent;
 };
@@ -43,4 +40,3 @@ export const ingestNormalizedEvents = async events => {
 
   return ingested;
 };
-

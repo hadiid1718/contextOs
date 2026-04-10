@@ -3,7 +3,11 @@ import mongoose from 'mongoose';
 import { env } from '../../config/env.js';
 import { AppError } from '../../utils/appError.js';
 
-export const searchChunksByVector = async ({ orgId, queryVector, topK = env.aiTopK }) => {
+export const searchChunksByVector = async ({
+  orgId,
+  queryVector,
+  topK = env.aiTopK,
+}) => {
   try {
     const results = await mongoose.connection
       .collection(env.aiChunkCollection)
@@ -43,4 +47,3 @@ export const searchChunksByVector = async ({ orgId, queryVector, topK = env.aiTo
     });
   }
 };
-

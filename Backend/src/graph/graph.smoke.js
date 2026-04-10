@@ -79,4 +79,3 @@ run().catch(error => {
   logger.error(error?.stack || error?.message || 'Graph smoke test failed');
   process.exitCode = 1;
 });
-

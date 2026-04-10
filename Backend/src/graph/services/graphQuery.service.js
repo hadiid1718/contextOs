@@ -19,7 +19,10 @@ export const getCausalChain = async ({ nodeId, maxHops = MAX_HOPS }) => {
     throw new AppError('Graph node not found', 404);
   }
 
-  const boundedHops = Math.min(MAX_HOPS, Math.max(1, Number(maxHops) || MAX_HOPS));
+  const boundedHops = Math.min(
+    MAX_HOPS,
+    Math.max(1, Number(maxHops) || MAX_HOPS)
+  );
   const queue = [{ id: nodeId, depth: 0 }];
   const visited = new Set([nodeId]);
   const edgeKeys = new Set();
@@ -43,7 +46,8 @@ export const getCausalChain = async ({ nodeId, maxHops = MAX_HOPS }) => {
         edges.push(edge);
       }
 
-      const neighbourId = edge.from_id === current.id ? edge.to_id : edge.from_id;
+      const neighbourId =
+        edge.from_id === current.id ? edge.to_id : edge.from_id;
       if (!visited.has(neighbourId)) {
         visited.add(neighbourId);
         queue.push({ id: neighbourId, depth: current.depth + 1 });
@@ -88,4 +92,3 @@ export const getDecisionsForFile = async ({ orgId, file }) => {
 
   return decisions;
 };
-
