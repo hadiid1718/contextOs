@@ -19,6 +19,7 @@ import TeamSettings from './pages/TeamSettings';
 import InviteResponse from './pages/InviteResponse';
 import Contact from './pages/Contact';
 import Home from './pages/Home';
+import IntegrationConnectPopup from './pages/IntegrationConnectPopup';
 import OAuthFailure from './pages/OAuthFailure';
 import OAuthSuccess from './pages/OAuthSuccess';
 import Pricing from './pages/Pricing';
@@ -41,6 +42,14 @@ const App = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/invite/:token" element={<InviteResponse />} />
+      <Route
+        path="/integrations/connect/:provider"
+        element={
+          <ProtectedRoute>
+            <IntegrationConnectPopup />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/*"
         element={
