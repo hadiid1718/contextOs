@@ -9,6 +9,7 @@ import {
 } from './organisation.routes.js';
 import { oauthRouter } from './oauth.routes.js';
 import { graphRouter } from '../graph/routes/graph.routes.js';
+import { aiRouter } from '../ai/routes/ai.routes.js';
 
 const apiRouter = Router();
 
@@ -19,5 +20,6 @@ apiRouter.use('/organisations', organisationRouter);
 apiRouter.use('/credentials', credentialRouter);
 apiRouter.use('/webhooks', webhookRouter);
 apiRouter.use('/graph', graphRouter);
+apiRouter.use('/ai', aiRouter);
 
 export { apiRouter };

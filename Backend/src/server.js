@@ -7,6 +7,10 @@ import {
   shutdownKnowledgeGraphModule,
 } from './graph/index.js';
 import { initializeIngestionModule, shutdownIngestionModule } from './ingestion/index.js';
+import {
+  initializeAIQueryModule,
+  shutdownAIQueryModule,
+} from './ai/index.js';
 
 const PORT = env.port;
 let httpServer = null;
@@ -17,6 +21,7 @@ const gracefulShutdown = async signal => {
   try {
     await shutdownKnowledgeGraphModule();
     await shutdownIngestionModule();
+    await shutdownAIQueryModule();
 
     if (httpServer) {
       await new Promise(resolve => httpServer.close(resolve));
@@ -34,6 +39,7 @@ const startServer = async () => {
     await connectToDatabase();
     await initializeIngestionModule();
     await initializeKnowledgeGraphModule();
+    await initializeAIQueryModule();
 
     httpServer = app.listen(PORT, () => {
       logger.info(

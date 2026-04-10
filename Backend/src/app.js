@@ -9,6 +9,7 @@ import { env } from './config/env.js';
 import { getGraphStatus } from './config/graphStatus.js';
 import { configurePassport } from './config/passport.js';
 import { getIngestionStatus } from './config/ingestionStatus.js';
+import { getAIQueryStatus } from './ai/index.js';
 import {
   errorHandler,
   notFoundHandler,
@@ -56,6 +57,7 @@ app.get('/health', (_req, res) => {
     uptime: process.uptime(),
     ingestion: getIngestionStatus(),
     graph: getGraphStatus(),
+    ai: getAIQueryStatus(),
   });
 });
 

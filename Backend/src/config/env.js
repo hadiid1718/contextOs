@@ -57,6 +57,7 @@ if (isProduction) {
     'GITHUB_CLIENT_SECRET',
     'GITHUB_CALLBACK_URL',
     'GRAPH_CONSUMER_GROUP_ID',
+    'OPENAI_API_KEY',
   ].forEach(assertRequired);
 }
 
@@ -177,4 +178,24 @@ export const env = {
     process.env.OAUTH_SUCCESS_REDIRECT || 'http://localhost:3000/auth/success',
   oauthFailureRedirect:
     process.env.OAUTH_FAILURE_REDIRECT || 'http://localhost:3000/auth/failure',
+
+  aiQueryEnabled: toBoolean(process.env.AI_QUERY_ENABLED, true),
+  openAiApiKey: process.env.OPENAI_API_KEY,
+  aiEmbeddingModel: process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small',
+  aiCompletionModel: process.env.AI_COMPLETION_MODEL || 'gpt-4o',
+  aiTopK: toNumber(process.env.AI_TOP_K, 10),
+  aiVectorCandidates: toNumber(process.env.AI_VECTOR_CANDIDATES, 150),
+  aiChunkCollection: process.env.AI_CHUNK_COLLECTION || 'rag_chunks',
+  aiVectorIndexName: process.env.AI_VECTOR_INDEX_NAME || 'rag_chunks_vector_idx',
+  aiVectorEmbeddingPath: process.env.AI_VECTOR_EMBEDDING_PATH || 'embedding',
+  aiGraphContextEnabled: toBoolean(process.env.AI_GRAPH_CONTEXT_ENABLED, true),
+  aiGraphContextNodes: toNumber(process.env.AI_GRAPH_CONTEXT_NODES, 3),
+  aiGraphContextHops: toNumber(process.env.AI_GRAPH_CONTEXT_HOPS, 2),
+  aiGraphServiceBaseUrl:
+    process.env.GRAPH_SERVICE_BASE_URL ||
+    `${process.env.API_BASE_URL || 'http://localhost:4001'}/api/v1/graph`,
+  aiGraphServiceTimeoutMs: toNumber(process.env.AI_GRAPH_SERVICE_TIMEOUT_MS, 5000),
+  aiRedisEnabled: toBoolean(process.env.AI_REDIS_ENABLED, true),
+  redisUrl: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
+  aiCacheTtlSeconds: toNumber(process.env.AI_CACHE_TTL_SECONDS, 600),
 };

@@ -83,6 +83,28 @@ Backend/
         credential.schemas.js
       index.js
       ingestion.smoke.js
+    ai/
+      README.md
+      ai.smoke.js
+      clients/
+        openai.client.js
+        redis.client.js
+      controllers/
+        ai.controller.js
+      models/
+        RagChunk.js
+      prompts/
+        queryPrompt.builder.js
+      repositories/
+        vectorSearch.repository.js
+      routes/
+        ai.routes.js
+      services/
+        graphContext.service.js
+        ragQuery.service.js
+      validators/
+        ai.schemas.js
+      index.js
     routes/
       auth.routes.js
       index.js
@@ -135,6 +157,10 @@ Module 4 knowledge graph routes:
 - `GET /api/v1/graph/node/:id`
 - `GET /api/v1/graph/causal-chain/:node_id?max_hops=5`
 - `GET /api/v1/graph/decisions?org_id=<org-id>&file=<file-path>`
+
+Module 5 AI query route:
+
+- `POST /api/v1/ai/query/stream` (SSE stream: `token`, `meta`, `done`, `error` events)
 
 Ingestion event schema published to Kafka topic `events.ingestion`:
 
@@ -211,6 +237,26 @@ Module 3 environment variables:
 - `SLACK_API_BASE_URL` (default `https://slack.com/api`)
 - `CONFLUENCE_API_BASE_URL` (default `https://your-domain.atlassian.net/wiki/rest/api`)
 
+Module 5 environment variables:
+
+- `AI_QUERY_ENABLED` (default `true`)
+- `OPENAI_API_KEY` (required in production)
+- `AI_EMBEDDING_MODEL` (default `text-embedding-3-small`)
+- `AI_COMPLETION_MODEL` (default `gpt-4o`)
+- `AI_TOP_K` (default `10`)
+- `AI_VECTOR_CANDIDATES` (default `150`)
+- `AI_CHUNK_COLLECTION` (default `rag_chunks`)
+- `AI_VECTOR_INDEX_NAME` (default `rag_chunks_vector_idx`)
+- `AI_VECTOR_EMBEDDING_PATH` (default `embedding`)
+- `AI_GRAPH_CONTEXT_ENABLED` (default `true`)
+- `AI_GRAPH_CONTEXT_NODES` (default `3`)
+- `AI_GRAPH_CONTEXT_HOPS` (default `2`)
+- `GRAPH_SERVICE_BASE_URL` (default `${API_BASE_URL}/api/v1/graph`)
+- `AI_GRAPH_SERVICE_TIMEOUT_MS` (default `5000`)
+- `AI_REDIS_ENABLED` (default `true`)
+- `REDIS_URL` (default `redis://127.0.0.1:6379`)
+- `AI_CACHE_TTL_SECONDS` (default `600`)
+
 Health check:
 
 - `GET /health`
@@ -235,4 +281,8 @@ Health response also includes `graph` runtime status:
 Run knowledge graph smoke test:
 
 - `npm run graph:smoke`
+
+Run AI query module smoke test:
+
+- `npm run ai:smoke`
 

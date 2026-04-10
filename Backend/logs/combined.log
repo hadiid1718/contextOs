@@ -184,3 +184,75 @@
 {"level":"info","message":"Created unique index on GraphEdge: (from_id, to_id, relationship_type)","service":"contextos-api","timestamp":"2026-04-10T08:24:29.951Z"}
 {"level":"info","message":"All Knowledge Graph indexes created successfully","service":"contextos-api","timestamp":"2026-04-10T08:24:29.952Z"}
 {"level":"info","message":"{\"service\":\"knowledge-graph\",\"message\":\"Graph smoke test completed\",\"ingestionResult\":{\"upsertedNodes\":3,\"upsertedEdges\":2},\"nodeFound\":false,\"chainNodes\":0,\"chainEdges\":0}","service":"contextos-api","timestamp":"2026-04-10T08:24:31.792Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-02.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-10T10:42:38.926Z"}
+{"level":"info","message":"Creating Knowledge Graph indexes...","service":"contextos-api","timestamp":"2026-04-10T10:42:38.931Z"}
+{"level":"info","message":"Created index on GraphNode: (org_id, node_type)","service":"contextos-api","timestamp":"2026-04-10T10:42:39.189Z"}
+{"level":"info","message":"Created index on GraphEdge: (from_id, to_id)","service":"contextos-api","timestamp":"2026-04-10T10:42:40.902Z"}
+{"level":"info","message":"Created index on GraphEdge: (org_id)","service":"contextos-api","timestamp":"2026-04-10T10:42:41.682Z"}
+{"level":"info","message":"Created unique index on GraphEdge: (from_id, to_id, relationship_type)","service":"contextos-api","timestamp":"2026-04-10T10:42:43.763Z"}
+{"level":"info","message":"All Knowledge Graph indexes created successfully","service":"contextos-api","timestamp":"2026-04-10T10:42:43.764Z"}
+{"level":"info","message":"{\"service\":\"knowledge-graph\",\"mode\":\"mock-kafka\",\"message\":\"Kafka consumer skipped because GRAPH_MOCK_KAFKA is enabled\"}","service":"contextos-api","timestamp":"2026-04-10T10:42:43.764Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:43.777Z"}
+{"level":"warn","message":"Redis cache startup degraded: Connection is closed.","service":"contextos-api","timestamp":"2026-04-10T10:42:43.778Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-10T10:42:43.784Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:43.838Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:43.948Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:44.106Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:44.310Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:44.564Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:44.875Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:45.239Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:45.645Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:46.101Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:46.603Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:47.167Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:47.782Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:48.443Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:49.151Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:49.907Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:50.723Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:51.580Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:52.491Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:53.447Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:54.450Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:55.512Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:56.628Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:57.782Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:42:58.986Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:00.242Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:01.554Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:02.917Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:04.330Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:05.786Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:07.290Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:08.845Z"}
+{"level":"info","message":"Creating Knowledge Graph indexes...","service":"contextos-api","timestamp":"2026-04-10T10:43:10.221Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:10.458Z"}
+{"level":"info","message":"Created index on GraphNode: (org_id, node_type)","service":"contextos-api","timestamp":"2026-04-10T10:43:10.486Z"}
+{"level":"info","message":"Created index on GraphEdge: (from_id, to_id)","service":"contextos-api","timestamp":"2026-04-10T10:43:10.739Z"}
+{"level":"info","message":"Created index on GraphEdge: (org_id)","service":"contextos-api","timestamp":"2026-04-10T10:43:10.992Z"}
+{"level":"info","message":"Created unique index on GraphEdge: (from_id, to_id, relationship_type)","service":"contextos-api","timestamp":"2026-04-10T10:43:11.247Z"}
+{"level":"info","message":"All Knowledge Graph indexes created successfully","service":"contextos-api","timestamp":"2026-04-10T10:43:11.248Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:12.118Z"}
+{"level":"info","message":"{\"service\":\"knowledge-graph\",\"message\":\"Graph smoke test completed\",\"ingestionResult\":{\"upsertedNodes\":3,\"upsertedEdges\":2},\"nodeFound\":false,\"chainNodes\":0,\"chainEdges\":0}","service":"contextos-api","timestamp":"2026-04-10T10:43:12.676Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:13.824Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:15.581Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:17.383Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:19.245Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:21.157Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:23.112Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:25.128Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:27.146Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:29.154Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:31.165Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:33.170Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:35.177Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:37.181Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:39.185Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:41.191Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:43.203Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:45.215Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:47.227Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:49.230Z"}
+{"level":"warn","message":"Redis error: connect ECONNREFUSED 127.0.0.1:6379","service":"contextos-api","timestamp":"2026-04-10T10:43:51.241Z"}
+{"level":"info","message":"Received SIGINT. Starting graceful shutdown","service":"contextos-api","timestamp":"2026-04-10T10:43:52.402Z"}
