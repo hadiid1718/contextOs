@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 
 import { env } from './config/env.js';
+import { getGraphStatus } from './config/graphStatus.js';
 import { configurePassport } from './config/passport.js';
 import { getIngestionStatus } from './config/ingestionStatus.js';
 import {
@@ -54,6 +55,7 @@ app.get('/health', (_req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     ingestion: getIngestionStatus(),
+    graph: getGraphStatus(),
   });
 });
 

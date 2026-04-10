@@ -8,6 +8,7 @@
     "start": "node --watch src/server.js",
     "dev": "node src/server.js",
     "ingestion:smoke": "node src/ingestion/ingestion.smoke.js",
+    "graph:smoke": "node src/graph/graph.smoke.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

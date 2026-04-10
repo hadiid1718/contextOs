@@ -155,3 +155,32 @@
 {"level":"info","message":"::1 - - [09/Apr/2026:07:47:31 +0000] \"GET / HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:31.782Z"}
 {"level":"info","message":"::1 - - [09/Apr/2026:07:47:32 +0000] \"GET /favicon.ico HTTP/1.1\" 404 47 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:32.274Z"}
 {"level":"info","message":"::1 - - [09/Apr/2026:07:47:36 +0000] \"GET /health HTTP/1.1\" 200 234 \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0\"","service":"contextos-api","timestamp":"2026-04-09T07:47:36.962Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-02.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-09T07:59:34.812Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-09T07:59:34.826Z"}
+{"level":"warn","message":"Verification email failed for hadeed.hassan189@gmail.com: getaddrinfo ENOTFOUND smtp.example.com","service":"contextos-api","timestamp":"2026-04-09T08:00:05.482Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:08:00:05 +0000] \"POST /api/v1/auth/register HTTP/1.1\" 201 325 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-09T08:00:05.725Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:08:00:27 +0000] \"GET /api/v1/auth/verify-email/a99c894a79d25d56349281be2bc95859918f2eedcd0be937f95642f36be92605 HTTP/1.1\" 200 41 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-09T08:00:27.622Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-00.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-09T09:15:16.149Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-09T09:15:16.165Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:09:15:59 +0000] \"GET /api/v1/auth/verify-email/a99c894a79d25d56349281be2bc95859918f2eedcd0be937f95642f36be92605 HTTP/1.1\" 400 54 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-09T09:15:59.479Z"}
+{"level":"info","message":"::1 - - [09/Apr/2026:09:16:06 +0000] \"POST /api/v1/auth/register HTTP/1.1\" 409 37 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-09T09:16:06.636Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-01.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-09T09:18:36.679Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-09T09:18:36.691Z"}
+{"level":"info","message":"MongoDB connected: ac-mgzppae-shard-00-00.abub9hz.mongodb.net","service":"contextos-api","timestamp":"2026-04-10T07:59:58.375Z"}
+{"level":"info","message":"ContextOS API server is running on port : http://localhost:4001","service":"contextos-api","timestamp":"2026-04-10T07:59:58.420Z"}
+{"level":"warn","message":"Verification email failed for hadeed.hassan990@gmail.com: getaddrinfo ENOTFOUND smtp.example.com","service":"contextos-api","timestamp":"2026-04-10T08:00:18.162Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:00:18 +0000] \"POST /api/v1/auth/register HTTP/1.1\" 201 325 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:00:18.477Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:01:01 +0000] \"POST /api/v1/auth/verify-email/caeb285461f83a64393b1bd9f90437ee8ac650fa9ca26e751eb05f56752602f4 HTTP/1.1\" 404 126 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:01:01.697Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:01:11 +0000] \"GET /api/v1/auth/verify-email/caeb285461f83a64393b1bd9f90437ee8ac650fa9ca26e751eb05f56752602f4 HTTP/1.1\" 200 41 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:01:11.426Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:03:22 +0000] \"POST /api/v1/auth/login HTTP/1.1\" 200 225 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:03:22.857Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:04:28 +0000] \"GET /api/v1/auth/69d8ae109e86373c28ba7c90 HTTP/1.1\" 404 72 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:04:28.562Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:05:19 +0000] \"GET /api/v1/auth/me HTTP/1.1\" 401 37 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:05:19.147Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:05:58 +0000] \"GET /api/v1/auth/me HTTP/1.1\" 401 45 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:05:58.280Z"}
+{"level":"info","message":"::1 - - [10/Apr/2026:08:07:07 +0000] \"POST /api/v1/auth/refresh HTTP/1.1\" 401 39 \"-\" \"HTTPie\"","service":"contextos-api","timestamp":"2026-04-10T08:07:07.107Z"}
+{"level":"info","message":"Creating Knowledge Graph indexes...","service":"contextos-api","timestamp":"2026-04-10T08:24:28.243Z"}
+{"level":"info","message":"Created index on GraphNode: (org_id, node_type)","service":"contextos-api","timestamp":"2026-04-10T08:24:28.558Z"}
+{"level":"info","message":"Created index on GraphEdge: (from_id, to_id)","service":"contextos-api","timestamp":"2026-04-10T08:24:29.386Z"}
+{"level":"info","message":"Created index on GraphEdge: (org_id)","service":"contextos-api","timestamp":"2026-04-10T08:24:29.681Z"}
+{"level":"info","message":"Created unique index on GraphEdge: (from_id, to_id, relationship_type)","service":"contextos-api","timestamp":"2026-04-10T08:24:29.951Z"}
+{"level":"info","message":"All Knowledge Graph indexes created successfully","service":"contextos-api","timestamp":"2026-04-10T08:24:29.952Z"}
+{"level":"info","message":"{\"service\":\"knowledge-graph\",\"message\":\"Graph smoke test completed\",\"ingestionResult\":{\"upsertedNodes\":3,\"upsertedEdges\":2},\"nodeFound\":false,\"chainNodes\":0,\"chainEdges\":0}","service":"contextos-api","timestamp":"2026-04-10T08:24:31.792Z"}

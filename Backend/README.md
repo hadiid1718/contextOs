@@ -12,6 +12,7 @@ Authentication/User Management service with embedded Ingestion Module (Data Inte
 - Nodemailer for email verification and password reset
 - express-rate-limit for auth route protection
 - KafkaJS for publishing normalized ingestion events
+- KafkaJS consumer groups for Knowledge Graph materialization
 - node-cron for 15-minute polling jobs
 - AES-256-GCM encryption for stored integration credentials
 
@@ -129,6 +130,12 @@ Module 3 ingestion routes:
 - `PUT /api/v1/credentials/:provider`
 - `DELETE /api/v1/credentials/:provider`
 
+Module 4 knowledge graph routes:
+
+- `GET /api/v1/graph/node/:id`
+- `GET /api/v1/graph/causal-chain/:node_id?max_hops=5`
+- `GET /api/v1/graph/decisions?org_id=<org-id>&file=<file-path>`
+
 Ingestion event schema published to Kafka topic `events.ingestion`:
 
 - `{ org_id, source, event_type, content, metadata, timestamp }`
@@ -182,6 +189,11 @@ Module 3 environment variables:
 - `KAFKA_CLIENT_ID`
 - `KAFKA_TOPIC`
 - `MOCK_KAFKA` (default `true`)
+- `GRAPH_ENABLED` (default `true`)
+- `GRAPH_KAFKA_TOPIC` (default `events.ingestion`)
+- `GRAPH_KAFKA_CLIENT_ID` (default `contextos-knowledge-graph-service`)
+- `GRAPH_CONSUMER_GROUP_ID` (required in production)
+- `GRAPH_MOCK_KAFKA` (default inherits `MOCK_KAFKA`)
 - `ENCRYPTION_KEY` (64-char hex key for AES-256-GCM)
 - `GITHUB_WEBHOOK_SECRET`
 - `JIRA_WEBHOOK_SECRET`
@@ -210,3 +222,17 @@ Health response includes `ingestion` runtime status:
 - `schedulerStarted`
 - `startupError`
 - `updatedAt`
+
+Health response also includes `graph` runtime status:
+
+- `enabled`
+- `kafkaConnected`
+- `consumerRunning`
+- `processedEvents`
+- `startupError`
+- `updatedAt`
+
+Run knowledge graph smoke test:
+
+- `npm run graph:smoke`
+

@@ -3,9 +3,9 @@
  * Run this to create necessary indexes
  */
 
-import { GraphNode } from '../graphService/models/GraphNode.js';
-import { GraphEdge } from '../graphService/models/GraphEdge.js';
-import logger from '../config/loggers.js';
+import { GraphNode } from '../graph/models/GraphNode.js';
+import { GraphEdge } from '../graph/models/GraphEdge.js';
+import logger from './loggers.js';
 
 export const createGraphIndexes = async () => {
   try {
@@ -15,29 +15,12 @@ export const createGraphIndexes = async () => {
     await GraphNode.collection.createIndex({ org_id: 1, node_type: 1 });
     logger.info('Created index on GraphNode: (org_id, node_type)');
 
-    await GraphNode.collection.createIndex(
-      { org_id: 1, source: 1, source_id: 1 },
-      { unique: true }
-    );
-    logger.info(
-      'Created unique index on GraphNode: (org_id, source, source_id)'
-    );
-
-    await GraphNode.collection.createIndex({ org_id: 1, file_path: 1 });
-    logger.info('Created index on GraphNode: (org_id, file_path)');
-
     // GraphEdge indexes
     await GraphEdge.collection.createIndex({ from_id: 1, to_id: 1 });
     logger.info('Created index on GraphEdge: (from_id, to_id)');
 
     await GraphEdge.collection.createIndex({ org_id: 1 });
     logger.info('Created index on GraphEdge: (org_id)');
-
-    await GraphEdge.collection.createIndex({ org_id: 1, from_id: 1 });
-    logger.info('Created index on GraphEdge: (org_id, from_id)');
-
-    await GraphEdge.collection.createIndex({ org_id: 1, to_id: 1 });
-    logger.info('Created index on GraphEdge: (org_id, to_id)');
 
     await GraphEdge.collection.createIndex(
       { from_id: 1, to_id: 1, relationship_type: 1 },
@@ -59,13 +42,8 @@ export const dropGraphIndexes = async () => {
     logger.info('Dropping Knowledge Graph indexes...');
 
     await GraphNode.collection.dropIndex('org_id_1_node_type_1');
-    await GraphNode.collection.dropIndex('org_id_1_source_1_source_id_1');
-    await GraphNode.collection.dropIndex('org_id_1_file_path_1');
-
     await GraphEdge.collection.dropIndex('from_id_1_to_id_1');
     await GraphEdge.collection.dropIndex('org_id_1');
-    await GraphEdge.collection.dropIndex('org_id_1_from_id_1');
-    await GraphEdge.collection.dropIndex('org_id_1_to_id_1');
     await GraphEdge.collection.dropIndex(
       'from_id_1_to_id_1_relationship_type_1'
     );

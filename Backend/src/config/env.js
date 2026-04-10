@@ -56,6 +56,7 @@ if (isProduction) {
     'GITHUB_CLIENT_ID',
     'GITHUB_CLIENT_SECRET',
     'GITHUB_CALLBACK_URL',
+    'GRAPH_CONSUMER_GROUP_ID',
   ].forEach(assertRequired);
 }
 
@@ -83,6 +84,24 @@ export const env = {
     'events.ingestion',
   mockKafka: toBoolean(
     process.env.MOCK_KAFKA ?? process.env.INGESTION_MOCK_KAFKA,
+    true
+  ),
+  graphEnabled: toBoolean(process.env.GRAPH_ENABLED, true),
+  graphKafkaTopic:
+    process.env.GRAPH_KAFKA_TOPIC ||
+    process.env.KAFKA_TOPIC ||
+    process.env.INGESTION_KAFKA_TOPIC ||
+    'events.ingestion',
+  graphKafkaClientId:
+    process.env.GRAPH_KAFKA_CLIENT_ID ||
+    process.env.KAFKA_CLIENT_ID ||
+    process.env.INGESTION_KAFKA_CLIENT_ID ||
+    'contextos-knowledge-graph-service',
+  graphConsumerGroupId:
+    process.env.GRAPH_CONSUMER_GROUP_ID ||
+    `${process.env.KAFKA_CLIENT_ID || 'contextos'}-graph-consumer-group`,
+  graphMockKafka: toBoolean(
+    process.env.GRAPH_MOCK_KAFKA ?? process.env.MOCK_KAFKA,
     true
   ),
 
