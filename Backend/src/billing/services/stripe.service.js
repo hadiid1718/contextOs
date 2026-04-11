@@ -12,15 +12,22 @@ export const createProCheckoutSession = async ({
   userId,
   userEmail,
   seats = 1,
+  interval = 'monthly',
   successUrl,
   cancelUrl,
   metadata = {},
 }) => {
+  const normalizedInterval = interval === 'annual' ? 'annual' : 'monthly';
+  const selectedPriceId =
+    normalizedInterval === 'annual' && env.stripeProAnnualPriceId
+      ? env.stripeProAnnualPriceId
+      : env.stripeProPriceId;
+
   const payload = {
     mode: 'subscription',
     success_url: successUrl,
     cancel_url: cancelUrl,
-    line_items: [{ price: env.stripeProPriceId, quantity: seats }],
+    line_items: [{ price: selectedPriceId, quantity: seats }],
     subscription_data: {
       metadata: {
         org_id: orgId,
@@ -28,6 +35,7 @@ export const createProCheckoutSession = async ({
         user_id: userId || '',
         plan: 'pro',
         seats: String(seats),
+        billing_interval: normalizedInterval,
         ...metadata,
       },
     },
@@ -37,6 +45,8 @@ export const createProCheckoutSession = async ({
       user_id: userId || '',
       plan: 'pro',
       seats: String(seats),
+      billing_interval: normalizedInterval,
+      stripe_price_id: selectedPriceId,
       ...metadata,
     },
   };
@@ -60,3 +70,12 @@ export const retrieveStripeSubscription = async subscriptionId =>
   stripe.subscriptions.retrieve(subscriptionId, {
     expand: ['items.data.price', 'latest_invoice'],
   });
+
+export const listCustomerInvoices = async ({ customerId, limit = 20 }) => {
+  const invoices = await stripe.invoices.list({
+    customer: customerId,
+    limit,
+  });
+
+  return invoices.data || [];
+};

@@ -72,12 +72,14 @@ export const incrementUsageRecord = async ({
 
 export const getUsageSummary = async orgId => {
   const subscription = await loadSubscriptionForOrg(orgId);
-  const { periodKey } = buildPeriodWindow();
+  const { periodKey, periodStart, periodEnd } = buildPeriodWindow();
   const record = await UsageRecord.findOne({ org_id: orgId, periodKey });
 
   return {
     subscription,
     periodKey,
+    periodStart: record?.periodStart || periodStart,
+    periodEnd: record?.periodEnd || periodEnd,
     usageCount: record?.usageCount || 0,
     limit: getOrgAiQueryLimit(subscription),
   };

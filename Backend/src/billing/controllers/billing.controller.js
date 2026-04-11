@@ -4,6 +4,7 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import {
   createCustomerPortalSession,
   createProCheckoutSession,
+  listCustomerInvoices,
 } from '../services/stripe.service.js';
 import {
   getSubscriptionByOrgId,
@@ -25,6 +26,11 @@ export const createProCheckout = asyncHandler(async (req, res) => {
     throw new AppError('Stripe checkout is not configured', 503);
   }
 
+  const interval = req.body.interval || 'monthly';
+  if (interval === 'annual' && !env.stripeProAnnualPriceId) {
+    throw new AppError('Annual billing is not configured yet', 503);
+  }
+
   const userId = req.auth?.sub || req.body.user_id || '';
   const userEmail = req.auth?.email || req.body.user_email || null;
   const orgName = req.body.org_name || req.body.org_id;
@@ -36,6 +42,7 @@ export const createProCheckout = asyncHandler(async (req, res) => {
     userId,
     userEmail,
     seats,
+    interval,
     successUrl:
       req.body.success_url ||
       `${env.appOrigin}/billing/success?org_id=${req.body.org_id}`,
@@ -49,6 +56,50 @@ export const createProCheckout = asyncHandler(async (req, res) => {
     message: 'Checkout session created',
     checkoutSessionId: session.id,
     url: session.url,
+    interval,
+  });
+});
+
+export const getPlans = asyncHandler(async (_req, res) => {
+  const monthly = env.proPriceUsd;
+  const annual = env.proAnnualPriceUsd;
+  const annualSavingsPercent =
+    monthly > 0
+      ? Math.max(0, Math.round(((monthly * 12 - annual) / (monthly * 12)) * 100))
+      : 0;
+
+  res.status(200).json({
+    plans: [
+      {
+        id: 'free',
+        label: 'Free',
+        monthlyPriceUsd: 0,
+        annualPriceUsd: 0,
+        aiQueryLimit: env.freeAiQueryLimit,
+        maxUsers: env.freeMaxUsers,
+        cta: 'current',
+      },
+      {
+        id: 'pro',
+        label: 'Pro',
+        monthlyPriceUsd: monthly,
+        annualPriceUsd: annual,
+        annualAvailable: Boolean(env.stripeProAnnualPriceId),
+        annualSavingsPercent,
+        aiQueryLimit: env.proAiQueryLimit,
+        maxUsers: env.freeMaxUsers,
+        cta: 'checkout',
+      },
+      {
+        id: 'enterprise',
+        label: 'Enterprise',
+        monthlyPriceUsd: null,
+        annualPriceUsd: null,
+        aiQueryLimit: env.enterpriseAiQueryLimit,
+        maxUsers: env.enterpriseMaxUsers,
+        cta: 'contact',
+      },
+    ],
   });
 });
 
@@ -87,6 +138,39 @@ export const getSubscription = asyncHandler(async (req, res) => {
 export const getUsage = asyncHandler(async (req, res) => {
   const usage = await getUsageSummary(req.params.org_id);
   res.status(200).json(usage);
+});
+
+export const getInvoices = asyncHandler(async (req, res) => {
+  const limit = req.query.limit || 20;
+  const subscription = await getSubscriptionByOrgId(req.params.org_id);
+
+  if (!env.stripeSecretKey || !subscription?.stripeCustomerId) {
+    return res.status(200).json({ invoices: [] });
+  }
+
+  try {
+    const rows = await listCustomerInvoices({
+      customerId: subscription.stripeCustomerId,
+      limit,
+    });
+
+    const invoices = rows.map((invoice) => ({
+      id: invoice.id,
+      date: invoice.created
+        ? new Date(invoice.created * 1000).toISOString()
+        : null,
+      amount: Number((invoice.amount_paid ?? invoice.amount_due ?? 0) / 100),
+      currency: String(invoice.currency || 'usd').toUpperCase(),
+      status: invoice.status === 'paid' ? 'paid' : 'failed',
+      pdfUrl: invoice.invoice_pdf || invoice.hosted_invoice_url || null,
+    }));
+
+    return res.status(200).json({ invoices });
+  } catch (error) {
+    throw new AppError('Unable to load invoice history', 502, {
+      reason: error?.message,
+    });
+  }
 });
 
 export const trackUsage = asyncHandler(async (req, res) => {

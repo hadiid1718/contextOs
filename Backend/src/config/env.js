@@ -233,10 +233,15 @@ export const env = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   stripeProPriceId: process.env.STRIPE_PRO_PRICE_ID || '',
+  stripeProAnnualPriceId: process.env.STRIPE_PRO_ANNUAL_PRICE_ID || '',
   stripeCustomerPortalReturnUrl:
     process.env.STRIPE_CUSTOMER_PORTAL_RETURN_URL ||
     'http://localhost:3000/settings/billing',
   proPriceUsd: toNumber(process.env.PRO_PRICE_USD, 49),
+  proAnnualPriceUsd: toNumber(
+    process.env.PRO_ANNUAL_PRICE_USD,
+    toNumber(process.env.PRO_PRICE_USD, 49) * 10
+  ),
   freeMaxUsers: toNumber(process.env.FREE_MAX_USERS, 5),
   freeAiQueryLimit: toNumber(process.env.FREE_AI_QUERY_LIMIT, 100),
   proAiQueryLimit: toNumber(process.env.PRO_AI_QUERY_LIMIT, 5000),

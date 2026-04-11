@@ -5,6 +5,7 @@ import { validate } from '../../middleware/validate.middleware.js';
 import { usageMetering } from '../middleware/usageMetering.middleware.js';
 import {
   checkoutSchema,
+  invoiceListSchema,
   orgParamsSchema,
   portalSchema,
   usageTrackSchema,
@@ -12,12 +13,16 @@ import {
 import {
   createPortal,
   createProCheckout,
+  getInvoices,
+  getPlans,
   getSubscription,
   getUsage,
   trackUsage,
 } from '../controllers/billing.controller.js';
 
 const billingRouter = Router();
+
+billingRouter.get('/plans', requireAuth, getPlans);
 
 billingRouter.post(
   '/checkout/pro',
@@ -42,6 +47,12 @@ billingRouter.get(
   requireAuth,
   validate(orgParamsSchema),
   getUsage
+);
+billingRouter.get(
+  '/invoices/:org_id',
+  requireAuth,
+  validate(invoiceListSchema),
+  getInvoices
 );
 billingRouter.post(
   '/usage/ai-query',
