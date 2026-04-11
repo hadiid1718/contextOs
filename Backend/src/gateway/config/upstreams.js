@@ -11,6 +11,7 @@ export const upstreamServices = Object.freeze({
   query: asServiceUrl(env.queryServiceUrl),
   notification: asServiceUrl(env.notificationServiceUrl),
   billing: asServiceUrl(env.billingServiceUrl),
+  admin: asServiceUrl(env.adminServiceUrl),
 });
 
 export const gatewayProxyRoutes = [
@@ -72,6 +73,13 @@ export const gatewayProxyRoutes = [
     requiresAuth: true,
     rateLimit: true,
   },
+  {
+    name: 'admin',
+    path: '/api/v1/admin',
+    target: upstreamServices.admin,
+    requiresAuth: false,
+    rateLimit: false,
+  },
 ];
 
 export const readinessTargets = [
@@ -81,4 +89,5 @@ export const readinessTargets = [
   { name: 'query', url: upstreamServices.query },
   { name: 'notification', url: upstreamServices.notification },
   { name: 'billing', url: upstreamServices.billing },
+  { name: 'admin', url: upstreamServices.admin },
 ];

@@ -114,6 +114,10 @@ export const env = {
     process.env.BILLING_SERVICE_URL ||
     process.env.API_BASE_URL ||
     'http://localhost:4001',
+  adminServiceUrl:
+    process.env.ADMIN_SERVICE_URL ||
+    process.env.API_BASE_URL ||
+    'http://localhost:4001',
   ingestionEnabled: process.env.INGESTION_ENABLED !== 'false',
   webhookBaseUrl:
     process.env.WEBHOOK_BASE_URL || 'http://localhost:4001/api/v1/webhooks',
