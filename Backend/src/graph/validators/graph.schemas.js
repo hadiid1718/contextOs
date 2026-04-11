@@ -26,3 +26,17 @@ export const getGraphDecisionsSchema = z.object({
   }),
   params: z.object({}).optional().default({}),
 });
+
+export const getGraphOverviewSchema = z.object({
+  body: z.object({}).optional().default({}),
+  query: z.object({
+    org_id: z.string().min(1),
+    node_types: z.string().optional(),
+    q: z.string().optional(),
+    from: z.string().optional(),
+    to: z.string().optional(),
+    min_confidence: z.coerce.number().min(0).max(1).optional(),
+    limit: z.coerce.number().int().min(1).max(500).optional(),
+  }),
+  params: z.object({}).optional().default({}),
+});

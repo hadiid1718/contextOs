@@ -11,6 +11,10 @@ import {
   shutdownIngestionModule,
 } from './ingestion/index.js';
 import { initializeAIQueryModule, shutdownAIQueryModule } from './ai/index.js';
+import {
+  initializeNotificationRealtime,
+  shutdownNotificationRealtime,
+} from './notifications/services/notificationRealtime.service.js';
 
 const PORT = env.port;
 let httpServer = null;
@@ -22,6 +26,7 @@ const gracefulShutdown = async signal => {
     await shutdownKnowledgeGraphModule();
     await shutdownIngestionModule();
     await shutdownAIQueryModule();
+    await shutdownNotificationRealtime();
 
     if (httpServer) {
       await new Promise(resolve => httpServer.close(resolve));
@@ -46,6 +51,8 @@ const startServer = async () => {
         `ContextOS API server is running on port : http://localhost:${PORT}`
       );
     });
+
+    initializeNotificationRealtime(httpServer);
   } catch (error) {
     logger.error(error?.stack || error?.message || 'Server startup failed');
     process.exitCode = 1;

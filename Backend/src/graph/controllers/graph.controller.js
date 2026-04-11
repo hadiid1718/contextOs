@@ -2,6 +2,7 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import {
   getCausalChain,
   getDecisionsForFile,
+  getGraphOverview as getGraphOverviewQuery,
   getGraphNodeById,
 } from '../services/graphQuery.service.js';
 
@@ -32,5 +33,26 @@ export const getGraphDecisions = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     data: decisions,
+  });
+});
+
+export const getGraphOverview = asyncHandler(async (req, res) => {
+  const nodeTypes = String(req.query.node_types || '')
+    .split(',')
+    .map(type => type.trim())
+    .filter(Boolean);
+
+  const overview = await getGraphOverviewQuery({
+    orgId: req.query.org_id,
+    nodeTypes,
+    q: req.query.q,
+    from: req.query.from,
+    to: req.query.to,
+    minConfidence: req.query.min_confidence,
+    limit: req.query.limit,
+  });
+
+  res.status(200).json({
+    data: overview,
   });
 });

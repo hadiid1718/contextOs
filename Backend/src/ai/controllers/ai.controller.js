@@ -23,23 +23,25 @@ const initializeSseResponse = res => {
 };
 
 export const streamRagQuery = async (req, res, next) => {
-  initializeSseResponse(res);
-
   const { org_id: orgId, question } = req.body;
 
   try {
     if (!env.aiQueryEnabled) {
-      throw new AppError('AI query module is disabled', 503);
+      next(new AppError('AI query module is disabled', 503));
+      return;
     }
 
     if (!req.auth?.sub) {
-      throw new AppError('Authentication required', 401);
+      next(new AppError('Authentication required', 401));
+      return;
     }
 
     await assertOrgMembership({
       userId: req.auth.sub,
       orgId,
     });
+
+    initializeSseResponse(res);
 
     const cached = await getCachedRagResponse({ orgId, question });
 
@@ -48,6 +50,7 @@ export const streamRagQuery = async (req, res, next) => {
         cached: true,
         citations: cached.citations,
         graph_context: cached.graph_context,
+        chunks_used: cached.chunks_used || null,
       });
       writeSseEvent(res, 'token', { text: cached.answer });
       writeSseEvent(res, 'done', {
@@ -63,6 +66,11 @@ export const streamRagQuery = async (req, res, next) => {
     const result = await streamRagAnswer({
       orgId,
       question,
+      onMeta: meta => {
+        if (!res.writableEnded) {
+          writeSseEvent(res, 'meta', meta);
+        }
+      },
       onToken: token => {
         if (res.writableEnded) {
           return;
@@ -73,17 +81,10 @@ export const streamRagQuery = async (req, res, next) => {
       },
     });
 
-    writeSseEvent(res, 'meta', {
-      cached: false,
-      citations: result.citations,
-      graph_context: result.graph_context,
-      chunks_used: result.chunks_used,
-      token_events: tokenEvents,
-      latency_ms: Date.now() - startedAt,
-    });
-
     writeSseEvent(res, 'done', {
       answer: result.answer,
+      token_events: tokenEvents,
+      latency_ms: Date.now() - startedAt,
     });
 
     res.end();

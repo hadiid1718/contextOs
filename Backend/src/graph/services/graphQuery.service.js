@@ -4,6 +4,27 @@ import { AppError } from '../../utils/appError.js';
 
 const MAX_HOPS = 5;
 
+const safeStringify = value => {
+  try {
+    return JSON.stringify(value ?? {});
+  } catch {
+    return '';
+  }
+};
+
+const buildSearchText = node => {
+  return [
+    node?._id,
+    node?.node_type,
+    node?.source,
+    safeStringify(node?.content),
+    safeStringify(node?.metadata),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+};
+
 export const getGraphNodeById = async id => {
   const node = await GraphNode.findById(id).lean();
   if (!node) {
@@ -91,4 +112,86 @@ export const getDecisionsForFile = async ({ orgId, file }) => {
     .lean();
 
   return decisions;
+};
+
+export const getGraphOverview = async ({
+  orgId,
+  nodeTypes = [],
+  q = '',
+  from = null,
+  to = null,
+  minConfidence = 0,
+  limit = 250,
+}) => {
+  if (!orgId) {
+    throw new AppError('Organisation id is required', 400);
+  }
+
+  const nodeFilters = {
+    org_id: orgId,
+  };
+
+  if (Array.isArray(nodeTypes) && nodeTypes.length > 0) {
+    nodeFilters.node_type = { $in: nodeTypes };
+  }
+
+  if (from || to) {
+    nodeFilters.created_at = {};
+
+    if (from) {
+      nodeFilters.created_at.$gte = new Date(from);
+    }
+
+    if (to) {
+      nodeFilters.created_at.$lte = new Date(to);
+    }
+  }
+
+  const boundedLimit = Math.min(500, Math.max(25, Number(limit) || 250));
+  const searchTerm = String(q || '')
+    .trim()
+    .toLowerCase();
+
+  const nodes = await GraphNode.find(nodeFilters)
+    .sort({ created_at: -1 })
+    .limit(boundedLimit)
+    .lean();
+
+  const filteredNodes = searchTerm
+    ? nodes.filter(node => buildSearchText(node).includes(searchTerm))
+    : nodes;
+
+  const nodeIds = new Set(filteredNodes.map(node => node._id));
+  const edgeFilters = {
+    org_id: orgId,
+  };
+
+  const boundedConfidence = Math.min(
+    1,
+    Math.max(0, Number(minConfidence) || 0)
+  );
+  if (boundedConfidence > 0) {
+    edgeFilters.confidence_score = { $gte: boundedConfidence };
+  }
+
+  const edges = await GraphEdge.find(edgeFilters).lean();
+  const filteredEdges = edges.filter(
+    edge => nodeIds.has(edge.from_id) && nodeIds.has(edge.to_id)
+  );
+
+  return {
+    nodes: filteredNodes,
+    edges: filteredEdges,
+    summary: {
+      nodeCount: filteredNodes.length,
+      edgeCount: filteredEdges.length,
+      minConfidence: boundedConfidence,
+      nodeTypes: Array.isArray(nodeTypes) ? nodeTypes : [],
+      search: searchTerm || null,
+      dateRange: {
+        from: from || null,
+        to: to || null,
+      },
+    },
+  };
 };

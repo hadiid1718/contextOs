@@ -86,7 +86,12 @@ const createQueryEmbedding = async question => {
   return embedding;
 };
 
-export const streamRagAnswer = async ({ orgId, question, onToken }) => {
+export const streamRagAnswer = async ({ orgId, question, onMeta, onToken }) => {
+  let answer = '';
+  let prompt = null;
+  let graphContext = [];
+  let metaPayload = null;
+
   try {
     const embedding = await createQueryEmbedding(question);
     const chunks = await searchChunksByVector({
@@ -95,14 +100,25 @@ export const streamRagAnswer = async ({ orgId, question, onToken }) => {
       topK: env.aiTopK,
     });
 
-    const graphContext = await fetchGraphContextForChunks({
+    graphContext = await fetchGraphContextForChunks({
       orgId,
       chunks,
       maxNodes: env.aiGraphContextNodes,
       maxHops: env.aiGraphContextHops,
     });
 
-    const prompt = buildRagPrompt({ question, chunks, graphContext });
+    prompt = buildRagPrompt({ question, chunks, graphContext });
+    metaPayload = {
+      cached: false,
+      citations: prompt.citations,
+      graph_context: graphContext,
+      chunks_used: chunks.length,
+    };
+
+    if (typeof onMeta === 'function') {
+      onMeta(metaPayload);
+    }
+
     const openAI = getOpenAIClient();
 
     const stream = await openAI.chat.completions.create({
@@ -121,7 +137,6 @@ export const streamRagAnswer = async ({ orgId, question, onToken }) => {
       ],
     });
 
-    let answer = '';
 
     for await (const part of stream) {
       const token = part?.choices?.[0]?.delta?.content;
@@ -132,27 +147,6 @@ export const streamRagAnswer = async ({ orgId, question, onToken }) => {
       answer += token;
       onToken(token);
     }
-
-    const trimmed = answer.trim();
-
-    if (!trimmed) {
-      throw new AppError('GPT-4o returned an empty answer', 502);
-    }
-
-    const payload = {
-      answer: trimmed,
-      citations: prompt.citations,
-      graph_context: graphContext,
-      created_at: new Date().toISOString(),
-    };
-
-    await setCachedRagResponse({ orgId, question, payload });
-
-    return {
-      ...payload,
-      chunks_used: chunks.length,
-      cached: false,
-    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -162,4 +156,24 @@ export const streamRagAnswer = async ({ orgId, question, onToken }) => {
       reason: error.message,
     });
   }
+
+  const trimmed = answer.trim();
+
+  if (!trimmed) {
+    throw new AppError('GPT-4o returned an empty answer', 502);
+  }
+
+  const payload = {
+    answer: trimmed,
+    citations: prompt.citations,
+    graph_context: graphContext,
+    created_at: new Date().toISOString(),
+  };
+
+  await setCachedRagResponse({ orgId, question, payload });
+
+  return {
+    ...payload,
+    ...metaPayload,
+  };
 };
