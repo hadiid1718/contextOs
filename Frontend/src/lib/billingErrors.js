@@ -10,7 +10,7 @@ const billingErrors = {
 };
 
 export const getBillingErrorMessage = (error, fallback = 'Unable to complete billing request right now.') => {
-  if (!error) return fallback;
+  if (!error) return '';
 
   const status = error?.response?.status || error?.status;
   const responseMessage = error?.response?.data?.message;

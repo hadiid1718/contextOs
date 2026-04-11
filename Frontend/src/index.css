@@ -171,3 +171,66 @@ body {
   animation-fill-mode: forwards;
 }
 
+@keyframes admin-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes admin-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.admin-shell {
+  background: radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.08), transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(14, 165, 233, 0.08), transparent 45%),
+    linear-gradient(180deg, #070a10 0%, #0d1117 45%, #131920 100%);
+}
+
+.admin-grid-overlay {
+  position: relative;
+  isolation: isolate;
+}
+
+.admin-grid-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity: 0.28;
+}
+
+.animate-admin-pulse {
+  animation: admin-pulse 1.6s ease-in-out infinite;
+}
+
+.animate-admin-shake {
+  animation: admin-shake 420ms ease-in-out;
+}
+

@@ -200,7 +200,7 @@ const Home = () => {
             Compare plans with monthly/yearly toggle and select the plan that matches your needs.
           </p>
           <div className="mt-6">
-            <Link to="/pricing">
+            <Link to="/billing">
               <Button>View pricing</Button>
             </Link>
           </div>

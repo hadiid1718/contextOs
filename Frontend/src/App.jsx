@@ -4,6 +4,10 @@ import Footer from './components/Footer';
 import NotificationDrawer from './components/notifications/NotificationDrawer';
 import NotificationToastStack from './components/notifications/NotificationToastStack';
 import ProtectedRoute from './components/ProtectedRoute';
+import {
+  AdminLoginRouteGuard,
+  AdminRouteGuard,
+} from './components/admin/RouteGuard';
 import BillingUpgradeModal from './components/billing/BillingUpgradeModal';
 import TopBar from './components/TopBar';
 import useAuth from './hooks/useAuth';
@@ -27,7 +31,8 @@ import Home from './pages/Home';
 import IntegrationConnectPopup from './pages/IntegrationConnectPopup';
 import OAuthFailure from './pages/OAuthFailure';
 import OAuthSuccess from './pages/OAuthSuccess';
-import Pricing from './pages/Pricing';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
 
 const App = () => {
   const { bootstrapSession } = useAuth();
@@ -42,7 +47,6 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/pricing" element={<Pricing />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/auth/success" element={<OAuthSuccess />} />
       <Route path="/auth/failure" element={<OAuthFailure />} />
@@ -50,6 +54,22 @@ const App = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/invite/:token" element={<InviteResponse />} />
+      <Route
+        path="/admin/login"
+        element={
+          <AdminLoginRouteGuard>
+            <AdminLoginPage />
+          </AdminLoginRouteGuard>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRouteGuard>
+            <AdminDashboard />
+          </AdminRouteGuard>
+        }
+      />
       <Route
         path="/integrations/connect/:provider"
         element={
