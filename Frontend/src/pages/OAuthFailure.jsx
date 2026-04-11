@@ -9,11 +9,26 @@ const OAuthFailure = () => {
 
     if (hasOpener) {
       window.opener.postMessage({ type: 'oauth:failure' }, window.location.origin);
-      window.setTimeout(() => window.close(), 150);
-      return;
     }
 
-    navigate('/login?oauth=failed', { replace: true });
+    // Fallback signal for cases where opener is lost by browser security policies.
+    try {
+      window.localStorage.setItem(
+        'oauth:result',
+        JSON.stringify({ type: 'oauth:failure', at: Date.now() })
+      );
+      window.localStorage.removeItem('oauth:result');
+    } catch {
+      // Ignore storage errors and rely on postMessage/polling in opener.
+    }
+
+    window.setTimeout(() => window.close(), 100);
+
+    const fallbackTimer = window.setTimeout(() => {
+      navigate('/login?oauth=failed', { replace: true });
+    }, 700);
+
+    return () => window.clearTimeout(fallbackTimer);
   }, [navigate]);
 
   return (

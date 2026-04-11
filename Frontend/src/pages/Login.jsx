@@ -46,6 +46,23 @@ const Login = () => {
     window.setTimeout(() => setShaking(false), 420);
   };
 
+  const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  const refreshAfterOauth = async () => {
+    const attempts = 5;
+
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const refreshed = await silentRefresh();
+      if (refreshed) return true;
+
+      if (attempt < attempts - 1) {
+        await wait(200 * (attempt + 1));
+      }
+    }
+
+    return false;
+  };
+
   const onSubmit = async (values) => {
     setApiError('');
     try {
@@ -97,7 +114,7 @@ const Login = () => {
             window.removeEventListener('message', onMessage);
             window.clearInterval(poll);
             window.clearTimeout(timeout);
-            const refreshed = await silentRefresh();
+            const refreshed = await refreshAfterOauth();
             if (refreshed) resolve(true);
             else reject(new Error('OAuth did not complete. Try again.'));
           }
@@ -112,7 +129,7 @@ const Login = () => {
             window.removeEventListener('message', onMessage);
             window.clearInterval(poll);
             window.clearTimeout(timeout);
-            const refreshed = await silentRefresh();
+            const refreshed = await refreshAfterOauth();
             if (refreshed) {
               resolve(true);
             } else {

@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
@@ -26,8 +26,11 @@ import Pricing from './pages/Pricing';
 
 const App = () => {
   const { bootstrapSession } = useAuth();
+  const didBootstrapRef = useRef(false);
 
   useEffect(() => {
+    if (didBootstrapRef.current) return;
+    didBootstrapRef.current = true;
     bootstrapSession();
   }, [bootstrapSession]);
 
