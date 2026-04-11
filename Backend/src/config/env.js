@@ -58,6 +58,7 @@ if (isProduction) {
     'GITHUB_CALLBACK_URL',
     'GRAPH_CONSUMER_GROUP_ID',
     'OPENAI_API_KEY',
+    'ADMIN_JWT_SECRET',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'STRIPE_PRO_PRICE_ID',
@@ -202,6 +203,18 @@ export const env = {
   cookieSecure: process.env.COOKIE_SECURE === 'true',
   cookieSameSite: process.env.COOKIE_SAME_SITE || 'lax',
   cookieDomain: process.env.COOKIE_DOMAIN || undefined,
+  cookieSecret: process.env.COOKIE_SECRET || 'dev-cookie-secret-change-me',
+
+  adminEmail: process.env.ADMIN_EMAIL || 'superadmin@contextos.internal',
+  adminInitialPassword: process.env.ADMIN_INITIAL_PASSWORD || '',
+  adminJwtSecret:
+    process.env.ADMIN_JWT_SECRET ||
+    process.env.JWT_ACCESS_SECRET ||
+    'dev-admin-jwt-secret-change-me',
+  adminJwtExpiresIn: process.env.ADMIN_JWT_EXPIRES_IN || '8h',
+  adminCookieName: process.env.ADMIN_COOKIE_NAME || 'admin_token',
+  adminLockoutMaxAttempts: toNumber(process.env.ADMIN_LOCKOUT_MAX_ATTEMPTS, 5),
+  adminLockoutWindowMinutes: toNumber(process.env.ADMIN_LOCKOUT_WINDOW_MINUTES, 15),
 
   smtpHost: process.env.SMTP_HOST,
   smtpPort: Number(process.env.SMTP_PORT || 587),

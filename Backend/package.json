@@ -10,6 +10,7 @@
     "gateway:start": "node --watch src/gateway.server.js",
     "gateway:dev": "node src/gateway.server.js",
     "gateway:smoke": "node src/gateway/gateway.smoke.js",
+    "db:setup": "node scripts/db.setup.js",
     "ingestion:smoke": "node src/ingestion/ingestion.smoke.js",
     "graph:smoke": "node src/graph/graph.smoke.js",
     "ai:smoke": "node src/ai/ai.smoke.js",

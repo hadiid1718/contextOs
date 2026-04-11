@@ -43,7 +43,7 @@ app.use(
   })
 );
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser(env.cookieSecret));
 app.use(
   morgan('combined', {
     stream: { write: message => logger.info(message.trim()) },

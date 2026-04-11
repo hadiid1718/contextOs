@@ -12,6 +12,7 @@ import { graphRouter } from '../graph/routes/graph.routes.js';
 import { aiRouter } from '../ai/routes/ai.routes.js';
 import { notificationRouter } from '../notifications/routes/notification.routes.js';
 import { billingRouter } from '../billing/index.js';
+import { adminRouter } from '../admin/index.js';
 
 const apiRouter = Router();
 
@@ -25,5 +26,6 @@ apiRouter.use('/graph', graphRouter);
 apiRouter.use('/ai', aiRouter);
 apiRouter.use('/notifications', notificationRouter);
 apiRouter.use('/billing', billingRouter);
+apiRouter.use('/admin', adminRouter);
 
 export { apiRouter };
