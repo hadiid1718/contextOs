@@ -231,7 +231,7 @@ const Integrations = () => {
   return (
     <div className="space-y-6">
       <Card
-        title="Module 5 Ingestion & Data Integrations"
+        title="Ingestion & Data Integrations"
         description="Connect GitHub, Jira, Slack, and Confluence. Webhook health is tracked per provider and the feed refreshes every 15 minutes."
       >
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">

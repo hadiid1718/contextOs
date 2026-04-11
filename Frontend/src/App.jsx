@@ -1,10 +1,12 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import Footer from './components/Footer';
+import NotificationDrawer from './components/notifications/NotificationDrawer';
+import NotificationToastStack from './components/notifications/NotificationToastStack';
 import ProtectedRoute from './components/ProtectedRoute';
-import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import useAuth from './hooks/useAuth';
+import useNotifications from './hooks/useNotifications';
 import Billing from './pages/Billing';
 import Dashboard from './pages/Dashboard';
 import ForgotPassword from './pages/ForgotPassword';
@@ -15,6 +17,7 @@ import Notifications from './pages/Notifications';
 import Query from './pages/Query';
 import Register from './pages/Register';
 import Settings from './pages/Settings';
+import NotificationSettings from './pages/NotificationSettings';
 import TeamSettings from './pages/TeamSettings';
 import InviteResponse from './pages/InviteResponse';
 import Contact from './pages/Contact';
@@ -66,12 +69,13 @@ const App = () => {
 };
 
 const AppShellWrapper = () => {
+  useNotifications({ bootstrap: true });
+
   return (
     <div className="min-h-screen bg-bg text-text">
       <TopBar />
-      <div className="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <Sidebar />
-        <main className="flex-1">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <main className="w-full">
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/query" element={<Query />} />
@@ -81,11 +85,14 @@ const AppShellWrapper = () => {
             <Route path="/billing" element={<Billing />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/settings/team" element={<TeamSettings />} />
+            <Route path="/settings/notifications" element={<NotificationSettings />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>
       </div>
       <Footer />
+      <NotificationDrawer />
+      <NotificationToastStack />
     </div>
   );
 };

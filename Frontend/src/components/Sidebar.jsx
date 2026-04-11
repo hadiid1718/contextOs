@@ -9,7 +9,7 @@ const navItems = [
   { label: 'Graph', to: '/graph', icon: BarChart3 },
   { label: 'Notifications', to: '/notifications', icon: Bell },
   { label: 'Billing', to: '/billing', icon: Wallet },
-  { label: 'Settings', to: '/settings/team', icon: Settings },
+  { label: 'Settings', to: '/settings/notifications', icon: Settings },
 ];
 
 const Sidebar = () => {

@@ -3,12 +3,27 @@ import { Link } from 'react-router-dom';
 
 const Settings = () => {
   return (
-    <Card title="Settings" description="Manage organization profile and preferences.">
-      <p className="text-sm text-text2">Team management is available in the dedicated settings module.</p>
-      <Link className="mt-3 inline-flex text-sm font-medium text-brand hover:text-brand-dark" to="/settings/team">
-        Open Team Management
-      </Link>
-    </Card>
+    <div className="space-y-4">
+      <Card title="Settings" description="Manage organisation and notification preferences.">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            className="rounded-xl border border-border bg-bg3/40 px-4 py-3 text-sm text-text transition hover:border-border-strong hover:bg-surface"
+            to="/settings/team"
+          >
+            <p className="font-medium">Team Management</p>
+            <p className="mt-1 text-xs text-text2">Invite members and control organisation roles.</p>
+          </Link>
+
+          <Link
+            className="rounded-xl border border-border bg-bg3/40 px-4 py-3 text-sm text-text transition hover:border-border-strong hover:bg-surface"
+            to="/settings/notifications"
+          >
+            <p className="font-medium">Notification Preferences</p>
+            <p className="mt-1 text-xs text-text2">Toggle toast/drawer categories and email digest frequency.</p>
+          </Link>
+        </div>
+      </Card>
+    </div>
   );
 };
 

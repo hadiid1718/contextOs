@@ -225,7 +225,7 @@ const Graph = () => {
   return (
     <div className="space-y-6">
       <Card
-        title="Module 4 Knowledge Graph Service"
+        title="Knowledge Graph Service"
         description="Interactive force-directed graph canvas with node detail inspection, BFS trace animation, edge confidence visuals, and backend-driven filters."
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
