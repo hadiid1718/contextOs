@@ -27,16 +27,16 @@ const GoldenSignalCard = ({
   const chartData = sparkData.map((point, index) => ({ idx: index + 1, value: point }));
 
   return (
-    <article className="rounded-2xl border border-[#1e2a38] bg-[#0d1117] p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-[#64748b]">{title}</p>
-      <div className="mt-2 flex items-center justify-between">
-        <p className="text-2xl font-semibold text-[#e2e8f0]">{value}</p>
-        <span className={`inline-flex items-center text-xs ${toneClasses[tone] || toneClasses.neutral}`}>
-          {isPositive ? <ArrowUpRight size={13} /> : <ArrowDownRight size={13} />}
+    <article className="rounded-xl border border-[#1e2a38] bg-[#0d1117] p-3">
+      <p className="text-[11px] uppercase tracking-[0.16em] text-[#64748b]">{title}</p>
+      <div className="mt-1.5 flex items-center justify-between">
+        <p className="text-xl font-semibold text-[#e2e8f0]">{value}</p>
+        <span className={`inline-flex items-center text-[11px] ${toneClasses[tone] || toneClasses.neutral}`}>
+          {isPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
           {Math.abs(Number(delta)).toFixed(1)}%
         </span>
       </div>
-      <div className="mt-3 h-12">
+      <div className="mt-2 h-10">
         <ResponsiveContainer width="100%" height="100%">
           {chartType === 'line' ? (
             <LineChart data={chartData}>

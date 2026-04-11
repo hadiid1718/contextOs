@@ -1,6 +1,7 @@
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import GoldenSignalCard from '../../components/admin/GoldenSignalCard';
 import KafkaLagPanel from '../../components/admin/KafkaLagPanel';
 import LogExplorer from '../../components/admin/LogExplorer';
@@ -56,24 +57,26 @@ const AdminDashboard = () => {
     setLogQuery,
     setLogPaused,
     refreshData,
-  } = useAdminStore((state) => ({
-    goldenSignals: state.goldenSignals,
-    serviceHealth: state.serviceHealth,
-    orgRateLimits: state.orgRateLimits,
-    kafkaLag: state.kafkaLag,
-    redisStats: state.redisStats,
-    logEntries: state.logEntries,
-    alerts: state.alerts,
-    podCounts: state.podCounts,
-    logQuery: state.logQuery,
-    logPaused: state.logPaused,
-    lastUpdated: state.lastUpdated,
-    isRefreshing: state.isRefreshing,
-    error: state.error,
-    setLogQuery: state.setLogQuery,
-    setLogPaused: state.setLogPaused,
-    refreshData: state.refreshData,
-  }));
+  } = useAdminStore(
+    useShallow((state) => ({
+      goldenSignals: state.goldenSignals,
+      serviceHealth: state.serviceHealth,
+      orgRateLimits: state.orgRateLimits,
+      kafkaLag: state.kafkaLag,
+      redisStats: state.redisStats,
+      logEntries: state.logEntries,
+      alerts: state.alerts,
+      podCounts: state.podCounts,
+      logQuery: state.logQuery,
+      logPaused: state.logPaused,
+      lastUpdated: state.lastUpdated,
+      isRefreshing: state.isRefreshing,
+      error: state.error,
+      setLogQuery: state.setLogQuery,
+      setLogPaused: state.setLogPaused,
+      refreshData: state.refreshData,
+    })),
+  );
 
   const jitterTimersRef = useRef([]);
   const [selectedService, setSelectedService] = useState('');
@@ -120,7 +123,7 @@ const AdminDashboard = () => {
     <div className="admin-shell admin-grid-overlay min-h-screen bg-[#070a10] text-[#e2e8f0]">
       <TopBar alertsCount={alerts.length} onLogout={handleLogout} />
 
-      <div className="mx-auto w-full max-w-[1500px] px-4 pb-10 pt-24 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1320px] px-4 pb-8 pt-24 sm:px-6 lg:px-8">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs text-[#94a3b8]">
           <div>
             Last updated {lastUpdatedLabel}
@@ -139,7 +142,7 @@ const AdminDashboard = () => {
           </div>
         ) : null}
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <GoldenSignalCard
             title="Requests/min"
             value={goldenSignals.reqPerMin?.toLocaleString() || '0'}
@@ -174,20 +177,20 @@ const AdminDashboard = () => {
           />
         </section>
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+        <section className="mt-5 grid gap-4 xl:grid-cols-[1.5fr_1fr]">
           <ServiceHealthPanel services={serviceHealth} onSelectService={handleServiceDrillDown} />
           <SecurityAlertPanel alerts={alerts} />
         </section>
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+        <section className="mt-5 grid gap-4 xl:grid-cols-[1.5fr_1fr]">
           <OrgRateLimitPanel rows={orgRateLimits} />
-          <div className="space-y-6">
+          <div className="space-y-4">
             <KafkaLagPanel topics={kafkaLag} />
             <RedisStatsPanel stats={redisStats} />
           </div>
         </section>
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-2">
+        <section className="mt-5 grid gap-4 xl:grid-cols-2">
           <LogExplorer
             entries={logEntries}
             query={logQuery}

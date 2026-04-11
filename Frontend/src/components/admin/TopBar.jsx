@@ -25,7 +25,7 @@ const TopBar = ({ alertsCount = 0, onLogout }) => {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[#1e2a38] bg-[#0d1117]/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
           <div className="inline-flex items-center gap-2 text-[#e2e8f0]">
             <Hexagon size={16} className="text-[#38bdf8]" />

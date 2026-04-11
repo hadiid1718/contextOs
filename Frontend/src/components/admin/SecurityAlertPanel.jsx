@@ -24,28 +24,28 @@ const SecurityAlertPanel = ({ alerts = [] }) => {
   }, [alerts, startIndex]);
 
   return (
-    <section className="rounded-2xl border border-[#1e2a38] bg-[#0d1117] p-4">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#cbd5e1]">Security Alerts</h3>
+    <section className="rounded-xl border border-[#1e2a38] bg-[#0d1117] p-3">
+      <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-[#cbd5e1]">Security Alerts</h3>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-3 space-y-2">
         {orderedAlerts.slice(0, 5).map((alert) => {
           const isCritical = alert.severity === 'critical';
 
           return (
-            <article key={alert.id} className="rounded-xl border border-[#1e2a38] bg-[#131920] px-3 py-3">
+            <article key={alert.id} className="rounded-lg border border-[#1e2a38] bg-[#131920] px-2.5 py-2">
               <div className="flex items-start gap-2">
                 {isCritical ? (
-                  <ShieldAlert size={16} className="mt-0.5 text-[#f43f5e]" />
+                  <ShieldAlert size={14} className="mt-0.5 text-[#f43f5e]" />
                 ) : (
-                  <AlertTriangle size={16} className="mt-0.5 text-[#f59e0b]" />
+                  <AlertTriangle size={14} className="mt-0.5 text-[#f59e0b]" />
                 )}
                 <div>
-                  <p className="text-sm font-medium text-[#e2e8f0]">{alert.title}</p>
-                  <p className="text-xs text-[#94a3b8]">
+                  <p className="text-xs font-medium text-[#e2e8f0]">{alert.title}</p>
+                  <p className="text-[11px] text-[#94a3b8]">
                     {alert.org}
                     {alert.ip ? ` - ${alert.ip}` : ''}
                   </p>
-                  <p className="mt-1 text-[11px] text-[#64748b]">
+                  <p className="mt-1 text-[10px] text-[#64748b]">
                     {formatDistanceToNowStrict(new Date(alert.ts), { addSuffix: true })}
                   </p>
                 </div>

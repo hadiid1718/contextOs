@@ -7,28 +7,28 @@ const RedisStatsPanel = ({ stats }) => {
   );
 
   return (
-    <section className="rounded-2xl border border-[#1e2a38] bg-[#0d1117] p-4">
-      <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#cbd5e1]">Redis Stats</h3>
+    <section className="rounded-xl border border-[#1e2a38] bg-[#0d1117] p-3">
+      <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-[#cbd5e1]">Redis Stats</h3>
 
-      <div className="mt-4 space-y-4">
+      <div className="mt-3 space-y-3">
         <div>
-          <div className="flex items-center justify-between text-xs text-[#94a3b8]">
+          <div className="flex items-center justify-between text-[11px] text-[#94a3b8]">
             <span>Hit rate</span>
             <span>{safeStats.hitRate}%</span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#1e293b]">
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#1e293b]">
             <div className="h-full bg-[#22d3a0]" style={{ width: `${hitRateWidth}%` }} />
           </div>
         </div>
 
         <div>
-          <div className="flex items-center justify-between text-xs text-[#94a3b8]">
+          <div className="flex items-center justify-between text-[11px] text-[#94a3b8]">
             <span>Memory</span>
             <span>
               {safeStats.memUsedGb}GB / {safeStats.memTotalGb}GB
             </span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#1e293b]">
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#1e293b]">
             <div
               className={`h-full ${memPct > 90 ? 'bg-[#f43f5e]' : memPct > 75 ? 'bg-[#f59e0b]' : 'bg-[#38bdf8]'}`}
               style={{ width: `${memPct}%` }}
@@ -36,7 +36,7 @@ const RedisStatsPanel = ({ stats }) => {
           </div>
         </div>
 
-        <p className="text-xs text-[#94a3b8]">TTL avg {safeStats.ttlAvg}s - volatile-lru policy</p>
+        <p className="text-[11px] text-[#94a3b8]">TTL avg {safeStats.ttlAvg}s - volatile-lru policy</p>
       </div>
     </section>
   );
