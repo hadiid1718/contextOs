@@ -4,10 +4,12 @@ import Footer from './components/Footer';
 import NotificationDrawer from './components/notifications/NotificationDrawer';
 import NotificationToastStack from './components/notifications/NotificationToastStack';
 import ProtectedRoute from './components/ProtectedRoute';
+import BillingUpgradeModal from './components/billing/BillingUpgradeModal';
 import TopBar from './components/TopBar';
 import useAuth from './hooks/useAuth';
 import useNotifications from './hooks/useNotifications';
 import Billing from './pages/Billing';
+import BillingSettings from './pages/BillingSettings';
 import Dashboard from './pages/Dashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import Graph from './pages/Graph';
@@ -86,6 +88,7 @@ const AppShellWrapper = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/settings/team" element={<TeamSettings />} />
             <Route path="/settings/notifications" element={<NotificationSettings />} />
+            <Route path="/settings/billing" element={<BillingSettings />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>
@@ -93,6 +96,7 @@ const AppShellWrapper = () => {
       <Footer />
       <NotificationDrawer />
       <NotificationToastStack />
+      <BillingUpgradeModal />
     </div>
   );
 };

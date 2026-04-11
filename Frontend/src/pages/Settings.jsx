@@ -21,6 +21,14 @@ const Settings = () => {
             <p className="font-medium">Notification Preferences</p>
             <p className="mt-1 text-xs text-text2">Toggle toast/drawer categories and email digest frequency.</p>
           </Link>
+
+          <Link
+            className="rounded-xl border border-border bg-bg3/40 px-4 py-3 text-sm text-text transition hover:border-border-strong hover:bg-surface"
+            to="/settings/billing"
+          >
+            <p className="font-medium">Billing Settings</p>
+            <p className="mt-1 text-xs text-text2">Usage meter, invoices, and Stripe billing portal access.</p>
+          </Link>
         </div>
       </Card>
     </div>

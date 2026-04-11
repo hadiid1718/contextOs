@@ -7,6 +7,7 @@ export { default as Integrations } from './Integrations';
 export { default as Graph } from './Graph';
 export { default as Notifications } from './Notifications';
 export { default as Billing } from './Billing';
+export { default as BillingSettings } from './BillingSettings';
 export { default as Settings } from './Settings';
 export { default as NotificationSettings } from './NotificationSettings';
 export { default as TeamSettings } from './TeamSettings';

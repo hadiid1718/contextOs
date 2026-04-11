@@ -27,12 +27,13 @@ const normalizeText = (value) => String(value || '').trim().toLowerCase();
 
 const normalizeQueryError = (error) => {
   if (!error) return 'Unable to run the AI query right now.';
+  const status = error?.response?.status || error?.status;
   if (error?.name === 'AbortError') return 'The query stream was stopped.';
   if (error?.response?.data?.message) return error.response.data.message;
-  if (error?.response?.status === 401) return 'Your session expired. Please sign in again to continue querying.';
-  if (error?.response?.status === 403) return 'You do not have access to query this organisation context.';
-  if (error?.response?.status === 503) return 'The AI query module is temporarily disabled.';
-  if (error?.response?.status === 429) return 'Too many queries were sent. Please wait a moment and try again.';
+  if (status === 401) return 'Your session expired. Please sign in again to continue querying.';
+  if (status === 403) return 'You do not have access to query this organisation context.';
+  if (status === 503) return 'The AI query module is temporarily disabled.';
+  if (status === 429) return 'Monthly AI query limit reached. Upgrade to continue.';
   if (error?.details?.reason) return error.details.reason;
   if (error?.message) return error.message;
   return 'Unable to run the AI query right now.';

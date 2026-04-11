@@ -1,4 +1,5 @@
 import axiosInstance from '../lib/axios';
+import useBillingStore from '../store/billingStore';
 
 const getBaseUrl = () => {
   return String(axiosInstance.defaults.baseURL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001/api/v1').replace(/\/+$/, '');
@@ -96,6 +97,14 @@ const run = async ({
     const error = new Error(errorPayload?.message || 'Unable to run query');
     error.status = response.status;
     error.details = errorPayload?.details || errorPayload?.errors || null;
+
+    if (response.status === 429) {
+      useBillingStore.getState().openUpgradeModal({
+        message: errorPayload?.message || 'Upgrade to continue.',
+        details: errorPayload?.details || errorPayload?.errors || null,
+      });
+    }
+
     if (typeof onError === 'function') {
       onError(error);
     }

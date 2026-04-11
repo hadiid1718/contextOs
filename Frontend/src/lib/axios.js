@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useBillingStore from '../store/billingStore';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001/api/v1';
 
@@ -22,7 +23,16 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const request = error?.config;
-    if (!request || request._retry || error?.response?.status !== 401) {
+    const status = error?.response?.status;
+
+    if (status === 429) {
+      useBillingStore.getState().openUpgradeModal({
+        message: error?.response?.data?.message || 'Upgrade to continue.',
+        details: error?.response?.data?.details || null,
+      });
+    }
+
+    if (!request || request._retry || status !== 401) {
       return Promise.reject(error);
     }
 
