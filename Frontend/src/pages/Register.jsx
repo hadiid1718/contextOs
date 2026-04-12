@@ -85,7 +85,10 @@ const Register = () => {
         orgName: values.orgName,
         role: values.role,
       });
-      navigate('/dashboard', { replace: true });
+      navigate('/check-email', {
+        replace: true,
+        state: { email: values.email },
+      });
     } catch (error) {
       setApiError(error?.response?.data?.message || 'Registration failed');
     }

@@ -24,6 +24,14 @@ const authService = {
     const { data } = await axiosInstance.post('/auth/register', payload);
     return data;
   },
+  verifyEmail: async (token) => {
+    const { data } = await axiosInstance.get(`/auth/verify-email/${token}`);
+    return data;
+  },
+  resendVerification: async (payload) => {
+    const { data } = await axiosInstance.post('/auth/resend-verification', payload);
+    return data;
+  },
   forgotPassword: async (payload) => {
     const { data } = await axiosInstance.post('/auth/forgot-password', payload);
     return data;

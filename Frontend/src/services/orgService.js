@@ -1,6 +1,10 @@
 import axiosInstance from '../lib/axios';
 
 const orgService = {
+  create: async (payload) => {
+    const { data } = await axiosInstance.post('/organisations', payload);
+    return data;
+  },
   list: async () => {
     const { data } = await axiosInstance.get('/organisations');
     return data;

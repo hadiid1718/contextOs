@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, CircleAlert, CircleCheck, Plug, RefreshCcw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import Badge from '../components/Badge';
@@ -23,6 +23,7 @@ const buildOAuthUrl = (provider) => {
 const Integrations = () => {
   const { organisations, currentOrg, setActiveOrg } = useOrg();
   const queryClient = useQueryClient();
+  const activatedOrgRef = useRef(null);
   const [contextReady, setContextReady] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [feedback, setFeedback] = useState('');
@@ -40,14 +41,26 @@ const Integrations = () => {
 
     const activateContext = async () => {
       if (!currentOrg?.org_id) {
+        activatedOrgRef.current = null;
         if (mounted) setContextReady(false);
         return;
       }
 
-      try {
-        await setActiveOrg(currentOrg);
-      } finally {
+      if (activatedOrgRef.current === currentOrg.org_id) {
         if (mounted) setContextReady(true);
+        return;
+      }
+
+      const activated = await setActiveOrg(currentOrg);
+
+      if (mounted) {
+        if (!activated) {
+          setContextReady(false);
+          return;
+        }
+
+        activatedOrgRef.current = currentOrg.org_id;
+        setContextReady(true);
       }
     };
 

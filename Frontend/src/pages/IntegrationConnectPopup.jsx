@@ -1,59 +1,119 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Badge from '../components/Badge';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Spinner from '../components/Spinner';
+import useOrg from '../hooks/useOrg';
 import useIntegrations, { integrationCatalog } from '../hooks/useIntegrations';
 
-const defaultTemplates = {
+const providerTemplates = {
   github: {
     accountName: 'GitHub account',
-    externalId: '',
-    scopes: 'repo,read:org',
-    metadataJson: '{\n  "repositories": ["owner/repository"]\n}',
-    credentialsJson: '{\n  "accessToken": "ghp_your_token_here"\n}',
+    tokenLabel: 'Access token',
+    tokenKey: 'accessToken',
+    tokenPlaceholder: 'ghp_...',
+    baseUrl: '',
+    defaultScopes: ['repo', 'read:org'],
   },
   jira: {
     accountName: 'Jira account',
-    externalId: '',
-    scopes: 'read:jira-work,read:jira-user',
-    metadataJson: '{\n  "projects": ["OPS"]\n}',
-    credentialsJson: '{\n  "accessToken": "your_jira_token",\n  "baseUrl": "https://your-domain.atlassian.net"\n}',
+    requiresEmail: true,
+    emailLabel: 'Atlassian email',
+    emailPlaceholder: 'you@company.com',
+    tokenLabel: 'API token',
+    tokenKey: 'accessToken',
+    tokenPlaceholder: 'Paste Jira API token',
+    baseUrl: 'https://your-domain.atlassian.net',
+    defaultScopes: ['read:jira-work', 'read:jira-user'],
   },
   slack: {
     accountName: 'Slack workspace',
-    externalId: '',
-    scopes: 'channels:history,groups:history,chat:write',
-    metadataJson: '{\n  "channels": ["general"]\n}',
-    credentialsJson: '{\n  "token": "xoxb-your-token",\n  "baseUrl": "https://slack.com/api"\n}',
+    tokenLabel: 'Bot token',
+    tokenKey: 'token',
+    tokenPlaceholder: 'xoxb-...',
+    baseUrl: 'https://slack.com/api',
+    defaultScopes: ['channels:history', 'groups:history', 'chat:write'],
   },
   confluence: {
     accountName: 'Confluence space',
-    externalId: '',
-    scopes: 'read:confluence-content.all',
-    metadataJson: '{\n  "spaces": ["ENG"]\n}',
-    credentialsJson: '{\n  "accessToken": "your_confluence_token",\n  "baseUrl": "https://your-domain.atlassian.net/wiki/rest/api"\n}',
+    requiresEmail: true,
+    emailLabel: 'Atlassian email',
+    emailPlaceholder: 'you@company.com',
+    tokenLabel: 'API token',
+    tokenKey: 'accessToken',
+    tokenPlaceholder: 'Paste Confluence API token',
+    baseUrl: 'https://your-domain.atlassian.net/wiki/rest/api',
+    defaultScopes: ['read:confluence-content.all'],
   },
 };
-
-const parseCsv = (value) =>
-  String(value || '')
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-const prettyLabel = (value) => value.charAt(0).toUpperCase() + value.slice(1);
 
 const IntegrationConnectPopup = () => {
   const { provider = '' } = useParams();
   const navigate = useNavigate();
+  const activatedOrgRef = useRef(null);
+  const {
+    organisations,
+    currentOrg,
+    setActiveOrg,
+    isLoading: organisationsLoading,
+  } = useOrg();
   const { saveIntegration, isSaving } = useIntegrations();
   const providerConfig = useMemo(() => integrationCatalog.find((item) => item.provider === provider), [provider]);
-  const initialTemplate = useMemo(() => defaultTemplates[provider] || defaultTemplates.github, [provider]);
+  const providerTemplate = useMemo(() => providerTemplates[provider] || providerTemplates.github, [provider]);
   const [error, setError] = useState('');
-  const [form, setForm] = useState(initialTemplate);
+  const [contextReady, setContextReady] = useState(false);
+  const [contextError, setContextError] = useState('');
+  const [form, setForm] = useState(() => ({
+    accountName: providerTemplate.accountName,
+    email: '',
+    token: '',
+    baseUrl: providerTemplate.baseUrl,
+  }));
+
+  useEffect(() => {
+    let mounted = true;
+
+    const ensureOrganisationContext = async () => {
+      const targetOrg = currentOrg || organisations[0];
+
+      if (!targetOrg?.org_id) {
+        activatedOrgRef.current = null;
+        if (!organisationsLoading && mounted) {
+          setContextReady(false);
+          setContextError('No organisation found. Please create or select an organisation first.');
+        }
+        return;
+      }
+
+      if (activatedOrgRef.current === targetOrg.org_id) {
+        if (mounted) {
+          setContextReady(true);
+        }
+        return;
+      }
+
+      setContextError('');
+      const activated = await setActiveOrg(targetOrg);
+
+      if (mounted) {
+        if (!activated) {
+          setContextReady(false);
+          setContextError('Could not activate organisation context. Re-select your organisation and try again.');
+          return;
+        }
+
+        activatedOrgRef.current = targetOrg.org_id;
+        setContextReady(true);
+      }
+    };
+
+    void ensureOrganisationContext();
+
+    return () => {
+      mounted = false;
+    };
+  }, [currentOrg, organisations, organisationsLoading, setActiveOrg]);
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -71,12 +131,21 @@ const IntegrationConnectPopup = () => {
     return () => window.removeEventListener('message', handleMessage);
   }, [provider]);
 
+  const handleCancel = () => {
+    if (window.opener) {
+      window.close();
+      return;
+    }
+
+    navigate('/integrations', { replace: true });
+  };
+
   if (!providerConfig) {
     return (
       <div className="min-h-screen bg-bg px-4 py-10 text-text">
         <Card title="Unknown integration" description="The selected provider is not available.">
           <p className="text-sm text-text2">Choose GitHub, Jira, Slack, or Confluence.</p>
-          <Button type="button" className="mt-4" onClick={() => navigate('/integrations', { replace: true })}>
+          <Button type="button" className="mt-4" onClick={handleCancel}>
             Back to integrations
           </Button>
         </Card>
@@ -88,29 +157,48 @@ const IntegrationConnectPopup = () => {
     event.preventDefault();
     setError('');
 
-    let metadata = {};
-    let credentials = {};
-
-    try {
-      metadata = form.metadataJson ? JSON.parse(form.metadataJson) : {};
-    } catch {
-      setError('Metadata must be valid JSON.');
+    if (!contextReady) {
+      setError(contextError || 'Organisation context is still loading. Please try again in a moment.');
       return;
     }
 
-    try {
-      credentials = form.credentialsJson ? JSON.parse(form.credentialsJson) : {};
-    } catch {
-      setError('Credentials must be valid JSON.');
+    const accountName = form.accountName.trim();
+    const email = form.email.trim();
+    const tokenValue = form.token.trim();
+    const baseUrl = form.baseUrl.trim();
+
+    if (!accountName) {
+      setError('Account name is required.');
       return;
+    }
+
+    if (!tokenValue) {
+      setError(`${providerTemplate.tokenLabel} is required.`);
+      return;
+    }
+
+    if (providerTemplate.requiresEmail && !email) {
+      setError('Atlassian email is required for this provider.');
+      return;
+    }
+
+    const credentials = {
+      [providerTemplate.tokenKey]: tokenValue,
+    };
+
+    if (providerTemplate.requiresEmail) {
+      credentials.email = email;
+    }
+
+    if (baseUrl) {
+      credentials.baseUrl = baseUrl;
     }
 
     const payload = {
-      accountName: form.accountName.trim(),
-      externalId: form.externalId.trim() || undefined,
+      accountName,
       status: 'active',
-      scopes: parseCsv(form.scopes),
-      metadata,
+      scopes: providerTemplate.defaultScopes,
+      metadata: baseUrl ? { baseUrl } : {},
       credentials,
     };
 
@@ -136,15 +224,8 @@ const IntegrationConnectPopup = () => {
       <div className="mx-auto max-w-2xl">
         <Card
           title={`Connect ${providerConfig.label}`}
-          description="Save the provider credentials and metadata so ingestion can start polling and accepting webhooks."
+          description="Enter the basic credentials below, then save the connection."
         >
-          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-text2">
-            <Badge tone="warning">Popup window</Badge>
-            <span>{prettyLabel(providerConfig.connectMode)} flow</span>
-            <span>•</span>
-            <span>{providerConfig.webhookPath || 'Scheduled polling only'}</span>
-          </div>
-
           <form className="space-y-4" onSubmit={handleSubmit}>
             <Input
               label="Account name"
@@ -153,54 +234,52 @@ const IntegrationConnectPopup = () => {
               required
             />
 
+            {providerTemplate.requiresEmail ? (
+              <Input
+                label={providerTemplate.emailLabel}
+                type="email"
+                value={form.email}
+                onChange={(event) => setForm((value) => ({ ...value, email: event.target.value }))}
+                placeholder={providerTemplate.emailPlaceholder}
+                required
+              />
+            ) : null}
+
             <Input
-              label="External account ID"
-              value={form.externalId}
-              onChange={(event) => setForm((value) => ({ ...value, externalId: event.target.value }))}
-              placeholder="Optional"
+              label={providerTemplate.tokenLabel}
+              type="password"
+              enablePasswordToggle
+              value={form.token}
+              onChange={(event) => setForm((value) => ({ ...value, token: event.target.value }))}
+              placeholder={providerTemplate.tokenPlaceholder}
+              required
             />
 
             <Input
-              label="Scopes"
-              value={form.scopes}
-              onChange={(event) => setForm((value) => ({ ...value, scopes: event.target.value }))}
-              placeholder="Comma-separated scopes"
+              label="Base URL (optional)"
+              value={form.baseUrl}
+              onChange={(event) => setForm((value) => ({ ...value, baseUrl: event.target.value }))}
+              placeholder="https://..."
             />
 
-            <label className="block text-sm text-text2">
-              <span className="mb-1 block font-medium">Metadata JSON</span>
-              <textarea
-                rows={5}
-                className="w-full rounded-lg border border-border bg-bg3 px-3 py-2 text-sm text-text outline-none ring-brand transition placeholder:text-text3 focus:border-border-strong focus:ring-1"
-                value={form.metadataJson}
-                onChange={(event) => setForm((value) => ({ ...value, metadataJson: event.target.value }))}
-              />
-            </label>
-
-            <label className="block text-sm text-text2">
-              <span className="mb-1 block font-medium">Credentials JSON</span>
-              <textarea
-                rows={8}
-                className="w-full rounded-lg border border-border bg-bg3 px-3 py-2 text-sm text-text outline-none ring-brand transition placeholder:text-text3 focus:border-border-strong focus:ring-1"
-                value={form.credentialsJson}
-                onChange={(event) => setForm((value) => ({ ...value, credentialsJson: event.target.value }))}
-              />
-            </label>
+            {contextError ? <p className="text-sm text-warning">{contextError}</p> : null}
 
             {error ? <p className="text-sm text-error">{error}</p> : null}
 
             <div className="flex flex-wrap items-center gap-2 pt-2">
-              <Button type="submit" disabled={isSaving}>
+              <Button type="submit" disabled={isSaving || !contextReady}>
                 {isSaving ? (
                   <span className="flex items-center gap-2">
                     <Spinner size={4} />
                     Saving...
                   </span>
+                ) : !contextReady ? (
+                  'Preparing context...'
                 ) : (
-                  'Save connection'
+                  'Save Connection'
                 )}
               </Button>
-              <Button type="button" variant="secondary" onClick={() => navigate('/integrations', { replace: true })}>
+              <Button type="button" variant="secondary" onClick={handleCancel}>
                 Cancel
               </Button>
             </div>

@@ -84,6 +84,7 @@ const hashKey = (entry) => normalizeText(entry.question);
 
 const Query = () => {
   const { organisations, currentOrg, setActiveOrg } = useOrg();
+  const activatedOrgRef = useRef(null);
   const [question, setQuestion] = useState('');
   const [historyItems, setHistoryItems] = useState([]);
   const [selectedHistoryId, setSelectedHistoryId] = useState(null);
@@ -94,9 +95,29 @@ const Query = () => {
   const activeRunIdRef = useRef(null);
 
   useEffect(() => {
-    if (currentOrg?.org_id) {
-      void setActiveOrg(currentOrg);
-    }
+    let mounted = true;
+
+    const activateContext = async () => {
+      if (!currentOrg?.org_id) {
+        activatedOrgRef.current = null;
+        return;
+      }
+
+      if (activatedOrgRef.current === currentOrg.org_id) {
+        return;
+      }
+
+      const activated = await setActiveOrg(currentOrg);
+      if (mounted && activated) {
+        activatedOrgRef.current = currentOrg.org_id;
+      }
+    };
+
+    void activateContext();
+
+    return () => {
+      mounted = false;
+    };
   }, [currentOrg, setActiveOrg]);
 
   useEffect(() => {

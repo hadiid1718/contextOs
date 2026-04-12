@@ -38,9 +38,37 @@ const useOrg = () => {
   const selectOrgMutation = useMutation({
     mutationFn: orgService.selectContext,
   });
+  const selectOrg = selectOrgMutation.mutateAsync;
 
   const organisations = useMemo(() => {
-    return orgsQuery.data?.organisations || orgsQuery.data?.data || orgsQuery.data || [];
+    const raw = orgsQuery.data?.organisations || orgsQuery.data?.data || orgsQuery.data || [];
+    if (!Array.isArray(raw)) {
+      return [];
+    }
+
+    const sorted = [...raw].sort((left, right) => {
+      const leftTs = new Date(left?.createdAt || 0).getTime();
+      const rightTs = new Date(right?.createdAt || 0).getTime();
+      return rightTs - leftTs;
+    });
+
+    const seen = new Set();
+    const deduped = [];
+
+    for (const org of sorted) {
+      if (!org?.org_id) continue;
+
+      const nameKey = String(org.name || '').trim().toLowerCase();
+      const dedupeKey = nameKey || `org:${org.org_id}`;
+      if (seen.has(dedupeKey)) {
+        continue;
+      }
+
+      seen.add(dedupeKey);
+      deduped.push(org);
+    }
+
+    return deduped;
   }, [orgsQuery.data]);
 
   useEffect(() => {
@@ -56,23 +84,26 @@ const useOrg = () => {
       }
     }
 
-    setCurrentOrg(organisations[0]);
+    const defaultOrg = organisations[0];
+    setCurrentOrg(defaultOrg);
   }, [currentOrg, organisations, setCurrentOrg]);
 
   const setActiveOrg = useCallback(async (organisation) => {
-    if (!organisation?.org_id) return;
+    if (!organisation?.org_id) return false;
     setCurrentOrg(organisation);
 
     try {
-      const payload = await selectOrgMutation.mutateAsync(organisation.org_id);
+      const payload = await selectOrg(organisation.org_id);
       const token = payload?.accessToken || payload?.data?.accessToken;
       if (token) {
         localStorage.setItem('accessToken', token);
       }
+      return true;
     } catch {
       // Keep local active state so users can continue working in UI-only flows.
+      return false;
     }
-  }, [selectOrgMutation, setCurrentOrg]);
+  }, [selectOrg, setCurrentOrg]);
 
   return {
     organisations,

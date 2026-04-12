@@ -14,6 +14,7 @@ import useAuth from './hooks/useAuth';
 import useNotifications from './hooks/useNotifications';
 import Billing from './pages/Billing';
 import BillingSettings from './pages/BillingSettings';
+import CheckEmail from './pages/CheckEmail';
 import Dashboard from './pages/Dashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import Graph from './pages/Graph';
@@ -31,6 +32,7 @@ import Home from './pages/Home';
 import IntegrationConnectPopup from './pages/IntegrationConnectPopup';
 import OAuthFailure from './pages/OAuthFailure';
 import OAuthSuccess from './pages/OAuthSuccess';
+import VerifyEmail from './pages/VerifyEmail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 
@@ -52,6 +54,8 @@ const App = () => {
       <Route path="/auth/failure" element={<OAuthFailure />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/check-email" element={<CheckEmail />} />
+      <Route path="/verify-email/:token" element={<VerifyEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/invite/:token" element={<InviteResponse />} />
       <Route

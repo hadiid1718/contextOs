@@ -22,24 +22,32 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [apiError, setApiError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [shaking, setShaking] = useState(false);
   const [oauthLoading, setOauthLoading] = useState('');
+  const [resendPending, setResendPending] = useState(false);
   const { login, silentRefresh } = useAuth();
   const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const loggedOutNotice = params.get('loggedOut') === '1';
   const oauthFailedNotice = params.get('oauth') === 'failed';
+  const verifyPendingNotice = params.get('verify') === 'pending';
+  const prefetchedEmail = location.state?.email || '';
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      email: prefetchedEmail,
       password: '',
     },
   });
+
+  const showResendVerification =
+    verifyPendingNotice || apiError.toLowerCase().includes('not verified');
 
   const runShake = () => {
     setShaking(true);
@@ -65,19 +73,53 @@ const Login = () => {
 
   const onSubmit = async (values) => {
     setApiError('');
+    setInfoMessage('');
     try {
       const response = await login(values);
       const payload = response?.data || response;
       if (payload?.user?.emailVerified === false) {
-        setApiError('Email is not verified');
+        setApiError('Email is not verified. Please verify your inbox link first.');
         runShake();
         return;
       }
       const redirectTo = location.state?.from || '/dashboard';
       navigate(redirectTo, { replace: true });
     } catch (error) {
-      setApiError(error?.response?.data?.message || error?.message || 'Login failed');
+      const message = error?.response?.data?.message || error?.message || 'Login failed';
+      if (message.toLowerCase().includes('not verified')) {
+        setApiError('Email is not verified. Please verify your inbox link first.');
+      } else {
+        setApiError(message);
+      }
       runShake();
+    }
+  };
+
+  const handleResendVerification = async () => {
+    const email = (getValues('email') || '').trim();
+    if (!email) {
+      setApiError('Enter your email first to resend the verification link.');
+      runShake();
+      return;
+    }
+
+    setResendPending(true);
+    setApiError('');
+    setInfoMessage('');
+
+    try {
+      const response = await authService.resendVerification({ email });
+      setInfoMessage(
+        response?.message ||
+          'If the account exists and is unverified, a verification email has been sent.'
+      );
+    } catch (error) {
+      setApiError(
+        error?.response?.data?.message || 'Unable to resend verification email right now.'
+      );
+      runShake();
+    } finally {
+      setResendPending(false);
     }
   };
 
@@ -164,6 +206,11 @@ const Login = () => {
         <div className={`w-full ${shaking ? 'animate-shake' : ''}`}>
           <AuthLogo />
           <Card title="Sign in" description="Use your workspace credentials to continue.">
+            {verifyPendingNotice ? (
+              <p className="mb-3 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">
+                Account created. Verify your email first, then sign in.
+              </p>
+            ) : null}
             {loggedOutNotice ? (
               <p className="mb-3 rounded-lg border border-success/40 bg-success/10 px-3 py-2 text-sm text-success">
                 You are logged out. Dashboard access requires a signed-in account.
@@ -186,9 +233,21 @@ const Login = () => {
                 {...register('password')}
               />
               {apiError ? <p className="text-sm text-error">{apiError}</p> : null}
+              {infoMessage ? <p className="text-sm text-success">{infoMessage}</p> : null}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
               </Button>
+              {showResendVerification ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full"
+                  onClick={handleResendVerification}
+                  disabled={resendPending || isSubmitting}
+                >
+                  {resendPending ? 'Sending verification email...' : 'Resend verification email'}
+                </Button>
+              ) : null}
             </form>
 
             <div className="my-4 flex items-center gap-3">

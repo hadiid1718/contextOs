@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Activity, AlertTriangle, RefreshCcw, Sparkles } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import Badge from '../components/Badge';
@@ -51,6 +51,7 @@ const dedupeNodes = (nodes = []) => {
 const Graph = () => {
   const queryClient = useQueryClient();
   const { organisations, currentOrg, setActiveOrg } = useOrg();
+  const activatedOrgRef = useRef(null);
   const [contextReady, setContextReady] = useState(false);
   const [filters, setFilters] = useState(defaultFilters);
   const [activeNodeId, setActiveNodeId] = useState(null);
@@ -68,14 +69,26 @@ const Graph = () => {
 
     const activateContext = async () => {
       if (!currentOrg?.org_id) {
+        activatedOrgRef.current = null;
         if (mounted) setContextReady(false);
         return;
       }
 
-      try {
-        await setActiveOrg(currentOrg);
-      } finally {
+      if (activatedOrgRef.current === currentOrg.org_id) {
         if (mounted) setContextReady(true);
+        return;
+      }
+
+      const activated = await setActiveOrg(currentOrg);
+
+      if (mounted) {
+        if (!activated) {
+          setContextReady(false);
+          return;
+        }
+
+        activatedOrgRef.current = currentOrg.org_id;
+        setContextReady(true);
       }
     };
 

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Copy, MailPlus, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Badge from '../components/Badge';
 import Button from '../components/Button';
 import Card from '../components/Card';
@@ -34,6 +34,7 @@ const countdownLabel = (expiresAt, now) => {
 
 const TeamSettings = () => {
   const { organisations, currentOrg, setActiveOrg } = useOrg();
+  const activatedOrgRef = useRef(null);
   const [contextReady, setContextReady] = useState(false);
   const [members, setMembers] = useState([]);
   const [openInviteModal, setOpenInviteModal] = useState(false);
@@ -52,14 +53,26 @@ const TeamSettings = () => {
 
     const activateContext = async () => {
       if (!currentOrg?.org_id) {
+        activatedOrgRef.current = null;
         if (mounted) setContextReady(false);
         return;
       }
 
-      try {
-        await setActiveOrg(currentOrg);
-      } finally {
+      if (activatedOrgRef.current === currentOrg.org_id) {
         if (mounted) setContextReady(true);
+        return;
+      }
+
+      const activated = await setActiveOrg(currentOrg);
+
+      if (mounted) {
+        if (!activated) {
+          setContextReady(false);
+          return;
+        }
+
+        activatedOrgRef.current = currentOrg.org_id;
+        setContextReady(true);
       }
     };
 
