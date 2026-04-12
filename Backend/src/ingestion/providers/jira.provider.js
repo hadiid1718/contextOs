@@ -1,6 +1,10 @@
 import { env } from '../../config/env.js';
 import { normalizeEvent } from '../normalizers/eventNormalizer.js';
-import { requestJson, buildBearerHeaders } from './providerHttpClient.js';
+import {
+  requestJson,
+  buildBearerHeaders,
+  buildBasicAuthHeaders,
+} from './providerHttpClient.js';
 
 const buildJqlSince = since => {
   const date = new Date(since);
@@ -22,13 +26,24 @@ export const pollJiraCredential = async ({
     return [];
   }
 
+  const emailCandidate =
+    decryptedCredentials?.email ||
+    decryptedCredentials?.username ||
+    credential?.externalId ||
+    credential?.accountName;
+  const atlassianEmail = String(emailCandidate || '').trim();
+  const useBasicAuth = atlassianEmail.includes('@');
+  const headers = useBasicAuth
+    ? buildBasicAuthHeaders(atlassianEmail, token)
+    : buildBearerHeaders(token);
+
   const baseURL = decryptedCredentials?.baseUrl || env.jiraApiBaseUrl;
   const jql = buildJqlSince(since);
   const data = await requestJson(
     {
       baseURL,
       url: '/rest/api/3/search',
-      headers: buildBearerHeaders(token),
+      headers,
       params: {
         jql,
         maxResults: 50,

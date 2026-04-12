@@ -1,4 +1,6 @@
 import { env } from '../config/env.js';
+import { Membership } from '../models/Membership.js';
+import { Organisation } from '../models/Organisation.js';
 import { PasswordResetToken } from '../models/PasswordResetToken.js';
 import { RefreshToken } from '../models/RefreshToken.js';
 import { User } from '../models/User.js';
@@ -35,6 +37,97 @@ const buildAuthPayload = (user, orgId = null) => {
 const refreshExpiryDate = () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 const verificationExpiryDate = () => new Date(Date.now() + 24 * 60 * 60 * 1000);
 const passwordResetExpiryDate = () => new Date(Date.now() + 60 * 60 * 1000);
+
+const slugifyOrganisation = value =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120);
+
+const buildSlugCandidate = (baseSlug, attempt) => {
+  if (attempt === 0) {
+    return baseSlug;
+  }
+
+  const suffix = `${Date.now().toString(36)}${attempt}`;
+  const maxBaseLength = Math.max(1, 120 - suffix.length - 1);
+  return `${baseSlug.slice(0, maxBaseLength)}-${suffix}`;
+};
+
+const createOrganisationForUser = async (user, orgName) => {
+  const trimmedOrgName = String(orgName || '').trim();
+  if (!trimmedOrgName) {
+    return null;
+  }
+
+  const baseSlug =
+    slugifyOrganisation(trimmedOrgName) || `org-${Date.now().toString(36)}`;
+
+  let organisation = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const slug = buildSlugCandidate(baseSlug, attempt);
+
+    try {
+      organisation = await Organisation.create({
+        name: trimmedOrgName,
+        slug,
+        ownerId: user.id,
+      });
+      break;
+    } catch (error) {
+      if (error?.code === 11000) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  if (!organisation) {
+    throw new AppError('Unable to create organisation', 409);
+  }
+
+  await Membership.create({
+    org_id: organisation.org_id,
+    user: user.id,
+    email: user.email,
+    role: 'owner',
+    status: 'active',
+    invitedBy: user.id,
+    joinedAt: new Date(),
+  });
+
+  const hasMembershipReference = user.organizations.some(
+    membership => membership.orgId === organisation.org_id
+  );
+
+  if (!hasMembershipReference) {
+    user.organizations.push({
+      orgId: organisation.org_id,
+      role: 'owner',
+    });
+    await user.save();
+  }
+
+  return organisation;
+};
+
+const resolvePrimaryOrgId = async user => {
+  const membership = await Membership.findOne({
+    user: user.id,
+    status: 'active',
+  })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  if (membership?.org_id) {
+    return membership.org_id;
+  }
+
+  return user.organizations?.[0]?.orgId || null;
+};
 
 const issueAuthTokens = async (
   user,
@@ -80,7 +173,7 @@ const sendVerificationEmail = async user => {
   });
 
   try {
-    const verificationUrl = `${env.apiBaseUrl}/api/v1/auth/verify-email/${rawToken}`;
+    const verificationUrl = `${env.appOrigin}/verify-email/${rawToken}`;
     await sendMail({
       to: user.email,
       subject: 'Verify your ContextOS account',
@@ -128,7 +221,7 @@ const buildAuthResponse = user => ({
 });
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password, role, organizationId } = req.body;
+  const { name, email, password, role, organizationId, orgName } = req.body;
 
   const existingUser = await User.findOne({ email: email.toLowerCase() });
   if (existingUser) {
@@ -147,6 +240,16 @@ export const register = asyncHandler(async (req, res) => {
     organizations,
   });
 
+  if (!organizationId && orgName) {
+    try {
+      await createOrganisationForUser(user, orgName);
+    } catch (error) {
+      logger.warn(
+        `Organisation bootstrap failed for ${user.email}: ${error.message}`
+      );
+    }
+  }
+
   let verificationToken = null;
   try {
     verificationToken = await sendVerificationEmail(user);
@@ -157,7 +260,12 @@ export const register = asyncHandler(async (req, res) => {
     // User creation continues, verification can be sent later via resend endpoint
   }
 
-  const { accessToken, refreshToken } = await issueAuthTokens(user);
+  const primaryOrgId = await resolvePrimaryOrgId(user);
+  const { accessToken, refreshToken } = await issueAuthTokens(
+    user,
+    null,
+    primaryOrgId
+  );
   setAuthCookies(res, accessToken, refreshToken);
 
   res.status(201).json({
@@ -201,7 +309,12 @@ export const login = asyncHandler(async (req, res) => {
   user.lastLoginAt = new Date();
   await user.save();
 
-  const { accessToken, refreshToken } = await issueAuthTokens(user);
+  const primaryOrgId = await resolvePrimaryOrgId(user);
+  const { accessToken, refreshToken } = await issueAuthTokens(
+    user,
+    null,
+    primaryOrgId
+  );
   setAuthCookies(res, accessToken, refreshToken);
 
   res.status(200).json({
@@ -301,11 +414,24 @@ export const verifyEmail = asyncHandler(async (req, res) => {
   }
 
   user.emailVerified = true;
+  user.lastLoginAt = new Date();
   await user.save();
 
   await VerificationToken.deleteMany({ user: user.id });
 
-  res.status(200).json({ message: 'Email verified successfully' });
+  const primaryOrgId = await resolvePrimaryOrgId(user);
+  const { accessToken, refreshToken } = await issueAuthTokens(
+    user,
+    null,
+    primaryOrgId
+  );
+  setAuthCookies(res, accessToken, refreshToken);
+
+  res.status(200).json({
+    message: 'Email verified successfully',
+    user: buildAuthResponse(user),
+    accessToken,
+  });
 });
 
 export const resendVerification = asyncHandler(async (req, res) => {

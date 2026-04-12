@@ -9,6 +9,7 @@ export const registerSchema = z.object({
     password: z.string().min(8).max(128),
     role: z.enum(roles).optional(),
     organizationId: z.string().min(1).optional(),
+    orgName: z.string().min(2).max(120).optional(),
   }),
   query: z.object({}).optional().default({}),
   params: z.object({}).optional().default({}),

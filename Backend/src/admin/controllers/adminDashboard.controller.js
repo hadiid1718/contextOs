@@ -9,7 +9,7 @@ import {
   getPodsData,
   getRedisStatsData,
   getServiceHealthData,
-} from '../services/adminMockData.service.js';
+} from '../services/adminDashboardData.service.js';
 
 const auditView = (req, meta) =>
   writeAdminAuditLog({
@@ -20,37 +20,37 @@ const auditView = (req, meta) =>
   });
 
 export const getGoldenSignals = asyncHandler(async (req, res) => {
-  const data = getGoldenSignalsData();
+  const data = await getGoldenSignalsData();
   await auditView(req, { panel: 'golden-signals' });
   res.status(200).json(data);
 });
 
 export const getServiceHealth = asyncHandler(async (req, res) => {
-  const data = getServiceHealthData();
+  const data = await getServiceHealthData();
   await auditView(req, { panel: 'service-health' });
   res.status(200).json(data);
 });
 
 export const getOrgRateLimits = asyncHandler(async (req, res) => {
-  const data = getOrgRateLimitsData();
+  const data = await getOrgRateLimitsData();
   await auditView(req, { panel: 'org-rate-limits' });
   res.status(200).json(data);
 });
 
 export const getKafkaLag = asyncHandler(async (req, res) => {
-  const data = getKafkaLagData();
+  const data = await getKafkaLagData();
   await auditView(req, { panel: 'kafka-lag' });
   res.status(200).json(data);
 });
 
 export const getRedisStats = asyncHandler(async (req, res) => {
-  const data = getRedisStatsData();
+  const data = await getRedisStatsData();
   await auditView(req, { panel: 'redis-stats' });
   res.status(200).json(data);
 });
 
 export const getLogs = asyncHandler(async (req, res) => {
-  const data = getLogsData({
+  const data = await getLogsData({
     q: req.query.q,
     limit: req.query.limit,
     offset: req.query.offset,
@@ -71,13 +71,13 @@ export const getLogs = asyncHandler(async (req, res) => {
 });
 
 export const getPods = asyncHandler(async (req, res) => {
-  const data = getPodsData();
+  const data = await getPodsData();
   await auditView(req, { panel: 'pods' });
   res.status(200).json(data);
 });
 
 export const getAlerts = asyncHandler(async (req, res) => {
-  const data = getAlertsData();
+  const data = await getAlertsData();
   await auditView(req, { panel: 'alerts' });
   res.status(200).json(data);
 });

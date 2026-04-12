@@ -6,6 +6,7 @@ const toHealthUrl = baseUrl =>
 
 const checkService = async ({ name, url }, correlationId) => {
   const healthUrl = toHealthUrl(url);
+  const startedAt = Date.now();
 
   try {
     const response = await fetch(healthUrl, {
@@ -21,6 +22,7 @@ const checkService = async ({ name, url }, correlationId) => {
       url,
       healthy: response.ok,
       statusCode: response.status,
+      latencyMs: Math.max(1, Date.now() - startedAt),
     };
   } catch (error) {
     return {
@@ -28,6 +30,7 @@ const checkService = async ({ name, url }, correlationId) => {
       url,
       healthy: false,
       error: error?.message || 'Health check failed',
+      latencyMs: Math.max(1, Date.now() - startedAt),
     };
   }
 };

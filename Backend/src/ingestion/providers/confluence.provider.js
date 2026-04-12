@@ -1,6 +1,10 @@
 import { env } from '../../config/env.js';
 import { normalizeConfluenceActivity } from '../normalizers/eventNormalizer.js';
-import { requestJson, buildBearerHeaders } from './providerHttpClient.js';
+import {
+  requestJson,
+  buildBearerHeaders,
+  buildBasicAuthHeaders,
+} from './providerHttpClient.js';
 
 const toSpaceList = metadata => {
   if (Array.isArray(metadata?.spaces) && metadata.spaces.length > 0) {
@@ -25,6 +29,17 @@ export const pollConfluenceCredential = async ({
     return [];
   }
 
+  const emailCandidate =
+    decryptedCredentials?.email ||
+    decryptedCredentials?.username ||
+    credential?.externalId ||
+    credential?.accountName;
+  const atlassianEmail = String(emailCandidate || '').trim();
+  const useBasicAuth = atlassianEmail.includes('@');
+  const headers = useBasicAuth
+    ? buildBasicAuthHeaders(atlassianEmail, token)
+    : buildBearerHeaders(token);
+
   const spaces = toSpaceList(credential.metadata);
   if (spaces.length === 0) {
     return [];
@@ -38,7 +53,7 @@ export const pollConfluenceCredential = async ({
       {
         baseURL: decryptedCredentials?.baseUrl || env.confluenceApiBaseUrl,
         url: '/content/search',
-        headers: buildBearerHeaders(token),
+        headers,
         params: {
           cql: `space="${space}" AND lastmodified >= "${cqlSince}"`,
           limit: 25,
