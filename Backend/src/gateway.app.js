@@ -31,7 +31,7 @@ gatewayApp.use(cookieParser());
 
 gatewayApp.get('/', (_req, res) => {
   res.status(200).json({
-    service: 'contextos-api-gateway',
+    service: 'stackmind-api-gateway',
     status: 'ok',
     timestamp: new Date().toISOString(),
   });

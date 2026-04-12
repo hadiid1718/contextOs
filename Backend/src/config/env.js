@@ -69,7 +69,7 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 4001),
   gatewayPort: Number(process.env.GATEWAY_PORT || 4000),
-  mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/contextos-auth',
+  mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/stackmind-auth',
   appOrigin: process.env.APP_ORIGIN || 'http://localhost:3000',
   gatewayCorsOrigin:
     process.env.GATEWAY_CORS_ORIGIN ||
@@ -129,7 +129,7 @@ export const env = {
   kafkaClientId:
     process.env.KAFKA_CLIENT_ID ||
     process.env.INGESTION_KAFKA_CLIENT_ID ||
-    'contextos-ingestion-service',
+    'stackmind-ingestion-service',
   kafkaTopic:
     process.env.KAFKA_TOPIC ||
     process.env.INGESTION_KAFKA_TOPIC ||
@@ -148,10 +148,10 @@ export const env = {
     process.env.GRAPH_KAFKA_CLIENT_ID ||
     process.env.KAFKA_CLIENT_ID ||
     process.env.INGESTION_KAFKA_CLIENT_ID ||
-    'contextos-knowledge-graph-service',
+    'stackmind-knowledge-graph-service',
   graphConsumerGroupId:
     process.env.GRAPH_CONSUMER_GROUP_ID ||
-    `${process.env.KAFKA_CLIENT_ID || 'contextos'}-graph-consumer-group`,
+    `${process.env.KAFKA_CLIENT_ID || 'stackmind'}-graph-consumer-group`,
   graphMockKafka: toBoolean(
     process.env.GRAPH_MOCK_KAFKA ?? process.env.MOCK_KAFKA,
     true
@@ -209,7 +209,7 @@ export const env = {
   cookieDomain: process.env.COOKIE_DOMAIN || undefined,
   cookieSecret: process.env.COOKIE_SECRET || 'dev-cookie-secret-change-me',
 
-  adminEmail: process.env.ADMIN_EMAIL || 'superadmin@contextos.internal',
+  adminEmail: process.env.ADMIN_EMAIL || 'superadmin@stackmind.internal',
   adminInitialPassword: process.env.ADMIN_INITIAL_PASSWORD || '',
   adminJwtSecret:
     process.env.ADMIN_JWT_SECRET ||
@@ -225,7 +225,7 @@ export const env = {
   smtpSecure: process.env.SMTP_SECURE === 'true',
   smtpUser: process.env.SMTP_USER,
   smtpPass: process.env.SMTP_PASS,
-  mailFrom: process.env.MAIL_FROM || 'ContextOS <noreply@contextos.io>',
+  mailFrom: process.env.MAIL_FROM || 'Stackmind <noreply@stackmind.io>',
 
   googleClientId: process.env.GOOGLE_CLIENT_ID || 'disabled-google-client-id',
   googleClientSecret:
@@ -265,6 +265,10 @@ export const env = {
   enterpriseAiQueryLimit: toNumber(process.env.ENTERPRISE_AI_QUERY_LIMIT, 0),
   enterpriseMaxUsers: toNumber(process.env.ENTERPRISE_MAX_USERS, 0),
   openAiApiKey: process.env.OPENAI_API_KEY,
+  aiMockMode: toBoolean(
+    process.env.AI_MOCK_MODE,
+    !process.env.OPENAI_API_KEY && runtimeNodeEnv !== 'production'
+  ),
   aiEmbeddingModel: process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small',
   aiCompletionModel: process.env.AI_COMPLETION_MODEL || 'gpt-4o',
   aiTopK: toNumber(process.env.AI_TOP_K, 10),

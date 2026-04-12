@@ -14,6 +14,33 @@ const toChannelList = metadata => {
   return [];
 };
 
+const discoverChannelsFromToken = async ({ token, baseURL }) => {
+  const data = await requestJson(
+    {
+      baseURL,
+      url: '/conversations.list',
+      headers: buildBearerHeaders(token),
+      params: {
+        types: 'public_channel,private_channel',
+        exclude_archived: true,
+        limit: 100,
+      },
+    },
+    {
+      maxRetries: env.retryMaxRetries,
+      baseDelayMs: env.retryBaseDelayMs,
+      maxDelayMs: env.retryMaxDelayMs,
+    }
+  );
+
+  const channels = Array.isArray(data?.channels) ? data.channels : [];
+
+  return channels
+    .map(channel => String(channel?.id || '').trim())
+    .filter(Boolean)
+    .slice(0, 20);
+};
+
 export const pollSlackCredential = async ({
   credential,
   decryptedCredentials,
@@ -25,7 +52,13 @@ export const pollSlackCredential = async ({
     return [];
   }
 
-  const channels = toChannelList(credential.metadata);
+  const baseURL = decryptedCredentials?.baseUrl || env.slackApiBaseUrl;
+  const configuredChannels = toChannelList(credential.metadata);
+  const channels =
+    configuredChannels.length > 0
+      ? configuredChannels
+      : await discoverChannelsFromToken({ token, baseURL });
+
   if (channels.length === 0) {
     return [];
   }
@@ -36,7 +69,7 @@ export const pollSlackCredential = async ({
   for (const channel of channels) {
     const data = await requestJson(
       {
-        baseURL: decryptedCredentials?.baseUrl || env.slackApiBaseUrl,
+        baseURL,
         url: '/conversations.history',
         headers: buildBearerHeaders(token),
         params: {

@@ -15,7 +15,7 @@ const sampleEvent = {
   source: 'github',
   event_type: 'pull_request.merged',
   content: {
-    repository: 'contextos/platform',
+    repository: 'stackmind/platform',
     commits: [
       {
         id: 'abc123',

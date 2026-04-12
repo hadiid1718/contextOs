@@ -3,7 +3,7 @@ import logger from './config/loggers.js';
 import { gatewayApp } from './gateway.app.js';
 import { closeGatewayRedis } from './gateway/index.js';
 
-const gatewayLogger = logger.child({ service: 'contextos-api-gateway' });
+const gatewayLogger = logger.child({ service: 'stackmind-api-gateway' });
 
 const PORT = env.gatewayPort;
 let httpServer = null;
@@ -30,7 +30,7 @@ const gracefulShutdown = async signal => {
 const startGateway = () => {
   httpServer = gatewayApp.listen(PORT, () => {
     gatewayLogger.info(
-      `ContextOS API Gateway is running on http://localhost:${PORT}`
+      `Stackmind API Gateway is running on http://localhost:${PORT}`
     );
   });
 };

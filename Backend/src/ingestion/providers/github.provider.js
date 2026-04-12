@@ -17,6 +17,39 @@ const toRepositoryList = metadata => {
   return [];
 };
 
+const discoverRepositoriesFromToken = async token => {
+  const data = await requestJson(
+    {
+      baseURL: env.githubApiBaseUrl,
+      url: '/user/repos',
+      headers: {
+        ...buildBearerHeaders(token),
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      params: {
+        sort: 'updated',
+        direction: 'desc',
+        per_page: 20,
+        page: 1,
+      },
+    },
+    {
+      maxRetries: env.retryMaxRetries,
+      baseDelayMs: env.retryBaseDelayMs,
+      maxDelayMs: env.retryMaxDelayMs,
+    }
+  );
+
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  return data
+    .map(repository => String(repository?.full_name || '').trim())
+    .filter(Boolean)
+    .slice(0, 10);
+};
+
 const normalizeGithubApiEvent = ({ orgId, credential, repo, event }) => {
   const eventType = event.type || 'unknown';
   const eventMap = {
@@ -56,14 +89,19 @@ export const pollGithubCredential = async ({
   credential,
   decryptedCredentials,
 }) => {
-  const repositories = toRepositoryList(credential.metadata);
-  if (repositories.length === 0) {
-    return [];
-  }
-
   const token =
     decryptedCredentials?.accessToken || decryptedCredentials?.token;
   if (!token) {
+    return [];
+  }
+
+  const configuredRepositories = toRepositoryList(credential.metadata);
+  const repositories =
+    configuredRepositories.length > 0
+      ? configuredRepositories
+      : await discoverRepositoriesFromToken(token);
+
+  if (repositories.length === 0) {
     return [];
   }
 

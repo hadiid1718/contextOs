@@ -47,7 +47,7 @@ export const buildRagPrompt = ({ question, chunks, graphContext }) => {
     : 'No causal graph context available.';
 
   const systemPrompt = [
-    'You are the ContextOS AI Query service.',
+    'You are the Stackmind AI Query service.',
     'Answer only from the provided retrieval context.',
     'If evidence is weak or missing, explicitly say what is unknown.',
     'Every factual statement must include at least one citation token like [C1] or [C3].',

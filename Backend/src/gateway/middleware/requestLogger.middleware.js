@@ -2,7 +2,7 @@ import morgan from 'morgan';
 
 import logger from '../../config/loggers.js';
 
-const gatewayLogger = logger.child({ service: 'contextos-api-gateway' });
+const gatewayLogger = logger.child({ service: 'stackmind-api-gateway' });
 
 morgan.token('correlation-id', req => req.correlationId || '-');
 morgan.token(

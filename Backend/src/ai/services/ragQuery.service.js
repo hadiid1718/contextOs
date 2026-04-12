@@ -15,6 +15,15 @@ const normalizeQuestion = question =>
     .toLowerCase()
     .replace(/\s+/g, ' ');
 
+const buildMockAnswer = ({ question, orgId }) => {
+  return [
+    'Local AI mock response is active because OPENAI_API_KEY is not configured.',
+    `Question: ${question}`,
+    `Organisation: ${orgId}`,
+    'Set OPENAI_API_KEY (or AI_MOCK_MODE=false) in your backend environment to enable full model-backed responses.',
+  ].join('\n\n');
+};
+
 export const buildQueryCacheKey = ({ orgId, question }) => {
   const hash = createHash('sha256')
     .update(
@@ -87,6 +96,34 @@ const createQueryEmbedding = async question => {
 };
 
 export const streamRagAnswer = async ({ orgId, question, onMeta, onToken }) => {
+  if (env.aiMockMode) {
+    const answer = buildMockAnswer({ question, orgId });
+    const payload = {
+      answer,
+      citations: [],
+      graph_context: [],
+      created_at: new Date().toISOString(),
+      cached: false,
+      chunks_used: 0,
+    };
+
+    if (typeof onMeta === 'function') {
+      onMeta({
+        cached: false,
+        citations: [],
+        graph_context: [],
+        chunks_used: 0,
+      });
+    }
+
+    if (typeof onToken === 'function') {
+      answer.split(/(\s+)/).filter(Boolean).forEach(token => onToken(token));
+    }
+
+    await setCachedRagResponse({ orgId, question, payload });
+    return payload;
+  }
+
   let answer = '';
   let prompt = null;
   let graphContext = [];

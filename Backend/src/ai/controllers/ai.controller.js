@@ -90,7 +90,17 @@ export const streamRagQuery = async (req, res, next) => {
     res.end();
   } catch (error) {
     if (!res.headersSent) {
-      next(error);
+      const statusCode = error instanceof AppError ? error.statusCode : 500;
+      res.status(statusCode).json({
+        message:
+          error instanceof AppError
+            ? error.message
+            : error?.message || 'AI query failed',
+        details:
+          error instanceof AppError
+            ? error.details
+            : { reason: error?.message || 'Unexpected error' },
+      });
       return;
     }
 

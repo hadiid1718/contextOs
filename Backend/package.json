@@ -1,7 +1,7 @@
 {
-  "name": "contextos-auth-service",
+  "name": "stackmind-auth-service",
   "version": "1.0.0",
-  "description": "Authentication, Organisation, and Ingestion microservice for ContextOS",
+  "description": "Authentication, Organisation, and Ingestion microservice for Stackmind",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

@@ -11,7 +11,17 @@ const retryConfig = {
 };
 
 export const ingestNormalizedEvent = async event => {
-  const normalizedEvent = normalizeEvent(event);
+  const normalizedEvent =
+    event?.org_id && event?.source && event?.event_type
+      ? {
+        org_id: event.org_id,
+        source: event.source,
+        event_type: event.event_type,
+        content: event.content || {},
+        metadata: event.metadata || {},
+        timestamp: event.timestamp || new Date().toISOString(),
+      }
+      : normalizeEvent(event);
 
   await withRetry(() => publishNormalizedEvent(normalizedEvent), {
     ...retryConfig,

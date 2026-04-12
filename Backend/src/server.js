@@ -48,7 +48,7 @@ const startServer = async () => {
 
     httpServer = app.listen(PORT, () => {
       logger.info(
-        `ContextOS API server is running on port : http://localhost:${PORT}`
+        `Stackmind API server is running on port : http://localhost:${PORT}`
       );
     });
 

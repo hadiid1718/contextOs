@@ -52,12 +52,12 @@ app.use(
 app.use(passport.initialize());
 
 app.get('/', (req, res) => {
-  res.send('Hello From ContextOS API');
+  res.send('Hello From Stackmind API');
 });
 app.get('/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
-    service: 'contextos-api',
+    service: 'stackmind-api',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     ingestion: getIngestionStatus(),

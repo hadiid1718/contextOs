@@ -4,7 +4,7 @@ import { env } from '../../config/env.js';
 import logger from '../../config/loggers.js';
 import { gatewayRedis } from '../services/redisClient.js';
 
-const gatewayLogger = logger.child({ service: 'contextos-api-gateway' });
+const gatewayLogger = logger.child({ service: 'stackmind-api-gateway' });
 
 const getOrgId = req => {
   if (req.orgId) {

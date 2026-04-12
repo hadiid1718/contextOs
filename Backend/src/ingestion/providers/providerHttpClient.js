@@ -19,7 +19,7 @@ export const requestJson = async (
     baseURL,
     timeout,
     headers: {
-      'User-Agent': 'ContextOS-Ingestion-Service',
+      'User-Agent': 'Stackmind-Ingestion-Service',
       ...headers,
     },
   });

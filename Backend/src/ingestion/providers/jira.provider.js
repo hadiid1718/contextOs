@@ -12,6 +12,31 @@ const buildJqlSince = since => {
   return `updated >= "${formatted}" ORDER BY updated ASC`;
 };
 
+const isAtlassianPlaceholderUrl = url =>
+  /your-domain\.atlassian\.net/i.test(String(url || ''));
+
+const resolveJiraBaseUrl = decryptedCredentials => {
+  const credentialBaseUrl = String(decryptedCredentials?.baseUrl || '').trim();
+  if (credentialBaseUrl) {
+    if (isAtlassianPlaceholderUrl(credentialBaseUrl)) {
+      throw new Error(
+        'Jira base URL is still set to the placeholder. Update the integration with your real Atlassian site URL.'
+      );
+    }
+
+    return credentialBaseUrl;
+  }
+
+  const envBaseUrl = String(env.jiraApiBaseUrl || '').trim();
+  if (!envBaseUrl || isAtlassianPlaceholderUrl(envBaseUrl)) {
+    throw new Error(
+      'Jira base URL is not configured. Set a real Atlassian site URL in integration settings or JIRA_API_BASE_URL.'
+    );
+  }
+
+  return envBaseUrl;
+};
+
 export const pollJiraCredential = async ({
   credential,
   decryptedCredentials,
@@ -37,7 +62,7 @@ export const pollJiraCredential = async ({
     ? buildBasicAuthHeaders(atlassianEmail, token)
     : buildBearerHeaders(token);
 
-  const baseURL = decryptedCredentials?.baseUrl || env.jiraApiBaseUrl;
+  const baseURL = resolveJiraBaseUrl(decryptedCredentials);
   const jql = buildJqlSince(since);
   const data = await requestJson(
     {

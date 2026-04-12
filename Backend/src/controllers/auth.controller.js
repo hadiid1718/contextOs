@@ -176,7 +176,7 @@ const sendVerificationEmail = async user => {
     const verificationUrl = `${env.appOrigin}/verify-email/${rawToken}`;
     await sendMail({
       to: user.email,
-      subject: 'Verify your ContextOS account',
+      subject: 'Verify your Stackmind account',
       text: `Verify your email by visiting: ${verificationUrl}`,
       html: `<p>Verify your email by clicking <a href="${verificationUrl}">this link</a>.</p>`,
     });
@@ -203,7 +203,7 @@ const sendPasswordResetEmail = async user => {
   const resetUrl = `${env.appOrigin}/reset-password?token=${rawToken}`;
   await sendMail({
     to: user.email,
-    subject: 'Reset your ContextOS password',
+    subject: 'Reset your Stackmind password',
     text: `Reset your password by visiting: ${resetUrl}`,
     html: `<p>Reset your password by clicking <a href="${resetUrl}">this link</a>.</p>`,
   });

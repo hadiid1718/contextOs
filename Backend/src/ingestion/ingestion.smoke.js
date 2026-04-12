@@ -39,7 +39,7 @@ const githubWebhookSample = normalizeGitHubWebhookEvent({
   },
   payload: {
     action: 'push',
-    repository: { full_name: 'contextos/demo', id: 'repo-1' },
+    repository: { full_name: 'stackmind/demo', id: 'repo-1' },
     sender: { login: 'demo-user' },
     commits: [
       {

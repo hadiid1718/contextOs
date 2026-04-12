@@ -8,7 +8,7 @@ healthRouter.get('/health', async (req, res) => {
   if (req.query?.probe === 'liveness') {
     return res.status(200).json({
       status: 'ok',
-      service: 'contextos-api-gateway',
+      service: 'stackmind-api-gateway',
       probe: 'liveness',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
@@ -21,7 +21,7 @@ healthRouter.get('/health', async (req, res) => {
 
   return res.status(readiness.ready ? 200 : 503).json({
     status: readiness.ready ? 'ok' : 'degraded',
-    service: 'contextos-api-gateway',
+    service: 'stackmind-api-gateway',
     probe: 'readiness',
     liveness: 'ok',
     timestamp: new Date().toISOString(),

@@ -1,6 +1,6 @@
 # API Gateway (Module 8)
 
-ContextOS API Gateway is the single entry point for frontend and client traffic.
+Stackmind API Gateway is the single entry point for frontend and client traffic.
 
 ## Features
 

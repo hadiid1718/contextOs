@@ -107,7 +107,7 @@ const parseJsonLogLine = line => {
   try {
     const parsed = JSON.parse(line);
     if (
-      parsed?.service !== 'contextos-api-gateway' ||
+      parsed?.service !== 'stackmind-api-gateway' ||
       parsed?.message !== 'http_request'
     ) {
       return null;

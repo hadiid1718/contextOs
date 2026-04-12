@@ -6,7 +6,7 @@ import { gatewayProxyRoutes } from '../config/upstreams.js';
 import { requireGatewayAuth } from '../middleware/auth.middleware.js';
 import { orgRateLimiter } from '../middleware/orgRateLimit.middleware.js';
 
-const gatewayLogger = logger.child({ service: 'contextos-api-gateway' });
+const gatewayLogger = logger.child({ service: 'stackmind-api-gateway' });
 
 const writeJsonBodyForProxy = (proxyReq, req) => {
   if (!req.body || !Object.keys(req.body).length) {

@@ -14,6 +14,7 @@ export const resolveIngestionOrgContext = (req, _res, next) => {
     req.orgId ||
     req.headers['x-org-id'] ||
     req.headers['x-contextos-org-id'] ||
+    req.headers['x-stackmind-org-id'] ||
     req.body?.org_id ||
     req.query?.org_id;
 

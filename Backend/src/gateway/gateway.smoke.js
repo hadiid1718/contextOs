@@ -1,7 +1,7 @@
 import { gatewayProxyRoutes, readinessTargets } from './config/upstreams.js';
 
 const output = {
-  service: 'contextos-api-gateway',
+  service: 'stackmind-api-gateway',
   routes: gatewayProxyRoutes.map(route => ({
     name: route.name,
     path: route.path,

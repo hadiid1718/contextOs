@@ -3,7 +3,7 @@ import Redis from 'ioredis';
 import { env } from '../../config/env.js';
 import logger from '../../config/loggers.js';
 
-const gatewayLogger = logger.child({ service: 'contextos-api-gateway' });
+const gatewayLogger = logger.child({ service: 'stackmind-api-gateway' });
 
 export const gatewayRedis = new Redis(env.redisUrl, {
   lazyConnect: true,
