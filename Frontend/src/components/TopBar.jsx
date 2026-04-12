@@ -84,7 +84,7 @@ const TopBar = () => {
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <Link to="/dashboard" className="text-lg font-semibold text-text">
-            ContextOS
+            Stackmind
           </Link>
           <div className="flex items-center gap-3 text-text2">
             <Search size={18} />

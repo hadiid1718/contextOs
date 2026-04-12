@@ -38,9 +38,9 @@ const Navbar = ({ isPublic = false }) => {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-border-strong bg-surface2 font-mono text-sm font-bold text-brand">
-            CO
+            SM
           </div>
-          <span className="text-base font-semibold text-text">ContextOS</span>
+          <span className="text-base font-semibold text-text">Stackmind</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

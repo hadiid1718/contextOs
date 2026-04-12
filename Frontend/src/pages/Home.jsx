@@ -96,7 +96,7 @@ const Home = () => {
             Connect, query, and reason over your org knowledge in one platform.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base text-text2">
-            ContextOS brings authentication, ingestion, graph intelligence, AI query, notifications, and billing into one developer-first experience.
+            Stackmind brings authentication, ingestion, graph intelligence, AI query, notifications, and billing into one developer-first experience.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/register">
@@ -119,7 +119,7 @@ const Home = () => {
             <p className="section-label">About Website</p>
             <h2 className="mt-2 text-3xl font-semibold">Built for modern product and platform teams</h2>
             <p className="mt-3 max-w-3xl text-sm text-text2">
-              ContextOS helps teams unify fragmented operational data, keep context live, and make confident decisions faster.
+              Stackmind helps teams unify fragmented operational data, keep context live, and make confident decisions faster.
             </p>
           </div>
 
@@ -211,7 +211,7 @@ const Home = () => {
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-semibold">Ready to get started?</h2>
           <p className="mt-4 text-text2">
-            Join teams using ContextOS to unlock operational intelligence from their data.
+            Join teams using Stackmind to unlock operational intelligence from their data.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/register">

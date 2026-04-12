@@ -172,7 +172,7 @@ const Integrations = () => {
       setPendingOAuthProvider('github');
       const popup = window.open(
         buildOAuthUrl('github', currentOrg?.org_id),
-        'contextos-github-oauth',
+        'stackmind-github-oauth',
         'width=560,height=760,menubar=no,toolbar=no,location=yes,status=no,scrollbars=yes,resizable=yes'
       );
 
@@ -189,7 +189,7 @@ const Integrations = () => {
 
     const popup = window.open(
       `${window.location.origin}/integrations/connect/${integration.provider}`,
-      `contextos-${integration.provider}-connect`,
+      `stackmind-${integration.provider}-connect`,
       'width=700,height=900,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'
     );
 

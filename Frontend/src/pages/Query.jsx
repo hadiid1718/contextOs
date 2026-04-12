@@ -9,7 +9,7 @@ import useOrg from '../hooks/useOrg';
 import graphService from '../services/graphService';
 import queryService from '../services/queryService';
 
-const HISTORY_STORAGE_PREFIX = 'contextos:query-history';
+const HISTORY_STORAGE_PREFIX = 'stackmind:query-history';
 
 const formatShortDate = (value) => {
   if (!value) return '-';
@@ -457,7 +457,7 @@ const Query = () => {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-wide text-text3">Current question</p>
-                    <p className="mt-1 text-base font-semibold text-text">{activeTurn?.question || 'Ask ContextOS anything about your organisation context.'}</p>
+                    <p className="mt-1 text-base font-semibold text-text">{activeTurn?.question || 'Ask Stackmind anything about your organisation context.'}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {activeTurn?.cached ? <Badge tone="success">Redis hit</Badge> : null}

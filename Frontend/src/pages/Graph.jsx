@@ -57,7 +57,7 @@ const Graph = () => {
   const [activeNodeId, setActiveNodeId] = useState(null);
   const [isTracing, setIsTracing] = useState(false);
   const [traceStepIndex, setTraceStepIndex] = useState(0);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 30000);
@@ -124,22 +124,17 @@ const Graph = () => {
   const graphNodes = overview.nodes || [];
   const graphEdges = overview.edges || [];
 
-  useEffect(() => {
-    if (activeNodeId && graphNodes.some((node) => node._id === activeNodeId)) {
+  const handleSelectNode = (nodeId) => {
+    if (!nodeId) {
       return;
     }
 
-    const nextActive =
-      graphNodes.find((node) => node.node_type === 'decision') ||
-      decisions.find((node) => node.node_type === 'decision') ||
-      graphNodes[0] ||
-      decisions[0] ||
-      null;
+    setActiveNodeId(nodeId);
+  };
 
-    if (nextActive?._id) {
-      setActiveNodeId(nextActive._id);
-    }
-  }, [activeNodeId, decisions, graphNodes]);
+  const handleCloseDetailPanel = () => {
+    setActiveNodeId(null);
+  };
 
   const activeNode = useMemo(() => {
     return selectedNode || graphNodes.find((node) => node._id === activeNodeId) || null;
@@ -160,14 +155,13 @@ const Graph = () => {
       (edge) => edge.from_id === activeNodeId || edge.to_id === activeNodeId
     );
     return dedupeEdges(scoped);
-  }, [activeNodeId, causalChain?.edges, graphEdges]);
+  }, [activeNodeId, causalChain, graphEdges]);
 
   const traceSteps = useMemo(() => buildBfsSteps(causalChain), [causalChain]);
 
   useEffect(() => {
     if (!isTracing || traceSteps.length === 0) return undefined;
 
-    setTraceStepIndex(0);
     let index = 0;
     const timer = window.setInterval(() => {
       index += 1;
@@ -223,7 +217,7 @@ const Graph = () => {
   const handleTimelineStep = (index) => {
     const step = traceSteps[index];
     if (!step?.id) return;
-    setActiveNodeId(step.id);
+    handleSelectNode(step.id);
     setTraceStepIndex(index);
     setIsTracing(false);
   };
@@ -314,7 +308,7 @@ const Graph = () => {
             <Button type="button" variant="secondary" onClick={() => refetchAll()}>
               Retry now
             </Button>
-            <Button type="button" variant="ghost" onClick={() => setActiveNodeId(null)}>
+            <Button type="button" variant="ghost" onClick={handleCloseDetailPanel}>
               Clear node selection
             </Button>
           </div>
@@ -347,7 +341,7 @@ const Graph = () => {
               selectedNodeId={activeNodeId}
               traceNodeIds={traceNodeIds}
               traceEdgeKeys={traceEdgeKeys}
-              onNodeSelect={setActiveNodeId}
+              onNodeSelect={handleSelectNode}
             />
           </Card>
 
@@ -368,7 +362,7 @@ const Graph = () => {
                     <button
                       key={node._id}
                       type="button"
-                      onClick={() => setActiveNodeId(node._id)}
+                      onClick={() => handleSelectNode(node._id)}
                       className={`rounded-xl border p-4 text-left transition ${
                         active ? 'border-brand/50 bg-brand/10' : 'border-border bg-bg3 hover:border-border-strong'
                       }`}
@@ -464,7 +458,7 @@ const Graph = () => {
           node={activeNode}
           relatedEdges={relatedEdges}
           nodeMap={activeNodeMap}
-          onClose={() => setActiveNodeId(null)}
+          onClose={handleCloseDetailPanel}
         />
       ) : null}
     </div>

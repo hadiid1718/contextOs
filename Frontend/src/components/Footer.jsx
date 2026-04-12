@@ -11,9 +11,9 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-border-strong bg-surface2 font-mono text-xs font-bold text-brand">
-                CO
+                SM
               </div>
-              <span className="text-sm font-semibold text-text">ContextOS</span>
+              <span className="text-sm font-semibold text-text">Stackmind</span>
             </div>
             <p className="text-xs text-text2">
               Unified data intelligence for teams that ship quickly and stay aligned.
@@ -119,12 +119,12 @@ const Footer = () => {
 
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-xs text-text3">
-            © {currentYear} ContextOS. All rights reserved.
+            © {currentYear} Stackmind. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-text3">
-            <a href="mailto:support@contextos.io" className="transition hover:text-brand">
+            <a href="mailto:support@stackmind.io" className="transition hover:text-brand">
               <Mail size={14} className="inline mr-1" />
-              support@contextos.io
+              support@stackmind.io
             </a>
           </div>
         </div>

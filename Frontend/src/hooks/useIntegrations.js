@@ -88,7 +88,7 @@ const buildActivityFeed = (integrations) => {
         icon: integration.icon,
         title: `${providerLabel} ${integration.eventLabel} batch ingested`,
         timestamp: createdAt.toISOString(),
-        detail: `${accountName} is feeding ContextOS${integration.webhookPath ? ` via ${integration.webhookPath}` : ' via scheduled polling'}.`,
+        detail: `${accountName} is feeding Stackmind${integration.webhookPath ? ` via ${integration.webhookPath}` : ' via scheduled polling'}.`,
         tone: integration.connected ? 'success' : 'warning',
       });
     }

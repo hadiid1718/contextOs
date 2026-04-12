@@ -15,7 +15,7 @@ const navItems = [
 const Sidebar = () => {
   return (
     <aside className="hidden w-64 shrink-0 rounded-xl border border-border bg-bg2 p-4 md:block">
-      <h2 className="mb-4 section-label">ContextOS</h2>
+      <h2 className="mb-4 section-label">Stackmind</h2>
       <OrgSwitcher />
       <nav className="space-y-1">
         {navItems.map((item) => {

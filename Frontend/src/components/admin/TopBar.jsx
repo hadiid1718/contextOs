@@ -1,4 +1,4 @@
-import { Bell, Hexagon, LogOut } from 'lucide-react';
+import { Bell, LogOut } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import Button from '../Button';
 
@@ -28,8 +28,10 @@ const TopBar = ({ alertsCount = 0, onLogout }) => {
       <div className="mx-auto flex w-full max-w-[1320px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
           <div className="inline-flex items-center gap-2 text-[#e2e8f0]">
-            <Hexagon size={16} className="text-[#38bdf8]" />
-            <span className="text-lg font-semibold tracking-tight">ContextOS</span>
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#38bdf8]/20 text-[10px] font-bold text-[#38bdf8]">
+              SM
+            </span>
+            <span className="text-lg font-semibold tracking-tight">Stackmind</span>
           </div>
           <span className="hidden text-xs uppercase tracking-[0.22em] text-[#38bdf8] sm:inline">
             System Admin / Mission Control

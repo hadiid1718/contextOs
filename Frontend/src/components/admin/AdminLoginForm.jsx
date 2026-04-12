@@ -20,7 +20,7 @@ const AdminLoginForm = ({ onSubmit, pending, adminEmailHint }) => {
             type="email"
             required
             disabled={pending}
-            placeholder={adminEmailHint || 'superadmin@contextos.internal'}
+            placeholder={adminEmailHint || 'superadmin@stackmind.internal'}
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="w-full bg-transparent text-sm text-[#e2e8f0] outline-none placeholder:text-[#64748b]"

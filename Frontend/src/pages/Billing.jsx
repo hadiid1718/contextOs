@@ -206,7 +206,7 @@ const Billing = () => {
                 <div className="mt-5">
                   {plan.id === 'enterprise' ? (
                     <a
-                      href="mailto:sales@contextos.io?subject=Enterprise%20Plan%20Inquiry"
+                      href="mailto:sales@stackmind.io?subject=Enterprise%20Plan%20Inquiry"
                       className="inline-flex items-center rounded-lg border border-border px-4 py-2 text-sm font-medium text-text2 transition hover:border-border-strong hover:text-text"
                     >
                       Contact sales

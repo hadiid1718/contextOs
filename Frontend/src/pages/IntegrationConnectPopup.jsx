@@ -24,7 +24,8 @@ const providerTemplates = {
     tokenLabel: 'API token',
     tokenKey: 'accessToken',
     tokenPlaceholder: 'Paste Jira API token',
-    baseUrl: 'https://your-domain.atlassian.net',
+    baseUrl: '',
+    baseUrlPlaceholder: 'https://your-domain.atlassian.net',
     defaultScopes: ['read:jira-work', 'read:jira-user'],
   },
   slack: {
@@ -43,7 +44,8 @@ const providerTemplates = {
     tokenLabel: 'API token',
     tokenKey: 'accessToken',
     tokenPlaceholder: 'Paste Confluence API token',
-    baseUrl: 'https://your-domain.atlassian.net/wiki/rest/api',
+    baseUrl: '',
+    baseUrlPlaceholder: 'https://your-domain.atlassian.net/wiki/rest/api',
     defaultScopes: ['read:confluence-content.all'],
   },
 };
@@ -259,7 +261,7 @@ const IntegrationConnectPopup = () => {
               label="Base URL (optional)"
               value={form.baseUrl}
               onChange={(event) => setForm((value) => ({ ...value, baseUrl: event.target.value }))}
-              placeholder="https://..."
+              placeholder={providerTemplate.baseUrlPlaceholder || 'https://...'}
             />
 
             {contextError ? <p className="text-sm text-warning">{contextError}</p> : null}

@@ -73,8 +73,8 @@ const Contact = () => {
                   <Mail size={20} className="mt-1 text-brand flex-shrink-0" />
                   <div>
                     <p className="font-medium text-text">Email</p>
-                    <p className="mt-1 text-sm text-text2">support@contextos.io</p>
-                    <p className="text-sm text-text2">hello@contextos.io</p>
+                    <p className="mt-1 text-sm text-text2">support@stackmind.io</p>
+                    <p className="text-sm text-text2">hello@stackmind.io</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
@@ -192,8 +192,8 @@ const Contact = () => {
           <div className="space-y-4">
             {[
               {
-                q: 'What is ContextOS?',
-                a: 'ContextOS is a unified data intelligence platform that helps you connect, query, and visualize data from multiple sources.',
+                q: 'What is Stackmind?',
+                a: 'Stackmind is a unified data intelligence platform that helps you connect, query, and visualize data from multiple sources.',
               },
               {
                 q: 'Is there a free tier?',

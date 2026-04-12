@@ -1,5 +1,3 @@
-import { Shield } from 'lucide-react';
-
 const AdminLoginCard = ({ children, errorMessage, shake }) => {
   return (
     <section
@@ -10,8 +8,10 @@ const AdminLoginCard = ({ children, errorMessage, shake }) => {
       <div className="mb-5 flex items-start justify-between gap-3">
         <div>
           <h1 className="inline-flex items-center gap-2 text-2xl font-semibold text-[#e2e8f0]">
-            ContextOS
-            <Shield size={18} className="text-[#38bdf8]" />
+            Stackmind
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[#38bdf8]/20 text-xs font-bold text-[#38bdf8]">
+              SM
+            </span>
           </h1>
           <p className="mt-1 inline-flex rounded-full border border-[#f59e0b]/35 bg-[#f59e0b]/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-[#f59e0b]">
             SUPERADMIN ACCESS ONLY

@@ -21,7 +21,7 @@ const AdminLoginPage = () => {
   const [shake, setShake] = useState(false);
 
   const adminEmailHint = useMemo(() => {
-    return import.meta.env.VITE_ADMIN_EMAIL || 'superadmin@contextos.internal';
+    return import.meta.env.VITE_ADMIN_EMAIL || 'superadmin@stackmind.internal';
   }, []);
 
   const triggerShake = () => {
