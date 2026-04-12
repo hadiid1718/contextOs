@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { getSocketClient } from '../lib/socket-client';
+import {
+  acquireSocketClient,
+  releaseSocketClient,
+} from '../lib/socket-client';
 import { normalizeNotificationError } from '../lib/notificationErrors';
 import notifService from '../services/notifService';
 import useNotifStore from '../store/notifStore';
@@ -176,13 +179,15 @@ const useNotifications = ({ bootstrap = false } = {}) => {
       return undefined;
     }
 
-    const socket = getSocketClient();
+    const socket = acquireSocketClient();
     socket.auth = (callback) => {
       callback({
         token: localStorage.getItem('accessToken') || '',
       });
     };
-    socket.connect();
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     const handleMessage = (incoming) => {
       const notification = normalizeNotification(incoming);
@@ -218,7 +223,7 @@ const useNotifications = ({ bootstrap = false } = {}) => {
     return () => {
       socket.off('notification:new', handleMessage);
       socket.off('connect_error', handleConnectError);
-      socket.disconnect();
+      releaseSocketClient();
     };
   }, [appendNotification, bootstrap, clearNotificationError, pushToast, setNotificationError]);
 

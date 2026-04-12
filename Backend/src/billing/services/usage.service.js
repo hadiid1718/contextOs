@@ -61,7 +61,6 @@ export const incrementUsageRecord = async ({
       $setOnInsert: {
         periodStart,
         periodEnd,
-        usageCount: 0,
       },
       $inc: { usageCount: units },
       $set: { lastIncrementAt: new Date() },

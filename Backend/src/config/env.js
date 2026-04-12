@@ -31,6 +31,15 @@ const toCsvArray = value =>
     .map(item => item.trim())
     .filter(Boolean);
 
+const normalizeProviderDefault = value => {
+  const normalized = String(value || 'auto').trim().toLowerCase();
+  if (['auto', 'openai', 'gemini'].includes(normalized)) {
+    return normalized;
+  }
+
+  return 'auto';
+};
+
 const assertRequired = key => {
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
@@ -57,12 +66,22 @@ if (isProduction) {
     'GITHUB_CLIENT_SECRET',
     'GITHUB_CALLBACK_URL',
     'GRAPH_CONSUMER_GROUP_ID',
-    'OPENAI_API_KEY',
     'ADMIN_JWT_SECRET',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'STRIPE_PRO_PRICE_ID',
   ].forEach(assertRequired);
+
+  const aiQueryEnabled = toBoolean(process.env.AI_QUERY_ENABLED, true);
+  const aiMockMode = toBoolean(process.env.AI_MOCK_MODE, false);
+  const hasOpenAi = Boolean(process.env.OPENAI_API_KEY);
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY);
+
+  if (aiQueryEnabled && !aiMockMode && !hasOpenAi && !hasGemini) {
+    throw new Error(
+      'Missing required AI provider key: set OPENAI_API_KEY or GEMINI_API_KEY (or enable AI_MOCK_MODE)'
+    );
+  }
 }
 
 export const env = {
@@ -265,12 +284,19 @@ export const env = {
   enterpriseAiQueryLimit: toNumber(process.env.ENTERPRISE_AI_QUERY_LIMIT, 0),
   enterpriseMaxUsers: toNumber(process.env.ENTERPRISE_MAX_USERS, 0),
   openAiApiKey: process.env.OPENAI_API_KEY,
+  geminiApiKey: process.env.GEMINI_API_KEY,
+  aiProviderDefault: normalizeProviderDefault(process.env.AI_PROVIDER_DEFAULT),
   aiMockMode: toBoolean(
     process.env.AI_MOCK_MODE,
-    !process.env.OPENAI_API_KEY && runtimeNodeEnv !== 'production'
+    !process.env.OPENAI_API_KEY &&
+      !process.env.GEMINI_API_KEY &&
+      runtimeNodeEnv !== 'production'
   ),
   aiEmbeddingModel: process.env.AI_EMBEDDING_MODEL || 'text-embedding-3-small',
   aiCompletionModel: process.env.AI_COMPLETION_MODEL || 'gpt-4o',
+  aiGeminiModel: process.env.AI_GEMINI_MODEL || 'gemini-2.0-flash',
+  aiGeminiEmbeddingModel:
+    process.env.AI_GEMINI_EMBEDDING_MODEL || 'gemini-embedding-001',
   aiTopK: toNumber(process.env.AI_TOP_K, 10),
   aiVectorCandidates: toNumber(process.env.AI_VECTOR_CANDIDATES, 150),
   aiChunkCollection: process.env.AI_CHUNK_COLLECTION || 'rag_chunks',

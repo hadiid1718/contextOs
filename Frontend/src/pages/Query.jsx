@@ -11,6 +11,29 @@ import queryService from '../services/queryService';
 
 const HISTORY_STORAGE_PREFIX = 'stackmind:query-history';
 
+const AI_PROVIDER_OPTIONS = [
+  { value: 'auto', label: 'Auto' },
+  { value: 'openai', label: 'OpenAI' },
+  { value: 'gemini', label: 'Gemini' },
+];
+
+const normalizeProviderValue = (provider) => {
+  const value = String(provider || 'auto').trim().toLowerCase();
+  if (['auto', 'openai', 'gemini', 'mock'].includes(value)) {
+    return value;
+  }
+
+  return 'auto';
+};
+
+const formatProviderLabel = (provider) => {
+  const normalized = normalizeProviderValue(provider);
+  if (normalized === 'openai') return 'OpenAI';
+  if (normalized === 'gemini') return 'Gemini';
+  if (normalized === 'mock') return 'Mock';
+  return 'Auto';
+};
+
 const formatShortDate = (value) => {
   if (!value) return '-';
   const date = new Date(value);
@@ -76,6 +99,9 @@ const buildHistoryEntry = (turn) => ({
   graph_context: turn.graph_context || [],
   cached: Boolean(turn.cached),
   chunks_used: turn.chunks_used || 0,
+  ai_provider_requested: normalizeProviderValue(turn.ai_provider_requested),
+  ai_provider: turn.ai_provider ? normalizeProviderValue(turn.ai_provider) : null,
+  retrieval_mode: turn.retrieval_mode || null,
   createdAt: turn.createdAt || new Date().toISOString(),
   latency_ms: turn.latency_ms ?? null,
 });
@@ -89,6 +115,7 @@ const Query = () => {
   const [historyItems, setHistoryItems] = useState([]);
   const [selectedHistoryId, setSelectedHistoryId] = useState(null);
   const [selectedGraphNodeId, setSelectedGraphNodeId] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState('auto');
   const [turn, setTurn] = useState(null);
   const [queryError, setQueryError] = useState('');
   const abortRef = useRef(null);
@@ -199,6 +226,7 @@ const Query = () => {
   const restoreHistory = (entry) => {
     setSelectedHistoryId(entry.id);
     setQuestion(entry.question || '');
+    setSelectedProvider(normalizeProviderValue(entry.ai_provider_requested));
     setSelectedGraphNodeId(null);
     setQueryError('');
     setTurn({
@@ -233,6 +261,9 @@ const Query = () => {
       graph_context: [],
       cached: false,
       chunks_used: 0,
+      ai_provider_requested: normalizeProviderValue(selectedProvider),
+      ai_provider: null,
+      retrieval_mode: null,
       status: 'connecting',
       createdAt: new Date().toISOString(),
       startedAt: new Date().toISOString(),
@@ -243,6 +274,7 @@ const Query = () => {
       const result = await queryService.run({
         orgId: currentOrg.org_id,
         question: trimmedQuestion,
+        aiProvider: selectedProvider,
         signal: controller.signal,
         onMeta: (meta) => {
           if (activeRunIdRef.current !== runId) return;
@@ -255,6 +287,13 @@ const Query = () => {
               citations: Array.isArray(meta?.citations) ? meta.citations : prev.citations,
               graph_context: Array.isArray(meta?.graph_context) ? meta.graph_context : prev.graph_context,
               chunks_used: meta?.chunks_used ?? prev.chunks_used,
+              ai_provider_requested: normalizeProviderValue(
+                meta?.ai_provider_requested || prev.ai_provider_requested
+              ),
+              ai_provider: meta?.ai_provider
+                ? normalizeProviderValue(meta.ai_provider)
+                : prev.ai_provider,
+              retrieval_mode: meta?.retrieval_mode || prev.retrieval_mode,
               latency_ms: meta?.latency_ms ?? prev.latency_ms,
             };
           });
@@ -285,7 +324,19 @@ const Query = () => {
           graph_context: result?.meta?.graph_context || prev.graph_context,
           cached: Boolean(result?.meta?.cached ?? prev.cached),
           chunks_used: result?.meta?.chunks_used ?? prev.chunks_used,
-          latency_ms: result?.meta?.latency_ms ?? prev.latency_ms,
+          ai_provider_requested: normalizeProviderValue(
+            result?.ai_provider_requested ||
+              result?.meta?.ai_provider_requested ||
+              prev.ai_provider_requested
+          ),
+          ai_provider:
+            result?.ai_provider || result?.meta?.ai_provider
+              ? normalizeProviderValue(result?.ai_provider || result?.meta?.ai_provider)
+              : prev.ai_provider,
+          retrieval_mode:
+            result?.meta?.retrieval_mode || prev.retrieval_mode,
+          latency_ms:
+            result?.latency_ms ?? result?.meta?.latency_ms ?? prev.latency_ms,
           finishedAt: new Date().toISOString(),
         };
 
@@ -324,6 +375,13 @@ const Query = () => {
   const answerPreview = activeTurn?.answer?.trim() || '';
   const statusTone = activeTurn?.cached ? 'success' : isStreaming ? 'warning' : activeTurn?.status === 'error' ? 'error' : 'neutral';
   const activeStatusLabel = activeTurn?.cached ? 'Redis hit' : activeTurn?.status === 'restored' ? 'History' : activeTurn?.status === 'done' ? 'Completed' : isStreaming ? 'Streaming' : 'Idle';
+  const requestedProvider = normalizeProviderValue(activeTurn?.ai_provider_requested || selectedProvider);
+  const usedProvider = activeTurn?.ai_provider
+    ? normalizeProviderValue(activeTurn.ai_provider)
+    : null;
+  const providerBadgeLabel = usedProvider
+    ? `${formatProviderLabel(usedProvider)}${requestedProvider === 'auto' ? ' (auto)' : ''}`
+    : formatProviderLabel(requestedProvider);
 
   return (
     <div className="space-y-6">
@@ -348,6 +406,7 @@ const Query = () => {
                 SSE streaming
               </span>
             </Badge>
+            <Badge tone="neutral">Provider: {providerBadgeLabel}</Badge>
             <Badge tone={statusTone}>{activeStatusLabel}</Badge>
             <Badge tone="neutral">{historyCount} saved queries</Badge>
           </div>
@@ -357,7 +416,7 @@ const Query = () => {
           {[
             { label: 'Live tokens', value: activeTurn?.status === 'streaming' ? 'On' : 'Ready' },
             { label: 'Context preview', value: graphContext.length > 0 ? `${graphContext.length} sources` : 'Waiting' },
-            { label: 'Cache state', value: activeTurn?.cached ? 'Redis hit' : 'Fresh run' },
+            { label: 'Provider', value: providerBadgeLabel },
             { label: 'Citations', value: citations.length > 0 ? `${citations.length} linked sources` : 'None yet' },
           ].map((metric) => (
             <div key={metric.label} className="rounded-xl border border-border bg-bg3 p-4">
@@ -399,7 +458,9 @@ const Query = () => {
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-semibold text-text">{entry.question}</p>
-                            <p className="mt-1 text-xs text-text3">{formatShortDate(entry.createdAt)}</p>
+                            <p className="mt-1 text-xs text-text3">
+                              {formatShortDate(entry.createdAt)} · {formatProviderLabel(entry.ai_provider || entry.ai_provider_requested)}
+                            </p>
                           </div>
                           {entry.cached ? <Badge tone="success">Redis hit</Badge> : <Badge tone="neutral">Saved</Badge>}
                         </div>
@@ -463,6 +524,7 @@ const Query = () => {
                     {activeTurn?.cached ? <Badge tone="success">Redis hit</Badge> : null}
                     {isRestored ? <Badge tone="neutral">History loaded</Badge> : null}
                     {isStreaming ? <Badge tone="warning">Live stream</Badge> : null}
+                    <Badge tone="neutral">{providerBadgeLabel}</Badge>
                   </div>
                 </div>
 
@@ -527,6 +589,26 @@ const Query = () => {
               </div>
 
               <div className="rounded-2xl border border-border bg-bg3/60 p-4">
+                <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+                  <label className="block min-w-[220px]">
+                    <span className="text-xs uppercase tracking-wide text-text3">AI provider</span>
+                    <select
+                      value={selectedProvider}
+                      onChange={(event) => setSelectedProvider(normalizeProviderValue(event.target.value))}
+                      disabled={isStreaming}
+                      className="mt-2 h-11 w-full rounded-xl border border-border bg-bg2 px-3 text-sm text-text outline-none transition focus:border-border-strong disabled:opacity-70"
+                    >
+                      {AI_PROVIDER_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="text-xs text-text3">
+                    Auto picks the best configured provider. Choose a specific model provider to force routing.
+                  </p>
+                </div>
                 <label className="block">
                   <span className="text-xs uppercase tracking-wide text-text3">Prompt</span>
                   <textarea
@@ -538,7 +620,7 @@ const Query = () => {
                   />
                 </label>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-text3">
-                  <span>Send with CMD + Enter</span>
+                  <span>Send with Ctrl/Cmd + Enter</span>
                   <span>{normalizeText(question).length} characters</span>
                 </div>
               </div>

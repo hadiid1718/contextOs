@@ -72,6 +72,7 @@ const parseSseBlock = (block) => {
 const run = async ({
   orgId,
   question,
+  aiProvider = 'auto',
   signal,
   onToken,
   onMeta,
@@ -88,6 +89,7 @@ const run = async ({
     body: JSON.stringify({
       org_id: orgId,
       question,
+      ai_provider: aiProvider,
     }),
     signal,
   });
@@ -98,7 +100,18 @@ const run = async ({
     error.status = response.status;
     error.details = errorPayload?.details || errorPayload?.errors || null;
 
-    if (response.status === 429) {
+    const details = errorPayload?.details;
+    const isBillingLimitError =
+      response.status === 429 &&
+      (String(errorPayload?.message || '').includes(
+        'Monthly AI query limit exceeded'
+      ) ||
+        (details &&
+          typeof details === 'object' &&
+          Object.hasOwn(details, 'limit') &&
+          Object.hasOwn(details, 'usageCount')));
+
+    if (isBillingLimitError) {
       useBillingStore.getState().openUpgradeModal({
         message: errorPayload?.message || 'Upgrade to continue.',
         details: errorPayload?.details || errorPayload?.errors || null,

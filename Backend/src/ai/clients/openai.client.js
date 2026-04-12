@@ -5,6 +5,8 @@ import { AppError } from '../../utils/appError.js';
 
 let openAIClient = null;
 
+export const isOpenAIConfigured = () => Boolean(env.openAiApiKey);
+
 export const getOpenAIClient = () => {
   if (openAIClient) {
     return openAIClient;

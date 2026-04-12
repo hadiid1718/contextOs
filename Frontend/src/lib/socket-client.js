@@ -1,6 +1,15 @@
 import { io } from 'socket.io-client';
 
 let socket;
+let socketConsumerCount = 0;
+let pendingDisconnectTimer = null;
+
+const clearPendingDisconnect = () => {
+  if (pendingDisconnectTimer) {
+    clearTimeout(pendingDisconnectTimer);
+    pendingDisconnectTimer = null;
+  }
+};
 
 export const getSocketClient = () => {
   if (!socket) {
@@ -15,5 +24,28 @@ export const getSocketClient = () => {
     });
   }
   return socket;
+};
+
+export const acquireSocketClient = () => {
+  clearPendingDisconnect();
+  socketConsumerCount += 1;
+  return getSocketClient();
+};
+
+export const releaseSocketClient = () => {
+  socketConsumerCount = Math.max(0, socketConsumerCount - 1);
+
+  if (!socket || socketConsumerCount > 0) {
+    return;
+  }
+
+  // In React StrictMode, effects mount/unmount twice in development.
+  // Delay disconnect to avoid closing a websocket during the initial handshake.
+  pendingDisconnectTimer = setTimeout(() => {
+    pendingDisconnectTimer = null;
+    if (socketConsumerCount === 0 && socket?.connected) {
+      socket.disconnect();
+    }
+  }, 150);
 };
 
