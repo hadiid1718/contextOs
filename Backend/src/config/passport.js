@@ -73,7 +73,9 @@ export const configurePassport = passport => {
             providerId: profile.id,
             profile,
           });
-          done(null, user);
+          done(null, user, {
+            provider: 'google',
+          });
         } catch (error) {
           done(error, null);
         }
@@ -89,14 +91,20 @@ export const configurePassport = passport => {
         callbackURL: env.githubCallbackUrl,
         scope: ['user:email'],
       },
-      async (_accessToken, _refreshToken, profile, done) => {
+      async (accessToken, _refreshToken, profile, done) => {
         try {
           const user = await findOrCreateOAuthUser({
             provider: 'github',
             providerId: profile.id,
             profile,
           });
-          done(null, user);
+          done(null, user, {
+            provider: 'github',
+            accessToken,
+            externalId: profile?.id || null,
+            accountName: profile?.username || profile?.displayName || 'GitHub account',
+            scopes: ['repo', 'read:org'],
+          });
         } catch (error) {
           done(error, null);
         }

@@ -9,17 +9,21 @@ export const requireAuth = (req, _res, next) => {
     : null;
 
   const cookieToken = req.cookies?.[env.accessCookieName];
-  const token = bearerToken || cookieToken;
+  const candidates = [bearerToken, cookieToken].filter(Boolean);
 
-  if (!token) {
+  if (candidates.length === 0) {
     return next(new AppError('Authentication required', 401));
   }
 
-  try {
-    const payload = verifyAccessToken(token);
-    req.auth = payload;
-    return next();
-  } catch {
-    return next(new AppError('Invalid or expired access token', 401));
+  for (const token of candidates) {
+    try {
+      const payload = verifyAccessToken(token);
+      req.auth = payload;
+      return next();
+    } catch {
+      // Try the next candidate token (for example, a fresh cookie after stale bearer).
+    }
   }
+
+  return next(new AppError('Invalid or expired access token', 401));
 };

@@ -27,7 +27,20 @@ oauthRouter.get(
 
 oauthRouter.get(
   '/github',
-  passport.authenticate('github', { scope: ['user:email'], session: false })
+  (req, res, next) => {
+    const orgId =
+      typeof req.query.org_id === 'string' && req.query.org_id.trim()
+        ? req.query.org_id.trim()
+        : undefined;
+
+    const authenticate = passport.authenticate('github', {
+      scope: ['user:email'],
+      session: false,
+      ...(orgId ? { state: orgId } : {}),
+    });
+
+    return authenticate(req, res, next);
+  }
 );
 
 oauthRouter.get(

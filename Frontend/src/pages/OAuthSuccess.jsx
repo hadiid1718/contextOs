@@ -9,7 +9,7 @@ const OAuthSuccess = () => {
     const hasOpener = Boolean(window.opener && window.opener !== window);
 
     if (hasOpener) {
-      window.opener.postMessage({ type: 'oauth:success' }, window.location.origin);
+      window.opener.postMessage({ type: 'oauth:success' }, '*');
     }
 
     // Fallback signal for cases where opener is lost by browser security policies.

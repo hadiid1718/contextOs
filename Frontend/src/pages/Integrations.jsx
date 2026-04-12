@@ -15,9 +15,10 @@ const providerLabelMap = integrationCatalog.reduce((acc, provider) => {
   return acc;
 }, {});
 
-const buildOAuthUrl = (provider) => {
+const buildOAuthUrl = (provider, orgId) => {
   const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4001/api/v1').replace(/\/+$/, '');
-  return `${base}/auth/oauth/${provider}`;
+  const query = orgId ? `?org_id=${encodeURIComponent(orgId)}` : '';
+  return `${base}/auth/oauth/${provider}${query}`;
 };
 
 const Integrations = () => {
@@ -30,6 +31,7 @@ const Integrations = () => {
   const [highlightedProvider, setHighlightedProvider] = useState(null);
   const [pendingOAuthProvider, setPendingOAuthProvider] = useState(null);
   const [localActivity, setLocalActivity] = useState([]);
+  const oauthPopupRef = useRef(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 30000);
@@ -97,10 +99,19 @@ const Integrations = () => {
 
   useEffect(() => {
     const handleMessage = async (event) => {
-      if (event.origin !== window.location.origin) return;
+      const messageType = event.data?.type;
 
-      if (event.data?.type === 'oauth:success') {
+      if (messageType === 'oauth:success' || messageType === 'oauth:failure') {
+        if (oauthPopupRef.current && event.source !== oauthPopupRef.current) {
+          return;
+        }
+      } else if (event.origin !== window.location.origin) {
+        return;
+      }
+
+      if (messageType === 'oauth:success') {
         const provider = pendingOAuthProvider || 'github';
+        oauthPopupRef.current = null;
         setPendingOAuthProvider(null);
         setHighlightedProvider(provider);
         setFeedback(`${providerLabelMap[provider]?.label || 'GitHub'} connected successfully.`);
@@ -122,7 +133,8 @@ const Integrations = () => {
         return;
       }
 
-      if (event.data?.type === 'oauth:failure') {
+      if (messageType === 'oauth:failure') {
+        oauthPopupRef.current = null;
         setPendingOAuthProvider(null);
         setFeedback('OAuth connection failed. Please try again.');
         return;
@@ -159,16 +171,18 @@ const Integrations = () => {
     if (integration.provider === 'github') {
       setPendingOAuthProvider('github');
       const popup = window.open(
-        buildOAuthUrl('github'),
+        buildOAuthUrl('github', currentOrg?.org_id),
         'contextos-github-oauth',
         'width=560,height=760,menubar=no,toolbar=no,location=yes,status=no,scrollbars=yes,resizable=yes'
       );
 
       if (!popup) {
+        oauthPopupRef.current = null;
         setPendingOAuthProvider(null);
         setFeedback('Please allow pop-ups to complete GitHub OAuth.');
       }
 
+      oauthPopupRef.current = popup;
       popup?.focus();
       return;
     }
