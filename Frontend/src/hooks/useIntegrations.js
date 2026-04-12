@@ -61,6 +61,10 @@ const toHealthState = (credential) => {
     return { label: 'Pending', tone: 'warning' };
   }
 
+  if (credential.status === 'active' && !credential.lastSyncedAt) {
+    return { label: 'Active', tone: 'success' };
+  }
+
   if (!credential.lastSyncedAt) {
     return { label: 'Pending', tone: 'warning' };
   }
