@@ -258,6 +258,94 @@ Shared runtime variables:
 Module 3 environment variables:
 
 - `KAFKA_BROKERS` (comma-separated)
+
+## Dockerized Environments (Development and Production)
+
+This repository supports separate Docker setups for development and production with explicit database URL switching.
+
+### Files
+
+- `Dockerfile`
+- `docker-compose.yaml` (development default)
+- `docker-compose.dev.yaml`
+- `docker-compose.prod.yaml`
+- `.env.development`
+- `.env.production`
+- `scripts/mongo/init-dev.js`
+
+### Environment Variable Switching (`DATABASE_URL`)
+
+The backend now resolves DB connection in this order:
+
+1. `DATABASE_URL`
+2. `MONGO_URI`
+3. built-in local fallback
+
+That allows the same app image to run in both environments without code changes.
+
+Development example:
+
+```env
+DATABASE_URL=mongodb://mongodb:27017/stackmind_dev?directConnection=true
+MONGO_URI=mongodb://mongodb:27017/stackmind_dev?directConnection=true
+```
+
+Production example:
+
+```env
+DATABASE_URL=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?appName=Stackmind
+MONGO_URI=${DATABASE_URL}
+```
+
+### Development (Local Docker)
+
+Run local app + local MongoDB + local proxy sidecar:
+
+```bash
+docker compose -f docker-compose.dev.yaml up --build
+```
+
+Or using default compose file:
+
+```bash
+docker compose up --build
+```
+
+What runs in dev:
+
+- `app` service on `http://localhost:4001`
+- `mongodb` on `localhost:27017`
+- `neon-local-proxy` sidecar on `localhost:27018` forwarding to MongoDB
+
+Ephemeral dev/testing behavior:
+
+- MongoDB dev data is stored in `tmpfs` so it resets when containers are recreated.
+- `scripts/mongo/init-dev.js` creates isolated `stackmind_dev` and `stackmind_test` DBs automatically.
+
+### Production (Cloud/Serverless MongoDB)
+
+Run production app container with external serverless MongoDB connection string injected via env:
+
+```bash
+DATABASE_URL='mongodb+srv://<username>:<password>@<cluster>.mongodb.net/?appName=Stackmind' \
+docker compose -f docker-compose.prod.yaml up --build -d
+```
+
+Important production notes:
+
+- No local MongoDB container is used in production compose.
+- Cloud/serverless MongoDB is external and accessed through `DATABASE_URL`.
+- Keep `DATABASE_URL` and secrets in a secret manager or CI/CD environment variables.
+
+### Quick Verify
+
+```bash
+docker compose -f docker-compose.dev.yaml ps
+curl http://localhost:4001/health
+```
+
+If the app starts successfully, it is using the configured `DATABASE_URL` for the active environment.
+
 - `KAFKA_CLIENT_ID`
 - `KAFKA_TOPIC`
 - `MOCK_KAFKA` (default `true`)

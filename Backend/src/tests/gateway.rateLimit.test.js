@@ -1,5 +1,4 @@
-import assert from 'node:assert/strict';
-import test from 'node:test';
+import { test, expect } from '@jest/globals';
 
 import { createOrgSlidingWindowRateLimiter } from '../gateway/middleware/orgRateLimit.middleware.js';
 
@@ -107,9 +106,9 @@ test('allows request under per-org limit', async () => {
     nextCalled = true;
   });
 
-  assert.equal(nextCalled, true);
-  assert.equal(res.statusCode, 200);
-  assert.equal(res.headers['X-RateLimit-Limit'], '2');
+  expect(nextCalled).toBe(true);
+  expect(res.statusCode).toBe(200);
+  expect(res.headers['X-RateLimit-Limit']).toBe('2');
 });
 
 test('blocks request above per-org limit', async () => {
@@ -132,10 +131,9 @@ test('blocks request above per-org limit', async () => {
     nextCalled = true;
   });
 
-  assert.equal(nextCalled, false);
-  assert.equal(blockedRes.statusCode, 429);
-  assert.equal(
-    blockedRes.payload?.message,
+  expect(nextCalled).toBe(false);
+  expect(blockedRes.statusCode).toBe(429);
+  expect(blockedRes.payload?.message).toBe(
     'Rate limit exceeded for organisation'
   );
 });

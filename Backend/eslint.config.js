@@ -35,7 +35,7 @@ export default [
     },
   },
   {
-    files: ['tests/**/*.js'],
+    files: ['tests/**/*.js', 'test/**/*.js'],
     languageOptions: {
       globals: {
         describe: 'readonly',
@@ -46,6 +46,15 @@ export default [
         beforeAll: 'readonly',
         afterAll: 'readonly',
         jest: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['scripts/mongo/**/*.js'],
+    languageOptions: {
+      sourceType: 'script',
+      globals: {
+        db: 'readonly',
       },
     },
   },

@@ -88,7 +88,10 @@ export const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: Number(process.env.PORT || 4001),
   gatewayPort: Number(process.env.GATEWAY_PORT || 4000),
-  mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/stackmind-auth',
+  mongoUri:
+    process.env.DATABASE_URL ||
+    process.env.MONGO_URI ||
+    'mongodb://127.0.0.1:27017/stackmind-auth',
   appOrigin: process.env.APP_ORIGIN || 'http://localhost:3000',
   gatewayCorsOrigin:
     process.env.GATEWAY_CORS_ORIGIN ||

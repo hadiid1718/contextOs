@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stackmind-backend-prod
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      PORT: 4001
+      # Use cloud/serverless MongoDB URL from secret injection.
+      DATABASE_URL: ${DATABASE_URL}
+      MONGO_URI: ${DATABASE_URL}
+    ports:
+      - "4001:4001"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: stackmind-prod-network

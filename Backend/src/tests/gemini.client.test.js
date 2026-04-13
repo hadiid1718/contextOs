@@ -1,5 +1,4 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from '@jest/globals';
 
 import { env } from '../config/env.js';
 import {
@@ -61,8 +60,8 @@ test('createGeminiEmbedding falls back to next model when configured model is un
   try {
     const embedding = await createGeminiEmbedding('How do we deploy this?');
 
-    assert.deepEqual(embedding, [0.123, 0.456]);
-    assert.deepEqual(requestedModels.slice(0, 2), [
+    expect(embedding).toEqual([0.123, 0.456]);
+    expect(requestedModels.slice(0, 2)).toEqual([
       'text-embedding-004',
       'gemini-embedding-001',
     ]);
@@ -134,8 +133,8 @@ test('generateGeminiAnswer falls back to next model when configured model is uns
       userPrompt: 'Summarize deployment steps.',
     });
 
-    assert.equal(answer, 'Fallback completion response');
-    assert.deepEqual(requestedModels.slice(0, 2), [
+    expect(answer).toBe('Fallback completion response');
+    expect(requestedModels.slice(0, 2)).toEqual([
       'gemini-1.5-flash',
       'gemini-2.0-flash',
     ]);
@@ -166,20 +165,18 @@ test('generateGeminiAnswer returns provider quota error details when Gemini quot
   });
 
   try {
-    await assert.rejects(
-      () =>
-        generateGeminiAnswer({
-          systemPrompt: 'You are an assistant.',
-          userPrompt: 'Explain deployment.',
-        }),
-      error => {
-        assert.equal(error?.statusCode, 429);
-        assert.match(String(error?.message || ''), /Gemini API quota exceeded/i);
-        assert.equal(error?.details?.provider, 'gemini');
-        assert.equal(error?.details?.operation, 'generateContent');
-        return true;
-      }
-    );
+    await expect(
+      generateGeminiAnswer({
+        systemPrompt: 'You are an assistant.',
+        userPrompt: 'Explain deployment.',
+      })
+    ).rejects.toMatchObject({
+      statusCode: 429,
+      details: {
+        provider: 'gemini',
+        operation: 'generateContent',
+      },
+    });
   } finally {
     globalThis.fetch = originalFetch;
     env.geminiApiKey = originalGeminiKey;

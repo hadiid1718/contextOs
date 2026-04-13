@@ -1,5 +1,4 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { test, expect } from '@jest/globals';
 
 import {
   buildPeriodWindow,
@@ -11,13 +10,13 @@ import { UsageRecord } from '../billing/models/UsageRecord.js';
 test('buildPeriodWindow returns month boundary key', () => {
   const period = buildPeriodWindow(new Date('2026-04-10T08:00:00Z'));
 
-  assert.equal(period.periodKey, '2026-04');
-  assert.equal(period.periodStart.toISOString(), '2026-04-01T00:00:00.000Z');
-  assert.equal(period.periodEnd.toISOString(), '2026-05-01T00:00:00.000Z');
+  expect(period.periodKey).toBe('2026-04');
+  expect(period.periodStart.toISOString()).toBe('2026-04-01T00:00:00.000Z');
+  expect(period.periodEnd.toISOString()).toBe('2026-05-01T00:00:00.000Z');
 });
 
 test('getOrgAiQueryLimit respects unlimited subscription', () => {
-  assert.equal(getOrgAiQueryLimit({ aiQueryLimit: 0 }), 0);
+  expect(getOrgAiQueryLimit({ aiQueryLimit: 0 })).toBe(0);
 });
 
 test('incrementUsageRecord avoids usageCount upsert conflict', async () => {
@@ -36,11 +35,10 @@ test('incrementUsageRecord avoids usageCount upsert conflict', async () => {
       date: new Date('2026-04-10T08:00:00Z'),
     });
 
-    assert.equal(
-      Object.hasOwn(capturedUpdate.$setOnInsert, 'usageCount'),
+    expect(Object.hasOwn(capturedUpdate.$setOnInsert, 'usageCount')).toBe(
       false
     );
-    assert.equal(capturedUpdate.$inc.usageCount, 1);
+    expect(capturedUpdate.$inc.usageCount).toBe(1);
   } finally {
     UsageRecord.findOneAndUpdate = originalFindOneAndUpdate;
   }

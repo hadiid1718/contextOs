@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stackmind-backend-dev
+    depends_on:
+      - mongodb
+      - neon-local-proxy
+    env_file:
+      - .env.development
+    environment:
+      NODE_ENV: development
+      PORT: 4001
+      DATABASE_URL: mongodb://mongodb:27017/stackmind_dev?directConnection=true
+      MONGO_URI: mongodb://mongodb:27017/stackmind_dev?directConnection=true
+    ports:
+      - "4001:4001"
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: stackmind-mongodb-dev
+    command: ["--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    tmpfs:
+      - /data/db
+    volumes:
+      - ./scripts/mongo/init-dev.js:/docker-entrypoint-initdb.d/init-dev.js:ro
+    restart: unless-stopped
+
+  # Compatibility sidecar named as requested.
+  # For MongoDB, this acts as a simple TCP proxy target inside the compose network.
+  neon-local-proxy:
+    image: alpine/socat:1.8.0.0
+    container_name: stackmind-neon-local-proxy-dev
+    command: ["tcp-listen:27018,fork,reuseaddr", "tcp-connect:mongodb:27017"]
+    depends_on:
+      - mongodb
+    ports:
+      - "27018:27018"
+    restart: unless-stopped
+
+networks:
+  default:
+    name: stackmind-dev-network
