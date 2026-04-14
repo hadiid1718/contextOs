@@ -162,9 +162,13 @@ const requestGeminiEmbedding = async ({ question, model }) => {
   const embedding = payload?.embedding?.values;
 
   if (!Array.isArray(embedding) || embedding.length === 0) {
-    throw new AppError('Gemini embedding generation returned empty values', 502, {
-      model,
-    });
+    throw new AppError(
+      'Gemini embedding generation returned empty values',
+      502,
+      {
+        model,
+      }
+    );
   }
 
   return {
@@ -244,7 +248,12 @@ export const createGeminiEmbedding = async question => {
       reason: result.message,
     });
 
-    if (!isModelUnsupportedError({ status: result.status, message: result.message })) {
+    if (
+      !isModelUnsupportedError({
+        status: result.status,
+        message: result.message,
+      })
+    ) {
       if (
         isQuotaExceededError({ status: result.status, message: result.message })
       ) {
@@ -300,9 +309,17 @@ export const generateGeminiAnswer = async ({ systemPrompt, userPrompt }) => {
       }
 
       lastFailure = result;
-      if (!isModelUnsupportedError({ status: result.status, message: result.message })) {
+      if (
+        !isModelUnsupportedError({
+          status: result.status,
+          message: result.message,
+        })
+      ) {
         if (
-          isQuotaExceededError({ status: result.status, message: result.message })
+          isQuotaExceededError({
+            status: result.status,
+            message: result.message,
+          })
         ) {
           throw createGeminiQuotaExceededError({
             operation: 'generateContent',

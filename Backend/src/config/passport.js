@@ -102,7 +102,8 @@ export const configurePassport = passport => {
             provider: 'github',
             accessToken,
             externalId: profile?.id || null,
-            accountName: profile?.username || profile?.displayName || 'GitHub account',
+            accountName:
+              profile?.username || profile?.displayName || 'GitHub account',
             scopes: ['repo', 'read:org'],
           });
         } catch (error) {

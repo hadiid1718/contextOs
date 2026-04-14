@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   app:
@@ -15,7 +15,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       MONGO_URI: ${DATABASE_URL}
     ports:
-      - "4001:4001"
+      - '4001:4001'
     restart: unless-stopped
 
 networks:

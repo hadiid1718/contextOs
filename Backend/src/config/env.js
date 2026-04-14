@@ -32,7 +32,9 @@ const toCsvArray = value =>
     .filter(Boolean);
 
 const normalizeProviderDefault = value => {
-  const normalized = String(value || 'auto').trim().toLowerCase();
+  const normalized = String(value || 'auto')
+    .trim()
+    .toLowerCase();
   if (['auto', 'openai', 'gemini'].includes(normalized)) {
     return normalized;
   }
@@ -240,7 +242,10 @@ export const env = {
   adminJwtExpiresIn: process.env.ADMIN_JWT_EXPIRES_IN || '8h',
   adminCookieName: process.env.ADMIN_COOKIE_NAME || 'admin_token',
   adminLockoutMaxAttempts: toNumber(process.env.ADMIN_LOCKOUT_MAX_ATTEMPTS, 5),
-  adminLockoutWindowMinutes: toNumber(process.env.ADMIN_LOCKOUT_WINDOW_MINUTES, 15),
+  adminLockoutWindowMinutes: toNumber(
+    process.env.ADMIN_LOCKOUT_WINDOW_MINUTES,
+    15
+  ),
 
   smtpHost: process.env.SMTP_HOST,
   smtpPort: Number(process.env.SMTP_PORT || 587),

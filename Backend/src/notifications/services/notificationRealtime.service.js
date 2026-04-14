@@ -101,7 +101,9 @@ export const emitNotificationRealtime = notification => {
   }
 
   if (notification.org_id) {
-    ioServer.to(toOrgRoom(notification.org_id)).emit('notification:new', notification);
+    ioServer
+      .to(toOrgRoom(notification.org_id))
+      .emit('notification:new', notification);
     return true;
   }
 

@@ -98,7 +98,7 @@ export const searchChunksFallback = async ({
 
     return results.map((item, index) => ({
       ...item,
-      score: Number((Math.max(0.1, 1 - index * 0.05)).toFixed(4)),
+      score: Number(Math.max(0.1, 1 - index * 0.05).toFixed(4)),
     }));
   } catch (error) {
     throw new AppError('Fallback chunk search failed', 500, {

@@ -91,11 +91,18 @@ const inferServiceFromPath = route => {
   const pathValue = String(route || '').toLowerCase();
 
   if (pathValue.startsWith('/api/v1/auth')) return 'auth';
-  if (pathValue.startsWith('/api/v1/credentials') || pathValue.startsWith('/api/v1/webhooks')) {
+  if (
+    pathValue.startsWith('/api/v1/credentials') ||
+    pathValue.startsWith('/api/v1/webhooks')
+  ) {
     return 'ingestion';
   }
   if (pathValue.startsWith('/api/v1/graph')) return 'graph';
-  if (pathValue.startsWith('/api/v1/query') || pathValue.startsWith('/api/v1/ai')) return 'query';
+  if (
+    pathValue.startsWith('/api/v1/query') ||
+    pathValue.startsWith('/api/v1/ai')
+  )
+    return 'query';
   if (pathValue.startsWith('/api/v1/notifications')) return 'notif';
   if (pathValue.startsWith('/api/v1/billing')) return 'billing';
   if (pathValue.startsWith('/api/v1/admin')) return 'org';
@@ -283,8 +290,13 @@ const buildServiceHealthRows = async () => {
     }
 
     const sparkData = sparkByService.get(service) || [];
-    const fallbackLatency = sparkData.length ? sparkData[sparkData.length - 1] : 0;
-    const latencyMs = Math.max(0, Math.round(base.latencyMs || fallbackLatency));
+    const fallbackLatency = sparkData.length
+      ? sparkData[sparkData.length - 1]
+      : 0;
+    const latencyMs = Math.max(
+      0,
+      Math.round(base.latencyMs || fallbackLatency)
+    );
 
     return {
       id: service,
@@ -313,7 +325,13 @@ const scanRedisKeys = async pattern => {
   let cursor = '0';
 
   do {
-    const result = await gatewayRedis.scan(cursor, 'MATCH', pattern, 'COUNT', '100');
+    const result = await gatewayRedis.scan(
+      cursor,
+      'MATCH',
+      pattern,
+      'COUNT',
+      '100'
+    );
     cursor = result[0];
     keys.push(...result[1]);
 
@@ -358,7 +376,10 @@ const computeKafkaLag = async ({ topic, groupId }) => {
     ]);
 
     const committedByPartition = new Map(
-      (groupOffsets || []).map(offset => [Number(offset.partition), toBigInt(offset.offset)])
+      (groupOffsets || []).map(offset => [
+        Number(offset.partition),
+        toBigInt(offset.offset),
+      ])
     );
 
     let lag = 0n;
@@ -373,7 +394,10 @@ const computeKafkaLag = async ({ topic, groupId }) => {
       }
     }
 
-    const safe = lag > BigInt(Number.MAX_SAFE_INTEGER) ? BigInt(Number.MAX_SAFE_INTEGER) : lag;
+    const safe =
+      lag > BigInt(Number.MAX_SAFE_INTEGER)
+        ? BigInt(Number.MAX_SAFE_INTEGER)
+        : lag;
     return Number(safe);
   } finally {
     try {
@@ -400,7 +424,13 @@ const buildGatewayLogRows = entries =>
       message: `${entry.method} ${entry.path} -> ${status}`,
       org: entry.orgId && entry.orgId !== '-' ? entry.orgId : 'global',
       route: entry.path,
-      tag: isServerError ? 'sec' : isRateLimited ? '429' : isSlow ? 'slow' : 'ok',
+      tag: isServerError
+        ? 'sec'
+        : isRateLimited
+          ? '429'
+          : isSlow
+            ? 'slow'
+            : 'ok',
     };
   });
 
@@ -435,8 +465,12 @@ export const getGoldenSignalsData = async () => {
   const reqPerMin = history.length ? history[history.length - 1] : 0;
 
   const minuteWindowStart = now - 60_000;
-  const lastMinute = requestEntries.filter(entry => entry.tsMs >= minuteWindowStart);
-  const errorCount = lastMinute.filter(entry => toNumber(entry.status, 0) >= 400).length;
+  const lastMinute = requestEntries.filter(
+    entry => entry.tsMs >= minuteWindowStart
+  );
+  const errorCount = lastMinute.filter(
+    entry => toNumber(entry.status, 0) >= 400
+  ).length;
   const errorRate =
     lastMinute.length > 0
       ? Number(((errorCount / lastMinute.length) * 100).toFixed(2))
@@ -473,9 +507,7 @@ export const getOrgRateLimitsData = async () => {
       zcardPipeline.zcard(key);
     }
 
-    const zcardResults = sortedKeys.length
-      ? await zcardPipeline.exec()
-      : [];
+    const zcardResults = sortedKeys.length ? await zcardPipeline.exec() : [];
 
     const orgIds = sortedKeys
       .map(key => key.slice(keyPrefix.length))
@@ -610,10 +642,16 @@ export const getRedisStatsData = async () => {
     const systemMemoryBytes = toNumber(parsed.get('total_system_memory'), 0);
 
     const memTotalBytes =
-      maxMemoryBytes > 0 ? maxMemoryBytes : systemMemoryBytes > 0 ? systemMemoryBytes : usedBytes;
+      maxMemoryBytes > 0
+        ? maxMemoryBytes
+        : systemMemoryBytes > 0
+          ? systemMemoryBytes
+          : usedBytes;
 
-    const memUsedGb = Number((usedBytes / (1024 ** 3)).toFixed(2));
-    const memTotalGb = Number((Math.max(memTotalBytes, usedBytes) / (1024 ** 3)).toFixed(2));
+    const memUsedGb = Number((usedBytes / 1024 ** 3).toFixed(2));
+    const memTotalGb = Number(
+      (Math.max(memTotalBytes, usedBytes) / 1024 ** 3).toFixed(2)
+    );
 
     const ttlMatches = String(info)
       .split('\n')
@@ -646,14 +684,13 @@ export const getRedisStatsData = async () => {
 export const getLogsData = async ({ q = '', limit = 50, offset = 0 } = {}) => {
   const safeLimit = clamp(toNumber(limit, 50), 1, 200);
   const safeOffset = Math.max(0, toNumber(offset, 0));
-  const normalizedQuery = String(q || '').trim().toLowerCase();
+  const normalizedQuery = String(q || '')
+    .trim()
+    .toLowerCase();
 
   const [gatewayEntries, adminAuditLogs] = await Promise.all([
     readGatewayRequestEntries(),
-    AdminAuditLog.find({})
-      .sort({ ts: -1 })
-      .limit(200)
-      .lean(),
+    AdminAuditLog.find({}).sort({ ts: -1 }).limit(200).lean(),
   ]);
 
   const rows = [
@@ -724,7 +761,10 @@ export const getAlertsData = async () => {
     id: `auth-${String(item._id || index)}`,
     type: String(item.action || 'AUTH_EVENT').toUpperCase(),
     severity: 'critical',
-    title: item.action === 'login_locked' ? 'Admin account temporarily locked' : 'Failed admin login attempt',
+    title:
+      item.action === 'login_locked'
+        ? 'Admin account temporarily locked'
+        : 'Failed admin login attempt',
     detail: `Admin action ${item.action} detected`,
     org: 'admin',
     ip: item.ip || '',
@@ -732,7 +772,10 @@ export const getAlertsData = async () => {
   }));
 
   const gatewayErrorAlerts = gatewayEntries
-    .filter(entry => toNumber(entry.status, 0) >= 500 || toNumber(entry.status, 0) === 429)
+    .filter(
+      entry =>
+        toNumber(entry.status, 0) >= 500 || toNumber(entry.status, 0) === 429
+    )
     .slice(-10)
     .map((entry, index) => ({
       id: `gw-${entry.tsMs}-${index}`,

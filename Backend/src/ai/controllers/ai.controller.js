@@ -149,7 +149,9 @@ export const streamRagQuery = async (req, res, next) => {
       aiProvider: result.ai_provider || 'mock',
       cached: Boolean(result.cached),
       chunksUsed: result.chunks_used || 0,
-      citationsCount: Array.isArray(result.citations) ? result.citations.length : 0,
+      citationsCount: Array.isArray(result.citations)
+        ? result.citations.length
+        : 0,
       graphContextCount: Array.isArray(result.graph_context)
         ? result.graph_context.length
         : 0,

@@ -20,7 +20,12 @@ import {
 
 const notificationRouter = Router();
 
-notificationRouter.get('/', requireAuth, validate(listNotificationsSchema), listNotifications);
+notificationRouter.get(
+  '/',
+  requireAuth,
+  validate(listNotificationsSchema),
+  listNotifications
+);
 
 notificationRouter.post(
   '/:id/read',

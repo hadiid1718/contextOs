@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   app:
@@ -17,15 +17,15 @@ services:
       DATABASE_URL: mongodb://mongodb:27017/stackmind_dev?directConnection=true
       MONGO_URI: mongodb://mongodb:27017/stackmind_dev?directConnection=true
     ports:
-      - "4001:4001"
+      - '4001:4001'
     restart: unless-stopped
 
   mongodb:
     image: mongo:7
     container_name: stackmind-mongodb-dev
-    command: ["--bind_ip_all"]
+    command: ['--bind_ip_all']
     ports:
-      - "27017:27017"
+      - '27017:27017'
     tmpfs:
       - /data/db
     volumes:
@@ -35,11 +35,11 @@ services:
   neon-local-proxy:
     image: alpine/socat:1.8.0.0
     container_name: stackmind-neon-local-proxy-dev
-    command: ["tcp-listen:27018,fork,reuseaddr", "tcp-connect:mongodb:27017"]
+    command: ['tcp-listen:27018,fork,reuseaddr', 'tcp-connect:mongodb:27017']
     depends_on:
       - mongodb
     ports:
-      - "27018:27018"
+      - '27018:27018'
     restart: unless-stopped
 
 networks:

@@ -65,7 +65,10 @@ export const getPlans = asyncHandler(async (_req, res) => {
   const annual = env.proAnnualPriceUsd;
   const annualSavingsPercent =
     monthly > 0
-      ? Math.max(0, Math.round(((monthly * 12 - annual) / (monthly * 12)) * 100))
+      ? Math.max(
+          0,
+          Math.round(((monthly * 12 - annual) / (monthly * 12)) * 100)
+        )
       : 0;
 
   res.status(200).json({
@@ -154,7 +157,7 @@ export const getInvoices = asyncHandler(async (req, res) => {
       limit,
     });
 
-    const invoices = rows.map((invoice) => ({
+    const invoices = rows.map(invoice => ({
       id: invoice.id,
       date: invoice.created
         ? new Date(invoice.created * 1000).toISOString()

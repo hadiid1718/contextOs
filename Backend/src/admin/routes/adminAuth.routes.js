@@ -27,7 +27,12 @@ adminAuthRouter.post(
   validate(adminLoginSchema),
   login
 );
-adminAuthRouter.post('/logout', requireSuperadmin, validate(emptyBodySchema), logout);
+adminAuthRouter.post(
+  '/logout',
+  requireSuperadmin,
+  validate(emptyBodySchema),
+  logout
+);
 adminAuthRouter.get('/me', requireSuperadmin, me);
 
 export { adminAuthRouter };

@@ -61,11 +61,13 @@ const routeByTypePrefix = [
 
 const resolveRouteFromType = (type = '') => {
   const normalized = String(type || '').toUpperCase();
-  const match = routeByTypePrefix.find((entry) => normalized.startsWith(entry.prefix));
+  const match = routeByTypePrefix.find(entry =>
+    normalized.startsWith(entry.prefix)
+  );
   return match?.route || '/notifications';
 };
 
-export const serializeNotification = (notification) => ({
+export const serializeNotification = notification => ({
   id: notification?._id?.toString() || notification?.id,
   user_id: notification?.user_id,
   org_id: notification?.org_id,
@@ -84,7 +86,7 @@ const getDefaultTypePreferences = () => ({
   ...defaultNotificationTypePreferences,
 });
 
-export const serializeNotificationPreference = (preference) => ({
+export const serializeNotificationPreference = preference => ({
   user_id: preference?.user_id,
   typePreferences: {
     ...getDefaultTypePreferences(),
@@ -108,7 +110,9 @@ export const normalizeNotificationEvent = (event = {}) => {
   const rawType = String(event.type || 'SYSTEM_EVENT').trim();
   const normalizedType = rawType || 'SYSTEM_EVENT';
 
-  const requestedSeverity = String(event.severity || '').toLowerCase().trim();
+  const requestedSeverity = String(event.severity || '')
+    .toLowerCase()
+    .trim();
   const severity = ALLOWED_SEVERITIES.has(requestedSeverity)
     ? requestedSeverity
     : normalizeSeverityFromType(normalizedType);
@@ -123,11 +127,14 @@ export const normalizeNotificationEvent = (event = {}) => {
       typeof event.route === 'string' && event.route.trim().length > 0
         ? event.route.trim()
         : resolveRouteFromType(normalizedType),
-    metadata: event.metadata && typeof event.metadata === 'object' ? event.metadata : {},
+    metadata:
+      event.metadata && typeof event.metadata === 'object'
+        ? event.metadata
+        : {},
   };
 };
 
-export const getOrCreateNotificationPreference = async (userId) => {
+export const getOrCreateNotificationPreference = async userId => {
   const preference = await NotificationPreference.findOneAndUpdate(
     { user_id: userId },
     { $setOnInsert: { user_id: userId } },
@@ -141,10 +148,12 @@ export const getOrCreateNotificationPreference = async (userId) => {
   return serializeNotificationPreference(preference);
 };
 
-export const createNotificationRecord = async (event) => {
+export const createNotificationRecord = async event => {
   const normalized = normalizeNotificationEvent(event);
 
-  const preference = await getOrCreateNotificationPreference(normalized.user_id);
+  const preference = await getOrCreateNotificationPreference(
+    normalized.user_id
+  );
   const isEnabled = preference.typePreferences?.[normalized.severity] !== false;
 
   if (!isEnabled) {
@@ -190,7 +199,11 @@ export const listNotificationsForUser = async ({
   const safeLimit = clamp(toInteger(limit, 10), 1, 50);
 
   const filter = buildVisibilityFilter({ userId, orgId, unreadOnly });
-  const unreadFilter = buildVisibilityFilter({ userId, orgId, unreadOnly: true });
+  const unreadFilter = buildVisibilityFilter({
+    userId,
+    orgId,
+    unreadOnly: true,
+  });
 
   const [items, total, unreadCount] = await Promise.all([
     Notification.find(filter)
@@ -218,7 +231,10 @@ export const listNotificationsForUser = async ({
   };
 };
 
-export const markNotificationReadForUser = async ({ userId, notificationId }) => {
+export const markNotificationReadForUser = async ({
+  userId,
+  notificationId,
+}) => {
   const updated = await Notification.findOneAndUpdate(
     {
       _id: notificationId,
@@ -255,18 +271,22 @@ export const markAllNotificationsReadForUser = async ({
   };
 };
 
-export const getNotificationPreferencesForUser = async (userId) => {
+export const getNotificationPreferencesForUser = async userId => {
   return getOrCreateNotificationPreference(userId);
 };
 
-export const updateNotificationPreferencesForUser = async ({ userId, payload }) => {
+export const updateNotificationPreferencesForUser = async ({
+  userId,
+  payload,
+}) => {
   const updates = {};
   const typePreferenceUpdates = {};
 
   if (payload?.typePreferences && typeof payload.typePreferences === 'object') {
-    ['info', 'success', 'warning', 'error'].forEach((key) => {
+    ['info', 'success', 'warning', 'error'].forEach(key => {
       if (typeof payload.typePreferences[key] === 'boolean') {
-        typePreferenceUpdates[`typePreferences.${key}`] = payload.typePreferences[key];
+        typePreferenceUpdates[`typePreferences.${key}`] =
+          payload.typePreferences[key];
       }
     });
   }
@@ -274,7 +294,9 @@ export const updateNotificationPreferencesForUser = async ({ userId, payload }) 
   Object.assign(updates, typePreferenceUpdates);
 
   if (typeof payload?.emailDigestFrequency === 'string') {
-    const normalizedFrequency = payload.emailDigestFrequency.trim().toLowerCase();
+    const normalizedFrequency = payload.emailDigestFrequency
+      .trim()
+      .toLowerCase();
 
     if (!ALLOWED_DIGEST_FREQUENCIES.has(normalizedFrequency)) {
       throw new AppError('Invalid email digest frequency', 400);

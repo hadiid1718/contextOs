@@ -30,7 +30,9 @@ describe('Backend App', () => {
       expect(response.body).toHaveProperty('billing');
 
       expect(Number.isFinite(response.body.uptime)).toBe(true);
-      expect(new Date(response.body.timestamp).toString()).not.toBe('Invalid Date');
+      expect(new Date(response.body.timestamp).toString()).not.toBe(
+        'Invalid Date'
+      );
     });
   });
 
@@ -81,7 +83,10 @@ describe('Backend App', () => {
       const response = await request(app).get('/api/v1/auth/me');
 
       expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Authentication required');
+      expect(response.body).toHaveProperty(
+        'message',
+        'Authentication required'
+      );
     });
 
     it('returns 401 for /auth/me with malformed token', async () => {

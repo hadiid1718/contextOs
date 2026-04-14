@@ -17,7 +17,7 @@ const buildAdminCookieOptions = () => ({
   path: '/',
 });
 
-const signAdminToken = (admin) =>
+const signAdminToken = admin =>
   jwt.sign(
     {
       sub: admin.id,
@@ -28,7 +28,7 @@ const signAdminToken = (admin) =>
     { expiresIn: env.adminJwtExpiresIn }
   );
 
-const serializeAdmin = (admin) => ({
+const serializeAdmin = admin => ({
   id: admin.id,
   email: admin.email,
   role: admin.role,

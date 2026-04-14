@@ -11,7 +11,8 @@ import {
 } from '../services/notification.service.js';
 
 export const publishNotification = asyncHandler(async (req, res) => {
-  const { user_id, org_id, type, severity, message, route, metadata } = req.body;
+  const { user_id, org_id, type, severity, message, route, metadata } =
+    req.body;
 
   const orgId = org_id || req.auth?.org_id;
 

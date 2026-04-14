@@ -27,7 +27,9 @@ const normalizeQuestion = question =>
     .replace(/\s+/g, ' ');
 
 const normalizeAiProvider = provider => {
-  const normalized = String(provider || 'auto').trim().toLowerCase();
+  const normalized = String(provider || 'auto')
+    .trim()
+    .toLowerCase();
   if (['openai', 'gemini', 'auto'].includes(normalized)) {
     return normalized;
   }
@@ -124,7 +126,11 @@ const buildMockAnswer = ({ question, orgId, aiProviderRequested }) => {
   ].join('\n\n');
 };
 
-export const buildQueryCacheKey = ({ orgId, question, aiProvider = 'auto' }) => {
+export const buildQueryCacheKey = ({
+  orgId,
+  question,
+  aiProvider = 'auto',
+}) => {
   const provider = normalizeAiProvider(aiProvider);
   const hash = createHash('sha256')
     .update(
@@ -309,7 +315,9 @@ const isGeminiQuotaError = error => {
   }
 
   const reason = String(error?.details?.reason || error?.message || '');
-  return /quota exceeded|rate limit|resource_exhausted|limit:\s*0/i.test(reason);
+  return /quota exceeded|rate limit|resource_exhausted|limit:\s*0/i.test(
+    reason
+  );
 };
 
 export const streamRagAnswer = async ({

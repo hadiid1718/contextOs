@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const booleanQuerySchema = z.preprocess((value) => {
+const booleanQuerySchema = z.preprocess(value => {
   if (typeof value === 'string') {
     const normalized = value.trim().toLowerCase();
     if (normalized === 'true') return true;
@@ -56,14 +56,13 @@ export const updateNotificationPreferencesSchema = z.object({
           error: z.boolean().optional(),
         })
         .optional(),
-      emailDigestFrequency: z
-        .enum(['instant', 'hourly', 'daily'])
-        .optional(),
+      emailDigestFrequency: z.enum(['instant', 'hourly', 'daily']).optional(),
     })
     .refine(
       value => {
         const hasTypePreferenceUpdates =
-          value.typePreferences && Object.keys(value.typePreferences).length > 0;
+          value.typePreferences &&
+          Object.keys(value.typePreferences).length > 0;
 
         return (
           hasTypePreferenceUpdates ||
