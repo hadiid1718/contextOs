@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node --watch src/server.js",
     "dev": "node src/server.js",
+    "dev:docker": "bash ./scripts/dev.sh ",
+    "prod:docker": "bash ./scripts/prod.sh ",
     "gateway:start": "node --watch src/gateway.server.js",
     "gateway:dev": "node src/gateway.server.js",
     "gateway:smoke": "node src/gateway/gateway.smoke.js",
