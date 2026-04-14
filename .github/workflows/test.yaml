@@ -1,0 +1,93 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, staging ]
+    paths:
+    - Backend/**
+    - .github/workflows/test.yaml
+  pull_request:
+    branches: [ main, staging ]
+    paths:
+    - Backend/**
+    - .github/workflows/test.yaml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: --experimental-vm-modules
+      DATABASE_URL: mongodb://127.0.0.1:27017/stackmind_test
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: npm
+        cache-dependency-path: Backend/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests with coverage
+      id: tests
+      continue-on-error: true
+      run: |
+        set -o pipefail
+        npm test -- --coverageReporters=text-summary --coverageReporters=json-summary --coverageReporters=lcov 2>&1 | tee test-output.log
+
+    - name: Upload coverage artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: |
+          Backend/coverage
+        retention-days: 30
+        if-no-files-found: warn
+
+    - name: Generate test summary
+      if: always()
+      run: |
+        if [ "${{ steps.tests.outcome }}" = "success" ]; then
+          echo "### Test run passed" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f coverage/coverage-summary.json ]; then
+            LINE_PCT=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')); process.stdout.write(String(c.total.lines.pct));")
+            STMT_PCT=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')); process.stdout.write(String(c.total.statements.pct));")
+            FUNC_PCT=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')); process.stdout.write(String(c.total.functions.pct));")
+            BRANCH_PCT=$(node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('coverage/coverage-summary.json','utf8')); process.stdout.write(String(c.total.branches.pct));")
+
+            echo "- Lines: ${LINE_PCT}%" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Statements: ${STMT_PCT}%" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Functions: ${FUNC_PCT}%" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Branches: ${BRANCH_PCT}%" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- Coverage summary not found, but tests passed." >> "$GITHUB_STEP_SUMMARY"
+          fi
+        else
+          echo "::error title=Tests failed::Run npm test locally and inspect failure details."
+          echo "### Test run failed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Suggested action: run npm test locally" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "#### Test output (tail)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 80 test-output.log >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          while IFS= read -r line; do
+            echo "::error title=Jest failure::$line"
+          done < <(grep -E "^\s*● | FAIL |Error:" test-output.log | head -n 20 || true)
+        fi
+
+    - name: Fail workflow if tests failed
+      if: steps.tests.outcome != 'success'
+      run: exit 1
